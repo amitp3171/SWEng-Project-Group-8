@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class SimpleChatServer
 {
-	
+	// Change later
 	private static SimpleServer server;
     public static void main( String[] args ) throws IOException
     {
