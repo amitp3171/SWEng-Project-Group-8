@@ -78,10 +78,22 @@ public class CinemaClient extends Application {
     }
 
     public static void switchScreen(String screenName) {
+        String title, path;
+
+        switch (screenName) {
+            case "movieList":
+                title = "Movie List";
+                path = "movieList";
+                break;
+            default:
+                title = "Home Page";
+                path = "primary";
+        }
+
         Platform.runLater(() -> {
-            setWindowTitle("My Clock");
+            setWindowTitle(title);
             try {
-                setContent("/Clock");
+                setContent(path);
             } catch (IOException e) {
                 e.printStackTrace();
             }

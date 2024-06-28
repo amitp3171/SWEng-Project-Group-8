@@ -26,7 +26,7 @@ public class PrimaryController {
 
 	@FXML
 	void showMovieList(ActionEvent event) {
-		//
+		CinemaClient.switchScreen("movieList");
 	}
 
 	@Subscribe
