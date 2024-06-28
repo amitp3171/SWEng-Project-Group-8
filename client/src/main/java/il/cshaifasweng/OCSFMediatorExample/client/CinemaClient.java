@@ -18,8 +18,8 @@ import org.greenrobot.eventbus.Subscribe;
 /**
  * JavaFX App
  */
-public class SimpleChatClient extends Application {
-
+public class CinemaClient extends Application {
+    private static Stage appStage;
     private static Scene scene;
     private SimpleClient client;
 
@@ -27,6 +27,7 @@ public class SimpleChatClient extends Application {
     public void start(Stage stage) throws IOException {
     	EventBus.getDefault().register(this);
     	client = SimpleClient.getClient();
+        appStage = stage;
     	client.openConnection();
         scene = new Scene(loadFXML("primary"), 640, 480);
         stage.setScene(scene);
@@ -38,11 +39,9 @@ public class SimpleChatClient extends Application {
     }
 
     private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(SimpleChatClient.class.getResource(fxml + ".fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(CinemaClient.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
-    
-    
 
     @Override
 	public void stop() throws Exception {
@@ -50,7 +49,6 @@ public class SimpleChatClient extends Application {
     	EventBus.getDefault().unregister(this);
 		super.stop();
 	}
-
 
     @Subscribe
     public void onMessageEvent(MessageEvent message) {
@@ -68,6 +66,27 @@ public class SimpleChatClient extends Application {
         });
     }
 
+    public static void setWindowTitle(String title) {
+        appStage.setTitle(title);
+    }
+
+    public static void setContent(String pageName) throws IOException {
+        Parent root = loadFXML(pageName);
+        scene = new Scene(root);
+        appStage.setScene(scene);
+        appStage.show();
+    }
+
+    public static void switchScreen(String screenName) {
+        Platform.runLater(() -> {
+            setWindowTitle("My Clock");
+            try {
+                setContent("/Clock");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
 	public static void main(String[] args) {
         launch();

@@ -3,14 +3,13 @@ package il.cshaifasweng.OCSFMediatorExample.server;
 import java.io.IOException;
 
 
-public class SimpleChatServer
+public class CinemaServer
 {
-	// Change later
 	private static SimpleServer server;
     public static void main( String[] args ) throws IOException
     {
         server = new SimpleServer(3000);
-        System.out.println("server is listening");
+        System.out.println("server online");
         server.listen();
     }
 }
