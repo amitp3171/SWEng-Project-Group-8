@@ -14,13 +14,19 @@
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>15</maven.compiler.source>
-		<maven.compiler.target>15</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<maven.assemblyPlugin.version>3.3.0</maven.assemblyPlugin.version>
 		<javafx.version>14</javafx.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
+			<!-- MySQL connector dependency (if you're using MySQL) -->
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>8.0.27</version>
+			</dependency>
 			<dependency>
 				<groupId>il.cshaifasweng.OCSFMediatorExample</groupId>
 				<artifactId>entities</artifactId>

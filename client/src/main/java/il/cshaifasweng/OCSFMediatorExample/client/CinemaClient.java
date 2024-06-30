@@ -1,5 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.client.ocsf.Branch;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -10,10 +11,19 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import org.hibernate.cfg.Configuration;
 import java.time.format.DateTimeFormatter;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.service.ServiceRegistry;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
 
 /**
  * JavaFX App
@@ -99,6 +109,25 @@ public class CinemaClient extends Application {
             }
         });
     }
+
+   private static Session session;
+
+    private static SessionFactory getSessionFactory(String password) throws HibernateException {
+        Configuration configuration = new Configuration();
+        configuration.setProperty("hibernate.connection.password", password);
+        configuration.addAnnotatedClass(Car.class);
+        configuration.addAnnotatedClass(Garage.class);
+        configuration.addAnnotatedClass(Person.class);
+        configuration.addAnnotatedClass(Picture.class);
+        ServiceRegistry serviceRegistry = new
+                StandardServiceRegistryBuilder()
+                .applySettings(configuration.getProperties()).build();
+        return configuration.buildSessionFactory(serviceRegistry);
+    }
+//    public static Branch[] generateBranches() throws Exception{
+//
+//    }
+
 
 	public static void main(String[] args) {
         launch();
