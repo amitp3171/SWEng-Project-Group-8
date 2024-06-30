@@ -1,9 +1,11 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
 import java.io.IOException;
-import javafx.fxml.FXML;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 
 public class movieListController {
@@ -14,7 +16,16 @@ public class movieListController {
     // keep in mind that a custom CellFactory has to be implemented
     // to display objects such as movies.
     @FXML
-    ListView movieListView;
+    private ListView<String> movieListView;
+
+    @FXML
+    private Menu movieListMenuWindow;
+
+    @FXML
+    private MenuItem movieListMenuWindowExit;
+
+    @FXML
+    private MenuItem movieListMenuWindowGoBack;
 
     @FXML
     private void switchToPrimary() throws IOException {
@@ -27,7 +38,13 @@ public class movieListController {
     }
 
     @FXML
-    void initialize() {
+    void onGoBack(ActionEvent event) {
+        CinemaClient.switchScreen("homePage");
+    }
 
+    @FXML
+    void initialize() {
+        String[] items = {"הארי פוטר", "מלחמת הכוכבים", "מועדון קרב"};
+        movieListView.getItems().addAll(items);
     }
 }

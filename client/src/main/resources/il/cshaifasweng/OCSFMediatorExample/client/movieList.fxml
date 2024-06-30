@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.movieListController">
     <children>
+      <MenuBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <menus>
+          <Menu fx:id="movieListMenuWindow" mnemonicParsing="false" text="חלון">
+            <items>
+              <MenuItem fx:id="movieListMenuWindowGoBack" mnemonicParsing="false" onAction="#onGoBack" text="חזור" />
+                  <MenuItem fx:id="movieListMenuWindowExit" mnemonicParsing="false" text="סגור" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
         <VBox alignment="CENTER" layoutX="231.0" layoutY="125.0" prefHeight="200.0" prefWidth="299.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <ListView fx:id="movieListView" onMouseClicked="#onMovieClick" prefHeight="263.0" prefWidth="600.0" />

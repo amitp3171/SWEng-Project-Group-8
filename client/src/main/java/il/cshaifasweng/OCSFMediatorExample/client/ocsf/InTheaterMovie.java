@@ -1,14 +1,24 @@
 package il.cshaifasweng.OCSFMediatorExample.client.ocsf;
 
+import javax.persistence.*;
 import java.util.*;
 
-public class InTheaterMovie extends AbstractMovie{
-    private Map<Theater, List<ScreeningTime>[]> screenings;
-    private List<ScreeningTime>[] days;
+@Entity
+@Table(name = "inTheaterMovies")
+public class InTheaterMovie extends AbstractMovie {
+    // primary key
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<ScreeningTime> screenings;
 
     public InTheaterMovie(String movieName, String producerName, List<String> mainActors, String description, String picture, List<ScreeningTime> screenings) {
         super(movieName, producerName, mainActors, description, picture);
-        this.days = new List[7];
-        //this.screenings = new HashMap<>;
+        this.screenings = screenings;
+    }
+
+    public InTheaterMovie() {
+        super();
     }
 }

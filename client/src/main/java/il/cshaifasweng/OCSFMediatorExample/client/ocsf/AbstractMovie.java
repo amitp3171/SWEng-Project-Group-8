@@ -18,6 +18,8 @@ public abstract class AbstractMovie {
         this.picture = picture;
     }
 
+    public AbstractMovie() {}
+
     // Getters and setters
     public String getMovieName() {
         return this.movieName;
