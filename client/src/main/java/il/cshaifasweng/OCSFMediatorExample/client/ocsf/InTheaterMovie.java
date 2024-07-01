@@ -23,5 +23,8 @@ public class InTheaterMovie extends AbstractMovie {
     public void addScreeningTime(ScreeningTime screeningTime) {
         screenings.add(screeningTime);
     }
+    public void removeScreeningTime(ScreeningTime screeningTime) {
+        screenings.remove(screeningTime);
+    }
     public List<ScreeningTime> getScreenings(){ return this.screenings;  }
 }

@@ -9,7 +9,7 @@ import javax.persistence.Table;
 @MappedSuperclass
 
 public abstract class AbstractEmployee extends AbstractUser {
-    @ElementCollection // Use ElementCollection for collections of simple types
+
     private String username;
     private String password;
 

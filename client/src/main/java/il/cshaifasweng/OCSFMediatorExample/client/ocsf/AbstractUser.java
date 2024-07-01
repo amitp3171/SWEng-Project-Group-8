@@ -7,7 +7,6 @@ public abstract class AbstractUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @ElementCollection // Use ElementCollection for collections of simple types
     private String firstName;
     private String lastName;
 
