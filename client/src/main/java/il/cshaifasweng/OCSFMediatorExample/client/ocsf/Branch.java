@@ -28,12 +28,9 @@ public class Branch {
         this.theaterList.add(theater);
     }
 
-
     public void addInTheaterMovieToList(InTheaterMovie inTheaterMovie) {
         this.inTheaterMovieList.add(inTheaterMovie);
     }
-
-
 
     public String getLocation() {
         return location;

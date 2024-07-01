@@ -8,6 +8,8 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,43 +46,94 @@ public class CheckInstances {
         return configuration.buildSessionFactory(serviceRegistry);
     }
 
-private static Theater[] generateTheaters() throws Exception {
-        Theater[] theaters = new Theater[10];
-      for(int i=0;i<10;i++){
-              Theater theater = new Theater();
-          theaters[i]=theater;
-          session.save(theater);
-          session.flush();
-      }
-      return theaters;
-}
-//Problem: creating branches with the same theaters belong to them(by Id).
-private static Branch[] generateBranches(Theater[] theaters) {
-        Branch[] branches = new Branch[3];
-        for(int i=0;i<3;i++){
-            Branch branch = new Branch("Haifa"+i);
-            for (Theater theater : theaters) {
-                branch.addTheaterToList(theater);
+    private static Theater[] generateTheaters() throws Exception {
+            Theater[] theaters = new Theater[10];
+          for(int i=0;i<10;i++){
+                  Theater theater = new Theater();
+              theaters[i]=theater;
+              session.save(theater);
+              session.flush();
+          }
+          return theaters;
+    }
+    //Problem: creating branches with the same theaters belong to them(by Id).
+    private static Branch[] generateBranches(Theater[] theaters) {
+            Branch[] branches = new Branch[3];
+            for(int i=0;i<3;i++){
+                Branch branch = new Branch("Haifa"+i);
+                for (Theater theater : theaters) {
+                    branch.addTheaterToList(theater);
+                }
+                branches[i]=branch;
+                session.save(branch);
+                session.flush();
             }
-            branches[i]=branch;
-            session.save(branch);
-            session.flush();
+            return branches;
+    }
+
+    private static void generateScreeningTimes(Branch branch,Theater theater) throws Exception {
+        List<String> mainActors = new ArrayList<String>();
+        mainActors.add("Zohar");
+        mainActors.add("Dan");
+        InTheaterMovie movie = new InTheaterMovie("Mad Max", "Amit Perry", mainActors, "Good movie", "pic");
+        ScreeningTime screeningTime = new ScreeningTime(branch, ScreeningTime.Day.MONDAY, LocalTime.of(20, 00), theater);
+        movie.addScreeningTime(screeningTime);
+        branch.addInTheaterMovieToList(movie);
+        session.save(movie);
+        session.flush();
+    }
+
+    private static List<Branch> getAllBranches() throws Exception{
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Branch> query = builder.createQuery(Branch.class);
+        query.from(Branch.class);
+        List<Branch> data = session.createQuery(query).getResultList();
+        return data;
+    }
+
+    private static List<Seat> getAllSeats() throws Exception{
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Seat> query = builder.createQuery(Seat.class);
+        query.from(Seat.class);
+        List<Seat> data = session.createQuery(query).getResultList();
+        return data;
+    }
+
+    private static List<Theater> getAllTheaters() throws Exception{
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Theater> query = builder.createQuery(Theater.class);
+        query.from(Theater.class);
+        List<Theater> data = session.createQuery(query).getResultList();
+        return data;
+    }
+
+
+
+    private static void printAllBranches() throws Exception {
+        List<Branch> branches = getAllBranches();
+        for(Branch branch : branches){
+            System.out.print("Branch location: " + branch.getLocation());
+
+            System.out.println('\n');
+
         }
-        return branches;
-}
+    }
 
-private static void generateScreeningTimes(Branch branch,Theater theater) throws Exception {
-    List<String> mainActors = new ArrayList<String>();
-    mainActors.add("Zohar");
-    mainActors.add("Dan");
-    InTheaterMovie movie = new InTheaterMovie("Mad Max", "Amit Perry", mainActors, "Good movie", "pic");
-    ScreeningTime screeningTime = new ScreeningTime(branch, ScreeningTime.Day.MONDAY, LocalTime.of(20, 00), theater);
-    movie.addScreeningTime(screeningTime);
-    branch.addInTheaterMovieToList(movie);
-    session.save(movie);
-    session.flush();
-}
+    private static void printAllSeats() throws Exception {
+        List<Seat> seats = getAllSeats();
+        for(Seat seat : seats){
+            System.out.print(seat.getId());
+            System.out.println('\n');
+        }
+    }
 
+    private static void printAllTheaters() throws Exception {
+        List<Theater> theaters = getAllTheaters();
+        for(Theater theater : theaters){
+            System.out.print(theater.getTheaterID());
+            System.out.println('\n');
+        }
+    }
 
 
 
@@ -94,6 +147,9 @@ public static void main( String[] args ) {
         Theater[] theaters = generateTheaters();
         Branch[] branches = generateBranches(theaters);
         generateScreeningTimes(branches[0], theaters[0]);
+
+        printAllBranches();
+        printAllSeats();
 
         session.getTransaction().commit(); // Save everything.
 
