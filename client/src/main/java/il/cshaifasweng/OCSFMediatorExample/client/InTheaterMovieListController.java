@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 import java.io.IOException;
 import java.util.*;
 
+import il.cshaifasweng.OCSFMediatorExample.client.ocsf.Branch;
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.DatabaseBridge;
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.InTheaterMovie;
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.ScreeningTime;
@@ -16,7 +17,14 @@ public class InTheaterMovieListController {
     @FXML
     private ListView<String> movieListView;
 
-    List<InTheaterMovie> inTheaterMovies;
+    private List<InTheaterMovie> inTheaterMovies;
+
+    private Branch selectedBranch;
+
+    public void setSelectedBranch(Branch branch) {
+        selectedBranch = branch;
+        initializeList();
+    }
 
     @FXML
     void onItemSelected(MouseEvent event) throws IOException {
@@ -45,17 +53,35 @@ public class InTheaterMovieListController {
         System.exit(0);
     }
 
-    @FXML
-    void initialize() {
+    void initializeList() {
+        movieListView.getItems().clear();
+
+        // get db
         DatabaseBridge db = DatabaseBridge.getInstance();
-        // get movies from DB
-        inTheaterMovies = db.getAll(InTheaterMovie.class);
+        inTheaterMovies = new ArrayList<>();
+
+        // filter movies by branch
+        for (InTheaterMovie movie : db.getAll(InTheaterMovie.class)) {
+            // check if movie has screenings in the selected branch
+            for (ScreeningTime screeningTime : movie.getScreenings()) {
+                // if any of the screenings are in the selected branch, add the movie
+                if (screeningTime.getBranch().equals(selectedBranch)) {
+                    inTheaterMovies.add(movie);
+                    break;
+                }
+            }
+        }
+
         // get movie names
         String[] movieNames = new String[inTheaterMovies.size()];
         for (int i = 0; i < movieNames.length; i++) {
             movieNames[i] = inTheaterMovies.get(i).getMovieName();
         }
-        // add to listView
+
+        // display movies
         movieListView.getItems().addAll(movieNames);
     }
+
+    @FXML
+    void initialize() {}
 }
