@@ -2,6 +2,7 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -34,13 +35,45 @@ public class CinemaClient extends Application {
         stage.show();
     }
 
-    static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
+    // set scene root
+    static FXMLLoader setRoot(String fxml) throws IOException {
+        // get fxml loader
+        FXMLLoader loader = getFXMLLoader(fxml);
+        // set root of scene to loader
+        scene.setRoot(loadFXML(loader));
+        // return used loader
+        return loader;
     }
 
-    private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(CinemaClient.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
+    // get fxml loader
+    public static FXMLLoader getFXMLLoader(String fxml) throws IOException {
+        return new FXMLLoader(CinemaClient.class.getResource(fxml + ".fxml"));
+    }
+
+    // load fxml given fxml path
+    public static Parent loadFXML(String fxml) throws IOException {
+        return getFXMLLoader(fxml).load();
+    }
+
+    // load fxml given fxml loader
+    public static Parent loadFXML(FXMLLoader loader) throws IOException {
+        return loader.load();
+    }
+
+    // set content given fxml path
+    public static FXMLLoader setContent(String fxml) throws IOException {
+        // set root of scene to the specified fxml
+        FXMLLoader loader = setRoot(fxml);
+        // update stage
+        appStage.setScene(scene);
+        // show stage
+        appStage.show();
+        // return used loader
+        return loader;
+    }
+
+    public static void setWindowTitle(String title) {
+        appStage.setTitle(title);
     }
 
     @Override
@@ -66,39 +99,12 @@ public class CinemaClient extends Application {
         });
     }
 
-    public static void setWindowTitle(String title) {
-        appStage.setTitle(title);
-    }
-
-    public static void setContent(String pageName) throws IOException {
-        Parent root = loadFXML(pageName);
-        scene = new Scene(root);
-        appStage.setScene(scene);
-        appStage.show();
-    }
-
-    public static void switchScreen(String screenName) {
-        String title, path;
-
-        switch (screenName) {
-            case "movieList":
-                title = "Movie List";
-                path = "movieList";
-                break;
-            default:
-                title = "Home Page";
-                path = "primary";
-        }
-
-        Platform.runLater(() -> {
-            setWindowTitle(title);
-            try {
-                setContent(path);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
+//    public static void setContent(String pageName) throws IOException {
+//        Parent root = loadFXML(pageName);
+//        scene = new Scene(root);
+//        appStage.setScene(scene);
+//        appStage.show();
+//    }
 
 	public static void main(String[] args) {
         launch();

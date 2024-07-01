@@ -22,8 +22,8 @@ import org.greenrobot.eventbus.Subscribe;
 public class PrimaryController {
 
 	@FXML
-	void showMovieList(ActionEvent event) {
-		CinemaClient.switchScreen("movieList");
+	void showMovieList(ActionEvent event) throws IOException {
+		CinemaClient.setContent("movieTypeSelection");
 	}
 
 	@FXML
