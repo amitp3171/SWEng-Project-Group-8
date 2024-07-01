@@ -1,7 +1,11 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
 import java.io.IOException;
+import java.util.*;
 
+import il.cshaifasweng.OCSFMediatorExample.client.ocsf.DatabaseBridge;
+import il.cshaifasweng.OCSFMediatorExample.client.ocsf.InTheaterMovie;
+import il.cshaifasweng.OCSFMediatorExample.client.ocsf.ScreeningTime;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,33 +13,26 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
 public class InTheaterMovieListController {
-
-    // usage of ListView wasn't taught in class,
-    // and we don't HAVE to use it, but in my opinion
-    // it's more esthetically appealing.
-    // keep in mind that a custom CellFactory has to be implemented
-    // to display objects such as movies.
     @FXML
     private ListView<String> movieListView;
 
+    List<InTheaterMovie> inTheaterMovies;
+
     @FXML
     void onItemSelected(MouseEvent event) throws IOException {
-        String selectedMovie = movieListView.getSelectionModel().getSelectedItem();
+        // if selected item is null
+        if (movieListView.getSelectionModel().getSelectedItem() == null) return;
 
-        if (selectedMovie == null) return;
+        // get screeningTime object
+        int selectedIndex = movieListView.getSelectionModel().getSelectedIndex();
+        InTheaterMovie selectedMovie = inTheaterMovies.get(selectedIndex);
 
+        // load screening list selector
         FXMLLoader screeningLoader = CinemaClient.setContent("screeningList");
 
+        // set selected movie
         ScreeningListController screeningController = screeningLoader.getController();
-        screeningController.setMovieLabel(selectedMovie);
-
-//        DialogPane screeningDialogPane = (DialogPane) CinemaClient.loadFXML("movieEditor");
-//
-//        Dialog<ButtonType> dialog = new Dialog<>();
-//        dialog.getDialogPane().setContent(screeningDialogPane);
-//        dialog.setTitle("בחר הקרנה");
-//
-//        dialog.showAndWait();
+        screeningController.setSelectedMovie(selectedMovie);
     }
 
     @FXML
@@ -50,7 +47,15 @@ public class InTheaterMovieListController {
 
     @FXML
     void initialize() {
-        String[] items = {"הארי פוטר", "מלחמת הכוכבים", "מועדון קרב"};
-        movieListView.getItems().addAll(items);
+        DatabaseBridge db = DatabaseBridge.getInstance();
+        // get movies from DB
+        inTheaterMovies = db.getAll(InTheaterMovie.class);
+        // get movie names
+        String[] movieNames = new String[inTheaterMovies.size()];
+        for (int i = 0; i < movieNames.length; i++) {
+            movieNames[i] = inTheaterMovies.get(i).getMovieName();
+        }
+        // add to listView
+        movieListView.getItems().addAll(movieNames);
     }
 }

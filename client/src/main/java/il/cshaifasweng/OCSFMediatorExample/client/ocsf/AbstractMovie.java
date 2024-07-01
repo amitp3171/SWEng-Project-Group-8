@@ -1,10 +1,14 @@
 package il.cshaifasweng.OCSFMediatorExample.client.ocsf;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.MappedSuperclass;
 import java.util.*;
 
+@MappedSuperclass
 public abstract class AbstractMovie {
     protected String movieName;
     protected String producerName;
+    @ElementCollection
     protected List<String> mainActors = new ArrayList<>();
     protected String description;
     protected String picture;

@@ -32,4 +32,11 @@ public class Seat {
     public void setTaken(boolean taken) {
         isTaken = taken;
     }
+
+    public Theater getTheater() {
+        return theater;
+    }
+    public void setTheater(Theater theater) {
+        this.theater = theater;
+    }
 }

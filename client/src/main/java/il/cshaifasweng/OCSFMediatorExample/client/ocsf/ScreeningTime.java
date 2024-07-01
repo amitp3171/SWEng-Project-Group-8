@@ -1,10 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client.ocsf;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "screeningTimes")
@@ -13,19 +10,28 @@ public class ScreeningTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     @ManyToOne(cascade = CascadeType.ALL)
     private Branch branch;
+
+    // enum for day of the week
+    public enum Day {
+        SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
+    }
+
+    @Enumerated(EnumType.STRING)
+    private Day day;
+
     // time of screening
     private LocalTime time;
-    // day of the week of screening
-    private String day;
+
     @ManyToOne(cascade = CascadeType.ALL)
     private Theater theater;
 
-    public ScreeningTime(Branch branch, LocalTime time, String day, Theater theater) {
+    public ScreeningTime(Branch branch, Day day, LocalTime time, Theater theater) {
         this.branch = branch;
-        this.time = time;
         this.day = day;
+        this.time = time;
         this.theater = theater;
     }
 
@@ -51,11 +57,11 @@ public class ScreeningTime {
         this.time = time;
     }
 
-    public String getDay() {
+    public Day getDay() {
         return day;
     }
 
-    public void setDay(String day) {
+    public void setDay(Day day) {
         this.day = day;
     }
 

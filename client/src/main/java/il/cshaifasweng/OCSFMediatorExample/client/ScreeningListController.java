@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import il.cshaifasweng.OCSFMediatorExample.client.ocsf.DatabaseBridge;
+import il.cshaifasweng.OCSFMediatorExample.client.ocsf.InTheaterMovie;
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.ScreeningTime;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,8 +27,24 @@ public class ScreeningListController {
 
     private List<ScreeningTime> screeningTimes;
 
-    public void setMovieLabel(String movieName) {
-        movieLabel.setText(movieName);
+    private InTheaterMovie selectedMovie;
+
+    public void setSelectedMovie(InTheaterMovie selectedMovie) {
+        this.selectedMovie = selectedMovie;
+        movieLabel.setText(selectedMovie.getMovieName());
+        initializeList();
+    }
+
+    public void initializeList() {
+        // get screenings of the selected movies
+        screeningTimes = selectedMovie.getScreenings();
+        // get screenings times as string
+        String[] items = new String[screeningTimes.size()];
+        for (int i = 0; i < screeningTimes.size(); i++) {
+            items[i] = screeningTimes.get(i).getTime().toString();
+        }
+        // display in list
+        screeningListView.getItems().addAll(items);
     }
 
     @FXML
@@ -52,7 +70,7 @@ public class ScreeningListController {
 
         // load dialog fxml
         FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("screeningEditor");
-        DialogPane screeningDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader); //CinemaClient.loadFXML("screeningEditor");
+        DialogPane screeningDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
 
         // get controller
         ScreeningEditorController screeningEditorController = dialogLoader.getController();
@@ -71,18 +89,13 @@ public class ScreeningListController {
         // if change was performed
         if (dialog.getResult() == ButtonType.OK) {
             screeningListView.getItems().set(selectedIndex, screeningTime.getTime().toString());
+            DatabaseBridge db = DatabaseBridge.getInstance();
+            // update DB entry
+            db.updateEntity(selectedMovie);
         };
     }
 
     @FXML
-    void initialize() {
-        // modify to fetch from DB later
-        screeningTimes = new ArrayList<>();
-        ScreeningTime firstTime = new ScreeningTime();
-        firstTime.setTime(LocalTime.of(17, 30));
-        screeningTimes.add(firstTime);
-        String[] items = {firstTime.getTime().toString()};
-        screeningListView.getItems().addAll(items);
-    }
+    void initialize() {}
 
 }
