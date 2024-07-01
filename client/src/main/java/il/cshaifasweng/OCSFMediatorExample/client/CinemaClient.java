@@ -101,6 +101,7 @@ public class CinemaClient extends Application {
     }
 
 	public static void main(String[] args) {
+        CheckInstances.main(args);
         launch();
     }
 
