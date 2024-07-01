@@ -15,7 +15,6 @@ public class InTheaterMovie extends AbstractMovie {
 
     public InTheaterMovie(String movieName, String producerName, List<String> mainActors, String description, String picture) {
         super(movieName, producerName, mainActors, description, picture);
-
     }
 
     public InTheaterMovie() {
@@ -24,4 +23,5 @@ public class InTheaterMovie extends AbstractMovie {
     public void addScreeningTime(ScreeningTime screeningTime) {
         screenings.add(screeningTime);
     }
+    public List<ScreeningTime> getScreenings(){ return this.screenings;  }
 }

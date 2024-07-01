@@ -1,6 +1,5 @@
 package il.cshaifasweng.OCSFMediatorExample.client.ocsf;
-import javax.persistence.ElementCollection;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.util.*;
 
 @MappedSuperclass
