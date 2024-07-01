@@ -22,11 +22,13 @@ import org.greenrobot.eventbus.Subscribe;
 public class PrimaryController {
 
 	@FXML
-	private Button homePage_viewList_btn;
-
-	@FXML
 	void showMovieList(ActionEvent event) {
 		CinemaClient.switchScreen("movieList");
+	}
+
+	@FXML
+	void onCloseProgram(ActionEvent event) {
+		System.exit(0);
 	}
 
 	@Subscribe
