@@ -21,6 +21,8 @@ public class ScreeningListController {
 
     @FXML
     private Label movieLabel;
+    @FXML
+    private Label movieInfoLabel;
 
     @FXML
     private ListView<String> screeningListView;
@@ -32,6 +34,10 @@ public class ScreeningListController {
     public void setSelectedMovie(InTheaterMovie selectedMovie) {
         this.selectedMovie = selectedMovie;
         movieLabel.setText(selectedMovie.getMovieName());
+        movieInfoLabel.setText("תקציר: " + selectedMovie.getDescription() + '\n'
+                + "שחקנים ראשיים: " + selectedMovie.getMainActors() + '\n'
+                + "מפיק: " + selectedMovie.getProducerName() + '\n'
+                + selectedMovie.getPicture());
         initializeList();
     }
 
@@ -41,7 +47,7 @@ public class ScreeningListController {
         // get screenings times as string
         String[] items = new String[screeningTimes.size()];
         for (int i = 0; i < screeningTimes.size(); i++) {
-            items[i] = screeningTimes.get(i).getTime().toString();
+            items[i] = String.format("%s, אולם %s", screeningTimes.get(i).getTime().toString(), screeningTimes.get(i).getTheater().getTheaterNumber());
         }
         // display in list
         screeningListView.getItems().addAll(items);
@@ -88,7 +94,8 @@ public class ScreeningListController {
 
         // if change was performed
         if (dialog.getResult() == ButtonType.OK) {
-            screeningListView.getItems().set(selectedIndex, screeningTime.getTime().toString());
+            String newLine = String.format("%s, אולם %s", screeningTimes.get(selectedIndex).getTime().toString(), screeningTimes.get(selectedIndex).getTheater().getTheaterNumber());
+            screeningListView.getItems().set(selectedIndex, newLine);
             DatabaseBridge db = DatabaseBridge.getInstance();
             // update DB entry
             db.updateEntity(selectedMovie);

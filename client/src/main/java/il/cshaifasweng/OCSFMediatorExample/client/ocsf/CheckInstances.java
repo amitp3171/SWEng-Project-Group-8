@@ -32,9 +32,9 @@ public class CheckInstances {
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/ProjectDataBase?serverTimezone=Asia/Jerusalem");
+        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/MyFirstDataBase?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "20danny05");
+        configuration.setProperty("hibernate.connection.password", "amit1717");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
@@ -49,7 +49,7 @@ public class CheckInstances {
     private static Theater[] generateTheaters() throws Exception {
         Theater[] theaters = new Theater[10];
         for(int i=0;i<10;i++){
-            Theater theater = new Theater();
+            Theater theater = new Theater(i+1);
             theaters[i]=theater;
             session.save(theater);
             session.flush();

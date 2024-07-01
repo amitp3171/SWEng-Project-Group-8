@@ -28,7 +28,7 @@ public class ScreeningEditorController {
     }
 
     public void setScreeningHour(String screeningHour) {
-        screeningHourTF.setText(screeningHour);
+        screeningHourTF.setText(screeningHour.split(",")[0]);
     }
 
     public void setSelectedScreeningTime(ScreeningTime selectedScreeningTime) {
@@ -45,7 +45,7 @@ public class ScreeningEditorController {
     void updateScreeningHour(ActionEvent event) throws ParseException {
         // get the new time
         String newTime = screeningHourTF.getText();
-
+        newTime = newTime.split(",")[0];
         LocalTime parsedNewTime = LocalTime.parse(newTime, DateTimeFormatter.ofPattern("HH:mm"));
 
         selectedScreeningTime.setTime(parsedNewTime);
