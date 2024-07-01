@@ -11,14 +11,17 @@ public class InTheaterMovie extends AbstractMovie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToMany(cascade = CascadeType.ALL)
-    private List<ScreeningTime> screenings;
+    private List<ScreeningTime> screenings = new ArrayList<>();
 
-    public InTheaterMovie(String movieName, String producerName, List<String> mainActors, String description, String picture, List<ScreeningTime> screenings) {
+    public InTheaterMovie(String movieName, String producerName, List<String> mainActors, String description, String picture) {
         super(movieName, producerName, mainActors, description, picture);
-        this.screenings = screenings;
+
     }
 
     public InTheaterMovie() {
         super();
+    }
+    public void addScreeningTime(ScreeningTime screeningTime) {
+        screenings.add(screeningTime);
     }
 }

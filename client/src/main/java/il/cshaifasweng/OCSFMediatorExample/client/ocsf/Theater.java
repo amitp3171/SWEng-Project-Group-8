@@ -25,7 +25,9 @@ public class Theater
     public Theater() {
         // add MAX_CAPACITY new seats
         for (int i = 0; i < MAX_CAPACITY; i++) {
-            seats.set(i, new Seat());
+            Seat seat = new Seat();
+            seat.setTheater(this); // Set the theater reference in the seat
+            seats.add(seat); // Use add instead of set
         }
     }
 

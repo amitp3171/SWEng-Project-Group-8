@@ -15,6 +15,7 @@ public class Seat {
     private boolean isTaken;
 
     @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "theater_id") // Define the foreign key column in the seats table
     private Theater theater;
 
     public Seat() {
@@ -31,5 +32,12 @@ public class Seat {
 
     public void setTaken(boolean taken) {
         isTaken = taken;
+    }
+
+    public Theater getTheater() {
+        return theater;
+    }
+    public void setTheater(Theater theater) {
+        this.theater = theater;
     }
 }
