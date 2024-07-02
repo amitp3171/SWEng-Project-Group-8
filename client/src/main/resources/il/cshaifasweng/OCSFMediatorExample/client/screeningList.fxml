@@ -26,7 +26,7 @@
    <center>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="movieLabel" alignment="CENTER" contentDisplay="CENTER" nodeOrientation="RIGHT_TO_LEFT" prefHeight="105.0" prefWidth="197.0" text="שם סרט">
+            <Label fx:id="movieLabel" alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" prefHeight="105.0" prefWidth="197.0" text="שם סרט">
                <font>
                   <Font size="22.0" />
                </font>

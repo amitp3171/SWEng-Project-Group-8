@@ -10,6 +10,7 @@ import il.cshaifasweng.OCSFMediatorExample.client.ocsf.ScreeningTime;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
@@ -17,13 +18,17 @@ public class InTheaterMovieListController {
     @FXML
     private ListView<String> movieListView;
 
+    @FXML
+    private Label branchNameLabel;
+
     private List<InTheaterMovie> inTheaterMovies;
 
     private Branch selectedBranch;
 
     public void setSelectedBranch(Branch branch) {
         selectedBranch = branch;
-        initializeList();
+        branchNameLabel.setText(branch.getLocation());
+        initializeList(false);
     }
 
     @FXML
@@ -40,6 +45,7 @@ public class InTheaterMovieListController {
 
         // set selected movie
         ScreeningListController screeningController = screeningLoader.getController();
+        screeningController.setSelectedBranch(selectedBranch);
         screeningController.setSelectedMovie(selectedMovie);
     }
 
@@ -53,15 +59,15 @@ public class InTheaterMovieListController {
         System.exit(0);
     }
 
-    void initializeList() {
+    void initializeList(boolean forceRefresh) {
         movieListView.getItems().clear();
+        inTheaterMovies = new ArrayList<>();
 
         // get db
         DatabaseBridge db = DatabaseBridge.getInstance();
-        inTheaterMovies = new ArrayList<>();
 
         // filter movies by branch
-        for (InTheaterMovie movie : db.getAll(InTheaterMovie.class)) {
+        for (InTheaterMovie movie : db.getAll(InTheaterMovie.class, forceRefresh)) {
             // check if movie has screenings in the selected branch
             for (ScreeningTime screeningTime : movie.getScreenings()) {
                 // if any of the screenings are in the selected branch, add the movie
@@ -80,6 +86,11 @@ public class InTheaterMovieListController {
 
         // display movies
         movieListView.getItems().addAll(movieNames);
+    }
+
+    @FXML
+    void onRefreshList(ActionEvent event) {
+        initializeList(true);
     }
 
     @FXML

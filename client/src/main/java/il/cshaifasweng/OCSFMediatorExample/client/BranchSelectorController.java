@@ -58,14 +58,14 @@ public class BranchSelectorController {
     void initialize() {
         DatabaseBridge db = DatabaseBridge.getInstance();
         // get movies from DB
-        availableBranches = db.getAll(Branch.class);
+        availableBranches = db.getAll(Branch.class, false);
         // get branch locations
-        String[] branchLocaations = new String[availableBranches.size()];
+        String[] branchLocations = new String[availableBranches.size()];
         for (int i = 0; i < availableBranches.size(); i++) {
-            branchLocaations[i] = availableBranches.get(i).getLocation();
+            branchLocations[i] = availableBranches.get(i).getLocation();
         }
         // add locations to listBox
-        selectBranchListBox.getItems().addAll(branchLocaations);
+        selectBranchListBox.getItems().addAll(branchLocations);
     }
 
 }

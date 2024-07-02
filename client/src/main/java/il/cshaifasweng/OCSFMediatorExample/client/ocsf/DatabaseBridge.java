@@ -7,6 +7,7 @@ import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
+import org.hibernate.annotations.QueryHints;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -36,7 +37,7 @@ public class DatabaseBridge {
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/MyFirstDataBase?serverTimezone=Asia/Jerusalem");
+        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
         configuration.setProperty("hibernate.connection.password", "20danny05");
         configuration.setProperty("hibernate.show_sql", "true");
@@ -50,15 +51,24 @@ public class DatabaseBridge {
         return configuration.buildSessionFactory(serviceRegistry);
     }
 
-    public static <T> List<T> getAll(Class<T> entityClass) {
+    public static <T> List<T> getAll(Class<T> entityClass, boolean forceRefresh) {
         // set session to read only
         session.setDefaultReadOnly(true);
+
         // query DB
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<T> query = builder.createQuery(entityClass);
         query.from(entityClass);
+
         // get list of extracted type
         List<T> data = session.createQuery(query).getResultList();
+
+        if (forceRefresh) {
+            // refresh each entity
+            for (T entity : data)
+                session.refresh(entity);
+        }
+
         // set to not read only
         session.setDefaultReadOnly(false);
         return data;

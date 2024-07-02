@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import il.cshaifasweng.OCSFMediatorExample.client.ocsf.Branch;
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.DatabaseBridge;
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.InTheaterMovie;
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.ScreeningTime;
@@ -32,12 +33,18 @@ public class ScreeningListController {
     @FXML
     private ListView<String> screeningListView;
 
+    private Branch selectedBranch;
+
     private List<ScreeningTime> screeningTimes;
 
     private InTheaterMovie selectedMovie;
 
     // default value is sunday
     private ScreeningTime.Day selectedDay = ScreeningTime.Day.SUNDAY;
+
+    public void setSelectedBranch(Branch branch) {
+        selectedBranch = branch;
+    }
 
     private String concatTimeTheater(int index) {
         // concat screening time with screening theater
@@ -74,8 +81,9 @@ public class ScreeningListController {
         screeningListView.getItems().clear();
         // filters screenings to only include the selected day
         for (ScreeningTime screeningTime : selectedMovie.getScreenings()) {
-            if (screeningTime.getDay() == selectedDay)
+            if (screeningTime.getDay() == selectedDay && screeningTime.getBranch().equals(selectedBranch)) {
                 screeningTimes.add(screeningTime);
+            }
         }
         // get screenings times as string
         String[] items = new String[screeningTimes.size()];
@@ -93,7 +101,10 @@ public class ScreeningListController {
 
     @FXML
     void onGoBack(ActionEvent event) throws IOException {
-        CinemaClient.setContent("inTheaterMovieList");
+        // get controller
+        InTheaterMovieListController controller = CinemaClient.setContent("inTheaterMovieList").getController();
+        // set selected branch
+        controller.setSelectedBranch(selectedBranch);
     }
 
     @FXML

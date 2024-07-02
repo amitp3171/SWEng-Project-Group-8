@@ -13,6 +13,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.Random;
 
 public class CheckInstances {
 
@@ -29,10 +33,12 @@ public class CheckInstances {
         configuration.addAnnotatedClass(InTheaterMovie.class);
         configuration.addAnnotatedClass(Seat.class);
         configuration.addAnnotatedClass(Theater.class);
+        configuration.addAnnotatedClass(ComingSoonMovie.class);
+        configuration.addAnnotatedClass(HomeMovie.class);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/MyFirstDataBase?serverTimezone=Asia/Jerusalem");
+        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
         configuration.setProperty("hibernate.connection.password", "20danny05");
         configuration.setProperty("hibernate.show_sql", "true");
@@ -56,32 +62,57 @@ public class CheckInstances {
         }
         return theaters;
     }
-    //Problem: creating branches with the same theaters belong to them(by Id).
-    private static Branch[] generateBranches(Theater[] theaters) {
-        Branch[] branches = new Branch[3];
-        for(int i=0;i<3;i++){
-            Branch branch = new Branch("Haifa"+i);
-            for (Theater theater : theaters) {
-                branch.addTheaterToList(theater);
-            }
-            branches[i]=branch;
+
+    private static void generateBranches(Branch[] branches) throws Exception {
+        for(Branch branch:branches){
             session.save(branch);
             session.flush();
         }
-        return branches;
+
     }
 
-    private static void generateScreeningTimes(Branch branch,Theater theater) throws Exception {
-        List<String> mainActors = new ArrayList<String>();
-        mainActors.add("Zohar");
-        mainActors.add("Dan");
-        InTheaterMovie movie = new InTheaterMovie("Mad Max", "Amit Perry", mainActors, "Good movie", "pic");
-        ScreeningTime screeningTime = new ScreeningTime(branch, ScreeningTime.Day.MONDAY, LocalTime.of(20, 00), theater);
-        movie.addScreeningTime(screeningTime);
-        branch.addInTheaterMovieToList(movie);
-        session.save(movie);
+
+    private static void generateScreeningTimes(Branch[] branches,Theater[] theaters,InTheaterMovie[] inTheaterMovies) throws Exception {
+        Random random = new Random();
+        ScreeningTime.Day[] daysOfWeek = ScreeningTime.Day.values();
+
+        for (InTheaterMovie movie:inTheaterMovies){
+            for(int i=0;i<5;i++){
+                int randomHour1 = random.nextInt(24);
+                Theater randomTheater1 = theaters[random.nextInt(theaters.length)];
+                Branch randomBranch1 = branches[random.nextInt(branches.length)];
+                ScreeningTime.Day randomDay1 = daysOfWeek[random.nextInt(daysOfWeek.length)];
+                ScreeningTime screeningTime1 = new ScreeningTime(randomBranch1, randomDay1, LocalTime.of(randomHour1, 0), randomTheater1);
+                movie.addScreeningTime(screeningTime1);
+            }
+            session.save(movie);
+            session.flush();
+        }
+
+    }
+
+    private static void generateComingSoonMovie() throws Exception {
+        List<String> mainActors = new ArrayList<>();
+        mainActors.add("Ryan");
+        mainActors.add("Yu");
+        LocalDate localDate = LocalDate.of(2024, 7, 27);
+
+        // Convert LocalDate to java.util.Date
+        Date specificDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        ComingSoonMovie comingSoonMovie = new ComingSoonMovie("Deadpool דדפול", "Shon", mainActors, "Funny Movie", "pic", specificDate);
+        session.save(comingSoonMovie);
         session.flush();
     }
+
+    private static void generateHomeMovie() throws Exception {
+        List<String> mainActors = new ArrayList<>();
+        mainActors.add("Simba");
+        mainActors.add("Scar");
+        HomeMovie homeMovie = new HomeMovie("Lion King מלך האריות", "Don", mainActors, "Great movie, lots of animals", "pic", "link");
+        session.save(homeMovie);
+        session.flush();
+    }
+
 
     private static List<Branch> getAllBranches() throws Exception{
         CriteriaBuilder builder = session.getCriteriaBuilder();
@@ -106,6 +137,8 @@ public class CheckInstances {
         List<Theater> data = session.createQuery(query).getResultList();
         return data;
     }
+
+
 
 
 
@@ -139,17 +172,64 @@ public class CheckInstances {
 
     public static void main( String[] args ) {
 
+
+
         try {
             SessionFactory sessionFactory = getSessionFactory();
             session = sessionFactory.openSession();
             session.beginTransaction();
 
+
+
+            Branch[] branches = new Branch[5];
+            branches[0] = new Branch("Haifa");
+            branches[1] = new Branch("Tel-Aviv");
+            branches[2] = new Branch("Eilat");
+            branches[3] = new Branch("Rishon");
+            branches[4] = new Branch("Jerusalem");
+            for(Branch branch : branches) {
+                Theater[] theaters = generateTheaters();
+                for (Theater theater : theaters) {
+                    branch.addTheaterToList(theater);
+                }
+            }
+
+            generateBranches(branches);
+
+            InTheaterMovie[] inTheaterMovies= new InTheaterMovie[5];
+
+            List<String> mainActors1 = new ArrayList<String>();
+            mainActors1.add("Zohar");
+            mainActors1.add("Dan");
+            inTheaterMovies[0] = new InTheaterMovie("Mad Max מקס הזועם", "Amit Perry", mainActors1, "Good movie", "pic1");
+
+            List<String> mainActors2 = new ArrayList<>();
+            mainActors2.add("Ceaser");
+            inTheaterMovies[1] = new InTheaterMovie("Planet of the Apes כוכב הקופים", "Peter", mainActors2, "Movie about apes", "pic2");
+
+            List<String> mainActors3 = new ArrayList<>();
+            mainActors3.add("Daniel");
+            inTheaterMovies[2] = new InTheaterMovie("Harry Potter הארי פוטר", "David", mainActors3, "Movie about friendship and magics", "pic3");
+
+            List<String> mainActors4 = new ArrayList<>();
+            mainActors4.add("Luke");
+            mainActors4.add("Han");
+            mainActors4.add("Lia");
+            inTheaterMovies[3] = new InTheaterMovie("Star Wars מלחמת הכוכבים", "George Lucas", mainActors4, "Movie about some guys waving light swords", "pic4" );
+
+            List<String> mainActors5 = new ArrayList<>();
+            mainActors5.add("Kevin");
+            inTheaterMovies[4] = new InTheaterMovie("The Usual Suspects החשוד המיידי", "Bryan", mainActors5, "Thrilling movie", "pic5");
+
             Theater[] theaters = generateTheaters();
-            Branch[] branches = generateBranches(theaters);
-            generateScreeningTimes(branches[0], theaters[0]);
+
+            generateScreeningTimes(branches, theaters,inTheaterMovies);
 
             printAllBranches();
             printAllSeats();
+
+            generateComingSoonMovie();
+            generateHomeMovie();
 
             session.getTransaction().commit(); // Save everything.
 
