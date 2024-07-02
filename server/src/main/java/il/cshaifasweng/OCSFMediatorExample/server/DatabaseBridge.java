@@ -1,19 +1,15 @@
-package il.cshaifasweng.OCSFMediatorExample.client.ocsf;
+package il.cshaifasweng.OCSFMediatorExample.server;
 
-import il.cshaifasweng.OCSFMediatorExample.client.dataClasses.*;
+import il.cshaifasweng.OCSFMediatorExample.server.dataClasses.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-import org.hibernate.annotations.QueryHints;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 

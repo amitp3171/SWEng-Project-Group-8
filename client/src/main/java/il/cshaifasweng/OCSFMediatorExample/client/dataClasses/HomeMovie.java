@@ -1,7 +1,7 @@
-package il.cshaifasweng.OCSFMediatorExample.client.ocsf;
+package il.cshaifasweng.OCSFMediatorExample.client.dataClasses;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.List;
 
 @Entity
 @Table(name = "homeMovie")

@@ -1,8 +1,9 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.client.events.MessageEvent;
+import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -22,7 +23,9 @@ import org.greenrobot.eventbus.Subscribe;
 public class CinemaClient extends Application {
     private static Stage appStage;
     private static Scene scene;
-    private SimpleClient client;
+    private static SimpleClient client;
+
+    private static int nextMessageId;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -30,9 +33,19 @@ public class CinemaClient extends Application {
     	client = SimpleClient.getClient();
         appStage = stage;
     	client.openConnection();
+        client.sendToServer(new Message(0, "add client"));
         scene = new Scene(loadFXML("primary"), 640, 480);
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static int getNextMessageId() {
+        nextMessageId++;
+        return nextMessageId;
+    }
+
+    public static SimpleClient getClient() {
+        return client;
     }
 
     // set scene root
@@ -85,18 +98,18 @@ public class CinemaClient extends Application {
 
     @Subscribe
     public void onMessageEvent(MessageEvent message) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
-        Platform.runLater(() -> {
-            Alert alert = new Alert(AlertType.INFORMATION,
-                    String.format("Message:\nId: %d\nData: %s\nTimestamp: %s\n",
-                            message.getMessage().getId(),
-                            message.getMessage().getMessage(),
-                            message.getMessage().getTimeStamp().format(dtf))
-            );
-            alert.setTitle("new message");
-            alert.setHeaderText("New Message:");
-            alert.show();
-        });
+//        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+//        Platform.runLater(() -> {
+//            Alert alert = new Alert(AlertType.INFORMATION,
+//                    String.format("Message:\nId: %d\nData: %s\nTimestamp: %s\n",
+//                            message.getMessage().getId(),
+//                            message.getMessage().getMessage(),
+//                            message.getMessage().getTimeStamp().format(dtf))
+//            );
+//            alert.setTitle("new message");
+//            alert.setHeaderText("New Message:");
+//            alert.show();
+//        });
     }
 
 	public static void main(String[] args) {

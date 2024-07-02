@@ -1,8 +1,9 @@
-package il.cshaifasweng.OCSFMediatorExample.client.ocsf;
+package il.cshaifasweng.OCSFMediatorExample.client.dataClasses;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.MappedSuperclass;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @MappedSuperclass
 public abstract class AbstractMovie {

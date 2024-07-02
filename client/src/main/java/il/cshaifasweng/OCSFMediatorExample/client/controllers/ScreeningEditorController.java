@@ -1,17 +1,12 @@
-package il.cshaifasweng.OCSFMediatorExample.client;
+package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
-import java.net.URL;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ResourceBundle;
 
-import il.cshaifasweng.OCSFMediatorExample.client.ocsf.ScreeningTime;
-
+import il.cshaifasweng.OCSFMediatorExample.client.dataClasses.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;

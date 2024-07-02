@@ -1,12 +1,11 @@
-package il.cshaifasweng.OCSFMediatorExample.client;
+package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
 import java.util.*;
 
-import il.cshaifasweng.OCSFMediatorExample.client.ocsf.Branch;
+import il.cshaifasweng.OCSFMediatorExample.client.dataClasses.*;
+import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.DatabaseBridge;
-import il.cshaifasweng.OCSFMediatorExample.client.ocsf.InTheaterMovie;
-import il.cshaifasweng.OCSFMediatorExample.client.ocsf.ScreeningTime;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

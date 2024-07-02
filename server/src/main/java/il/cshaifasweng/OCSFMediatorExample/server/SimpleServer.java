@@ -4,39 +4,32 @@ import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.SubscribedClient;
+import il.cshaifasweng.OCSFMediatorExample.server.dataClasses.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SimpleServer extends AbstractServer {
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
 
 	public SimpleServer(int port) {
 		super(port);
-		
 	}
 
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
 		String request = message.getMessage();
+		System.out.println("Received request: " + request);
 		try {
 			//we got an empty message, so we will send back an error message with the error details.
 			if (request.isBlank()){
 				message.setMessage("Error! we got an empty message");
 				client.sendToClient(message);
-			}
-			//we got a request to change submitters IDs with the updated IDs at the end of the string, so we save
-			// the IDs at data field in Message entity and send back to all subscribed clients a request to update
-			//their IDs text fields. An example of use of observer design pattern.
-			//message format: "change submitters IDs: 123456789, 987654321"
-			else if(request.startsWith("change submitters IDs:")){
-				message.setData(request.substring(23));
-				message.setMessage("update submitters IDs");
-				sendToAllClients(message);
 			}
 			//we got a request to add a new client as a subscriber.
 			else if (request.equals("add client")){
@@ -44,6 +37,27 @@ public class SimpleServer extends AbstractServer {
 				SubscribersList.add(connection);
 				message.setMessage("client added successfully");
 				client.sendToClient(message);
+			}
+			// if received message requests the list of branches
+			else if (request.equals("get branch list")){
+				// cast received message to requested class
+				// Message<Branch> receivedMessage = (Message<Branch>) msg;
+				Message receivedMessage = (Message) msg;
+				// get DatabaseBridge instance
+				DatabaseBridge db = DatabaseBridge.getInstance();
+				// get data
+				List<Branch> receivedData = db.getAll(Branch.class, true);
+				// modify message
+				receivedMessage.setMessage("updated branch list successfully");
+				receivedMessage.setDataList(receivedData);
+				// send message
+				try {
+					client.sendToClient(receivedMessage);
+					System.out.println("Branch request satisfied");
+				} catch (IOException e) {
+					System.out.println("Message Failed");
+					e.printStackTrace();
+				}
 			}
 			//we got a message from client requesting to echo Hello, so we will send back to client Hello world!
 			else if(request.startsWith("echo Hello")){

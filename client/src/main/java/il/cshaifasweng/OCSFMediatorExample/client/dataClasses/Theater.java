@@ -1,9 +1,7 @@
-package il.cshaifasweng.OCSFMediatorExample.client.ocsf;
+package il.cshaifasweng.OCSFMediatorExample.client.dataClasses;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 @Entity

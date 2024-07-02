@@ -1,9 +1,6 @@
-package il.cshaifasweng.OCSFMediatorExample.client.ocsf;
+package il.cshaifasweng.OCSFMediatorExample.server.dataClasses;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 @Entity
 @Table(name = "seats")

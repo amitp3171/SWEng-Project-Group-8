@@ -1,5 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.client.events.*;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import org.greenrobot.eventbus.EventBus;
 
@@ -16,13 +17,26 @@ public class SimpleClient extends AbstractClient {
 	@Override
 	protected void handleMessageFromServer(Object msg) {
 		Message message = (Message) msg;
+		System.out.println("Message received: " + message.getMessage());
+
 		if(message.getMessage().equals("update submitters IDs")){
 			EventBus.getDefault().post(new UpdateMessageEvent(message));
-		}else if(message.getMessage().equals("client added successfully")){
+		}
+
+		else if(message.getMessage().equals("updated branch list successfully")){
+			System.out.println("SimpleClient processing updated branch list");
+			System.out.println(message.getDataList());
+			EventBus.getDefault().post(new NewBranchListEvent(message));
+		}
+
+		else if(message.getMessage().equals("client added successfully")){
 			EventBus.getDefault().post(new NewSubscriberEvent(message));
-		}else if(message.getMessage().equals("Error! we got an empty message")){
+		}
+
+		else if(message.getMessage().equals("Error! we got an empty message")){
 			EventBus.getDefault().post(new ErrorEvent(message));
-		}else {
+		}
+		else {
 			EventBus.getDefault().post(new MessageEvent(message));
 		}
 	}

@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="122.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.ScreeningEditorController">
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="122.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningEditorController">
    <content>
       <StackPane prefHeight="88.0" prefWidth="359.0">
          <children>

@@ -1,4 +1,4 @@
-package il.cshaifasweng.OCSFMediatorExample.client.ocsf;
+package il.cshaifasweng.OCSFMediatorExample.server.dataClasses;
 
 import javax.persistence.MappedSuperclass;
 

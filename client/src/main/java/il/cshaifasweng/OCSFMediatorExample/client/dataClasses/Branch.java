@@ -1,12 +1,13 @@
-package il.cshaifasweng.OCSFMediatorExample.client.ocsf;
+package il.cshaifasweng.OCSFMediatorExample.client.dataClasses;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "branches")
-public class Branch {
+public class Branch implements Serializable {
     // location is the primary key
     @Id
     private String location;

@@ -1,6 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client.ocsf;
 
-import il.cshaifasweng.OCSFMediatorExample.client.ocsf.*;
+import il.cshaifasweng.OCSFMediatorExample.client.dataClasses.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

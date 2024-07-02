@@ -1,15 +1,15 @@
-package il.cshaifasweng.OCSFMediatorExample.client;
+package il.cshaifasweng.OCSFMediatorExample.client.events;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 
-public class ErrorEvent {
+public class NewSubscriberEvent {
     private Message message;
 
     public Message getMessage() {
         return message;
     }
 
-    public ErrorEvent(Message message) {
+    public NewSubscriberEvent(Message message) {
         this.message = message;
     }
 }

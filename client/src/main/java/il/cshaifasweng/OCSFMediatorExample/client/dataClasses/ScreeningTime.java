@@ -1,4 +1,4 @@
-package il.cshaifasweng.OCSFMediatorExample.client.ocsf;
+package il.cshaifasweng.OCSFMediatorExample.client.dataClasses;
 
 import javax.persistence.*;
 import java.time.LocalTime;
