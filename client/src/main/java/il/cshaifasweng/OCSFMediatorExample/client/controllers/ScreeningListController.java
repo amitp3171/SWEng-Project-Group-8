@@ -28,7 +28,7 @@ public class ScreeningListController {
     @FXML
     private ListView<String> screeningListView;
 
-    private Branch selectedBranch;
+    private String selectedBranch;
 
     private List<ScreeningTime> screeningTimes;
 
@@ -37,7 +37,7 @@ public class ScreeningListController {
     // default value is sunday
     private ScreeningTime.Day selectedDay = ScreeningTime.Day.SUNDAY;
 
-    public void setSelectedBranch(Branch branch) {
+    public void setSelectedBranch(String branch) {
         selectedBranch = branch;
     }
 
@@ -76,7 +76,7 @@ public class ScreeningListController {
         screeningListView.getItems().clear();
         // filters screenings to only include the selected day
         for (ScreeningTime screeningTime : selectedMovie.getScreenings()) {
-            if (screeningTime.getDay() == selectedDay && screeningTime.getBranch().equals(selectedBranch)) {
+            if (screeningTime.getDay() == selectedDay && screeningTime.getBranch().getLocation().equals(selectedBranch)) {
                 screeningTimes.add(screeningTime);
             }
         }

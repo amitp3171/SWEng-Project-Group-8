@@ -1,5 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.server;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
@@ -11,13 +13,19 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.lang.*;
+import java.util.Map;
 
 public class SimpleServer extends AbstractServer {
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
+	private static ObjectMapper mapper = new ObjectMapper();
+	DatabaseBridge db = DatabaseBridge.getInstance();
 
 	public SimpleServer(int port) {
 		super(port);
+		mapper.registerModule(new JavaTimeModule());
 	}
 
 	@Override
@@ -40,46 +48,57 @@ public class SimpleServer extends AbstractServer {
 			}
 			// if received message requests the list of branches
 			else if (request.equals("get branch list")){
-				// cast received message to requested class
-				// Message<Branch> receivedMessage = (Message<Branch>) msg;
-				Message receivedMessage = (Message) msg;
-				// get DatabaseBridge instance
-				DatabaseBridge db = DatabaseBridge.getInstance();
 				// get data
 				List<Branch> receivedData = db.getAll(Branch.class, true);
 				// modify message
-				receivedMessage.setMessage("updated branch list successfully");
-				receivedMessage.setDataList(receivedData);
+				List<String> branchLocations = new ArrayList<>();
+				// get branch locations
+				for (Branch branch : receivedData) {
+					branchLocations.add(branch.getLocation());
+				}
 				// send message
+				message.setMessage("updated branch list successfully");
+				String listAsJson = mapper.writeValueAsString(branchLocations);
+				message.setData(listAsJson);
 				try {
-					client.sendToClient(receivedMessage);
+					client.sendToClient(message);
 					System.out.println("Branch request satisfied");
 				} catch (IOException e) {
 					System.out.println("Message Failed");
 					e.printStackTrace();
 				}
 			}
-			//we got a message from client requesting to echo Hello, so we will send back to client Hello world!
-			else if(request.startsWith("echo Hello")){
-				message.setMessage("Hello World!");
-				client.sendToClient(message);
-			}
-			else if(request.startsWith("send Submitters IDs")){
-				//add code here to send submitters IDs to client
-				message.setMessage("214732745, 211754502");
-				client.sendToClient(message);
-			}
-			else if (request.startsWith("send Submitters")){
-				//add code here to send submitters names to client
-				message.setMessage("Daniel, Dan");
-				client.sendToClient(message);
-			}
-			else if (request.equals("what’s the time?") || request.equals("what's the time?")) {
-				//add code here to send the time to client
-				DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
-				String currentDate = LocalDate.now().format(formatter);
-				message.setMessage(currentDate);
-				client.sendToClient(message);
+			else if (request.startsWith("get movie list")){
+				Message receivedMessage = (Message) msg;
+				// parse message
+				String[] splitMessage = receivedMessage.getMessage().split(",");
+				String branchLocation = splitMessage[1];
+				boolean forceRefresh = Boolean.parseBoolean(splitMessage[2]);
+				// get DatabaseBridge instance
+				DatabaseBridge db = DatabaseBridge.getInstance();
+				// get data
+				List<InTheaterMovie> receivedData = db.getAll(InTheaterMovie.class, forceRefresh);
+				ArrayList<String> movieNameAndId = new ArrayList<>();
+				// filter movies
+				for (InTheaterMovie movie : receivedData) {
+					for (Branch branch : movie.getBranches()) {
+						if (branch.getLocation().equals(branchLocation)) {
+							movieNameAndId.add(String.format("%s,%s", movie.getId(), movie.getMovieName()));
+							break;
+						}
+					}
+				}
+				// send message
+				receivedMessage.setMessage("updated InTheaterMovie list successfully");
+				String listAsJson = mapper.writeValueAsString(movieNameAndId);
+				receivedMessage.setData(listAsJson);
+				try {
+					client.sendToClient(receivedMessage);
+					System.out.println(String.format("InTheaterMovieList request satisfied for branch %s", branchLocation));
+				} catch (IOException e) {
+					System.out.println("Message Failed");
+					e.printStackTrace();
+				}
 			}
 			else if (request.startsWith("multiply")){
 				//add code here to multiply 2 numbers received in the message and send result back to client

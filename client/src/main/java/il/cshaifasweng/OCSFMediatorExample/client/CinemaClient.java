@@ -1,5 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import il.cshaifasweng.OCSFMediatorExample.client.events.MessageEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Application;
@@ -24,12 +26,14 @@ public class CinemaClient extends Application {
     private static Stage appStage;
     private static Scene scene;
     private static SimpleClient client;
+    private static ObjectMapper mapper = new ObjectMapper();
 
     private static int nextMessageId;
 
     @Override
     public void start(Stage stage) throws IOException {
     	EventBus.getDefault().register(this);
+        mapper.registerModule(new JavaTimeModule());
     	client = SimpleClient.getClient();
         appStage = stage;
     	client.openConnection();
@@ -46,6 +50,10 @@ public class CinemaClient extends Application {
 
     public static SimpleClient getClient() {
         return client;
+    }
+
+    public static ObjectMapper getMapper() {
+        return mapper;
     }
 
     // set scene root

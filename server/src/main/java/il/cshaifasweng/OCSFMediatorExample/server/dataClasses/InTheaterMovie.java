@@ -1,5 +1,8 @@
 package il.cshaifasweng.OCSFMediatorExample.server.dataClasses;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +16,8 @@ public class InTheaterMovie extends AbstractMovie {
     private int id;
     @ManyToMany(cascade = CascadeType.ALL)
     private List<ScreeningTime> screenings = new ArrayList<>();
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Branch> branches = new ArrayList<>();
 
     public InTheaterMovie(String movieName, String producerName, List<String> mainActors, String description, String picture) {
         super(movieName, producerName, mainActors, description, picture);
@@ -27,5 +32,29 @@ public class InTheaterMovie extends AbstractMovie {
     public void removeScreeningTime(ScreeningTime screeningTime) {
         screenings.remove(screeningTime);
     }
+    public void addBranch(Branch branch) {
+        branches.add(branch);
+    }
+    public void removeBranch(Branch branch) {
+        branches.remove(branch);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public List<ScreeningTime> getScreenings(){ return this.screenings;  }
+    public void setScreenings(List<ScreeningTime> screenings){
+        this.screenings = screenings;
+    }
+    public List<Branch> getBranches() {
+        return branches;
+    }
+    public void setBranches(List<Branch> branches) {
+        this.branches = branches;
+    }
 }

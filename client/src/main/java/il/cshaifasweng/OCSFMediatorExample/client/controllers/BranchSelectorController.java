@@ -1,8 +1,11 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.dataClasses.*;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewBranchListEvent;
@@ -23,9 +26,9 @@ public class BranchSelectorController {
 
     private Dialog<ButtonType> dialog;
 
-    private List<Branch> availableBranches;
+    private ArrayList<String> availableBranches;
 
-    private Branch selectedBranch;
+    private String selectedBranch;
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
@@ -61,15 +64,14 @@ public class BranchSelectorController {
     @Subscribe
     public void onUpdateBranchEvent(NewBranchListEvent event) {
         Platform.runLater(() -> {
-            availableBranches = event.getMessage().getDataList();
-            // get branch locations
-            String[] branchLocations = new String[availableBranches.size()];
-            for (int i = 0; i < availableBranches.size(); i++) {
-                branchLocations[i] = availableBranches.get(i).getLocation();
+            try {
+                availableBranches = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
             }
-            System.out.println(event.getBranches());
+            catch (IOException e) {
+                e.printStackTrace();
+            }
             // add locations to listBox
-            selectBranchListBox.getItems().addAll(branchLocations);
+            selectBranchListBox.getItems().addAll(availableBranches);
             // refresh listBox
             System.out.println("Branch request received");
         });
@@ -77,17 +79,11 @@ public class BranchSelectorController {
 
     @FXML
     void initialize() throws IOException {
-//        DatabaseBridge db = DatabaseBridge.getInstance();
-//        // get movies from DB
-//        availableBranches = db.getAll(Branch.class, false);
-
+        // register to EventBus
         EventBus.getDefault().register(this);
-        // get next message ID
-        int messageId = CinemaClient.getNextMessageId();
-        // generate message
-        // Message<Branch> newMessage = new Message<>(messageId, "get branch list", Branch.class);
-        Message newMessage = new Message(messageId, "get branch list");
         // send request to server
+        int messageId = CinemaClient.getNextMessageId();
+        Message newMessage = new Message(messageId, "get branch list");
         CinemaClient.getClient().sendToServer(newMessage);
         System.out.println("Branch request sent");
     }

@@ -83,6 +83,8 @@ public class CheckInstances {
                 Branch randomBranch1 = branches[random.nextInt(branches.length)];
                 ScreeningTime.Day randomDay1 = daysOfWeek[random.nextInt(daysOfWeek.length)];
                 ScreeningTime screeningTime1 = new ScreeningTime(randomBranch1, randomDay1, LocalTime.of(randomHour1, 0), randomTheater1);
+                randomBranch1.addInTheaterMovieToList(movie);
+                if (!movie.getBranches().contains(randomBranch1.getLocation())) {movie.addBranch(randomBranch1);}
                 movie.addScreeningTime(screeningTime1);
             }
             session.save(movie);
