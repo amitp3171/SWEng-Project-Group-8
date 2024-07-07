@@ -1,6 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client.ocsf;
 
-import il.cshaifasweng.OCSFMediatorExample.client.dataClasses.*;
+import il.cshaifasweng.OCSFMediatorExample.client.delete.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -82,9 +82,9 @@ public class CheckInstances {
                 Theater randomTheater1 = theaters[random.nextInt(theaters.length)];
                 Branch randomBranch1 = branches[random.nextInt(branches.length)];
                 ScreeningTime.Day randomDay1 = daysOfWeek[random.nextInt(daysOfWeek.length)];
-                ScreeningTime screeningTime1 = new ScreeningTime(randomBranch1, randomDay1, LocalTime.of(randomHour1, 0), randomTheater1);
-                randomBranch1.addInTheaterMovieToList(movie);
-                if (!movie.getBranches().contains(randomBranch1.getLocation())) {movie.addBranch(randomBranch1);}
+                ScreeningTime screeningTime1 = new ScreeningTime(randomBranch1, randomDay1, LocalTime.of(randomHour1, 0), randomTheater1, movie);
+                if (!randomBranch1.getInTheaterMovieList().contains(movie)) randomBranch1.addInTheaterMovieToList(movie);
+                if (!movie.getBranches().contains(randomBranch1)) movie.addBranch(randomBranch1);
                 movie.addScreeningTime(screeningTime1);
             }
             session.save(movie);
