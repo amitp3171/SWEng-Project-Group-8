@@ -2,7 +2,6 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
 
-import il.cshaifasweng.OCSFMediatorExample.client.dataClasses.*;
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
+import org.greenrobot.eventbus.EventBus;
 
 public class MovieTypeSelectionController {
 
@@ -55,6 +55,9 @@ public class MovieTypeSelectionController {
 
         // show dialog
         dialog.showAndWait();
+
+        // unregister dialog in case X button was pressed
+        if (EventBus.getDefault().isRegistered(branchSelectorController)) EventBus.getDefault().unregister(branchSelectorController);
     }
 
     @FXML

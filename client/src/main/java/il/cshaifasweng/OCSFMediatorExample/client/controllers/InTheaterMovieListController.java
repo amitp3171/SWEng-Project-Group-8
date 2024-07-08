@@ -3,11 +3,8 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 import java.io.IOException;
 import java.util.*;
 
-import il.cshaifasweng.OCSFMediatorExample.client.dataClasses.*;
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
-import il.cshaifasweng.OCSFMediatorExample.client.events.NewBranchListEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewInTheaterMovieListEvent;
-import il.cshaifasweng.OCSFMediatorExample.client.ocsf.DatabaseBridge;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -30,32 +27,37 @@ public class InTheaterMovieListController {
 
     private String selectedBranch;
 
+    private boolean forceRefresh;
+
     public void setSelectedBranch(String branchLocation) throws IOException {
         selectedBranch = branchLocation;
         branchNameLabel.setText(selectedBranch);
-        requestServerUpdate(false);
+        requestServerData(false);
     }
 
     @FXML
     void onItemSelected(MouseEvent event) throws IOException {
-//        // if selected item is null
-//        if (movieListView.getSelectionModel().getSelectedItem() == null) return;
-//
-//        // get screeningTime object
-//        int selectedIndex = movieListView.getSelectionModel().getSelectedIndex();
-//        InTheaterMovie selectedMovie = inTheaterMovies.get(selectedIndex);
-//
-//        // load screening list selector
-//        FXMLLoader screeningLoader = CinemaClient.setContent("screeningList");
-//
-//        // set selected movie
-//        ScreeningListController screeningController = screeningLoader.getController();
-//        screeningController.setSelectedBranch(selectedBranch);
-//        screeningController.setSelectedMovie(selectedMovie);
+        // if selected item is null
+        if (movieListView.getSelectionModel().getSelectedItem() == null) return;
+
+        // get screeningTime object
+        int selectedIndex = movieListView.getSelectionModel().getSelectedIndex();
+        String selectedMovie = inTheaterMovies.get(selectedIndex);
+
+        // load screening list selector
+        FXMLLoader screeningLoader = CinemaClient.setContent("screeningList");
+
+        // set selected movie
+        ScreeningListController screeningController = screeningLoader.getController();
+        screeningController.setSelectedBranch(selectedBranch);
+        screeningController.setSelectedMovie(selectedMovie, forceRefresh);
+
+        EventBus.getDefault().unregister(this);
     }
 
     @FXML
     void onGoBack(ActionEvent event) throws IOException {
+        EventBus.getDefault().unregister(this);
         CinemaClient.setContent("movieTypeSelection");
     }
 
@@ -64,10 +66,10 @@ public class InTheaterMovieListController {
         System.exit(0);
     }
 
-    private void requestServerUpdate(boolean forceRefresh) throws IOException {
+    private void requestServerData(boolean forceRefresh) throws IOException {
         // send request to server
         int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, String.format("get movie list,%s,%s", selectedBranch, forceRefresh));
+        Message newMessage = new Message(messageId, String.format("get InTheaterMovie list,%s,%s", selectedBranch, forceRefresh));
         CinemaClient.getClient().sendToServer(newMessage);
         System.out.println("InTheaterMovie request sent");
     }
@@ -101,11 +103,13 @@ public class InTheaterMovieListController {
 
     @FXML
     void onRefreshList(ActionEvent event) throws IOException {
-        requestServerUpdate(true);
+        this.forceRefresh = true;
+        requestServerData(true);
     }
 
     @FXML
     void initialize() throws IOException {
+        forceRefresh = false;
         // register to EventBus
         EventBus.getDefault().register(this);
     }

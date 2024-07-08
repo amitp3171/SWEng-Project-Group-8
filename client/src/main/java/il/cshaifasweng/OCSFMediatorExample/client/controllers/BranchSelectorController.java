@@ -7,9 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
-import il.cshaifasweng.OCSFMediatorExample.client.dataClasses.*;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewBranchListEvent;
-import il.cshaifasweng.OCSFMediatorExample.client.ocsf.DatabaseBridge;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -83,7 +81,7 @@ public class BranchSelectorController {
         EventBus.getDefault().register(this);
         // send request to server
         int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "get branch list");
+        Message newMessage = new Message(messageId, "get Branch list");
         CinemaClient.getClient().sendToServer(newMessage);
         System.out.println("Branch request sent");
     }

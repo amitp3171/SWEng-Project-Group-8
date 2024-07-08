@@ -16,7 +16,7 @@
         <menus>
           <Menu mnemonicParsing="false" text="חלון">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onGoBack" text="סגור" />
+                  <MenuItem mnemonicParsing="false" onAction="#onGoBack" text="חזור" />
               <MenuItem mnemonicParsing="false" onAction="#onCloseProgram" text="סגור" />
             </items>
           </Menu>

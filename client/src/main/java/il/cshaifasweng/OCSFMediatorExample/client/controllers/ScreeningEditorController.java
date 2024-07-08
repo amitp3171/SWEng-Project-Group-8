@@ -1,10 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.text.ParseException;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
-import il.cshaifasweng.OCSFMediatorExample.client.dataClasses.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ButtonType;
@@ -16,7 +13,7 @@ public class ScreeningEditorController {
     private TextField screeningHourTF;
     private Dialog<ButtonType> dialog;
 
-    private ScreeningTime selectedScreeningTime;
+    private StringBuilder selectedScreeningTime;
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
@@ -26,7 +23,7 @@ public class ScreeningEditorController {
         screeningHourTF.setText(screeningHour.split(",")[0]);
     }
 
-    public void setSelectedScreeningTime(ScreeningTime selectedScreeningTime) {
+    public void setSelectedScreeningTime(StringBuilder selectedScreeningTime) {
         this.selectedScreeningTime = selectedScreeningTime;
     }
 
@@ -41,9 +38,9 @@ public class ScreeningEditorController {
         // get the new time
         String newTime = screeningHourTF.getText();
         newTime = newTime.split(",")[0];
-        LocalTime parsedNewTime = LocalTime.parse(newTime, DateTimeFormatter.ofPattern("HH:mm"));
 
-        selectedScreeningTime.setTime(parsedNewTime);
+        selectedScreeningTime.delete(0, selectedScreeningTime.length());
+        selectedScreeningTime.append(newTime);
 
         dialog.setResult(ButtonType.OK);
         dialog.close();

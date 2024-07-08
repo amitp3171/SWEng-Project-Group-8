@@ -6,8 +6,10 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.service.ServiceRegistry;
 
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
@@ -49,6 +51,8 @@ public class DatabaseBridge {
     }
 
     public static <T> List<T> getAll(Class<T> entityClass, boolean forceRefresh) {
+        if(forceRefresh) session.clear();
+
         // set session to read only
         session.setDefaultReadOnly(true);
 
@@ -71,14 +75,25 @@ public class DatabaseBridge {
         return data;
     }
 
+    public static <T> List<T> executeNativeQuery(String sqlQuery, Class<T> resultClass) {
+        NativeQuery<T> query = session.createNativeQuery(sqlQuery, resultClass);
+        List<T> result = query.getResultList();
+        return result;
+    }
+
     public static <T> void updateEntity(T entity) {
-        // start transaction
-        session.beginTransaction();
-        // update the entity
-        session.update(entity);
-        session.flush();
-        // commit transaction
-        session.getTransaction().commit();
+        try {
+            // start transaction
+            session.beginTransaction();
+            // update the entity
+            session.clear();
+            session.update(entity);
+            session.flush();
+            // commit transaction
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public static DatabaseBridge getInstance() {

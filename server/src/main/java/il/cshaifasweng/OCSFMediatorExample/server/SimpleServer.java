@@ -34,20 +34,20 @@ public class SimpleServer extends AbstractServer {
 		String request = message.getMessage();
 		System.out.println("Received request: " + request);
 		try {
-			//we got an empty message, so we will send back an error message with the error details.
+			// if empty message is received
 			if (request.isBlank()){
 				message.setMessage("Error! we got an empty message");
 				client.sendToClient(message);
 			}
-			//we got a request to add a new client as a subscriber.
+
 			else if (request.equals("add client")){
 				SubscribedClient connection = new SubscribedClient(client);
 				SubscribersList.add(connection);
 				message.setMessage("client added successfully");
 				client.sendToClient(message);
 			}
-			// if received message requests the list of branches
-			else if (request.equals("get branch list")){
+
+			else if (request.equals("get Branch list")){
 				// get data
 				List<Branch> receivedData = db.getAll(Branch.class, true);
 				// modify message
@@ -60,46 +60,79 @@ public class SimpleServer extends AbstractServer {
 				message.setMessage("updated branch list successfully");
 				String listAsJson = mapper.writeValueAsString(branchLocations);
 				message.setData(listAsJson);
-				try {
-					client.sendToClient(message);
-					System.out.println("Branch request satisfied");
-				} catch (IOException e) {
-					System.out.println("Message Failed");
-					e.printStackTrace();
-				}
+
+				client.sendToClient(message);
+				System.out.println("Branch request satisfied");
 			}
-			else if (request.startsWith("get movie list")){
-				Message receivedMessage = (Message) msg;
-				// parse message
-				String[] splitMessage = receivedMessage.getMessage().split(",");
+
+			else if (request.startsWith("get InTheaterMovie list")){
+				// parse message (message_text,branch_location,force_refresh)
+				String[] splitMessage = message.getMessage().split(",");
 				String branchLocation = splitMessage[1];
 				boolean forceRefresh = Boolean.parseBoolean(splitMessage[2]);
 				// get DatabaseBridge instance
 				DatabaseBridge db = DatabaseBridge.getInstance();
 				// get data
 				List<InTheaterMovie> receivedData = db.getAll(InTheaterMovie.class, forceRefresh);
-				ArrayList<String> movieNameAndId = new ArrayList<>();
+				ArrayList<String> movieToString = new ArrayList<>();
 				// filter movies
 				for (InTheaterMovie movie : receivedData) {
 					for (Branch branch : movie.getBranches()) {
 						if (branch.getLocation().equals(branchLocation)) {
-							movieNameAndId.add(String.format("%s,%s", movie.getId(), movie.getMovieName()));
+							movieToString.add(movie.toString());
 							break;
 						}
 					}
 				}
 				// send message
-				receivedMessage.setMessage("updated InTheaterMovie list successfully");
-				String listAsJson = mapper.writeValueAsString(movieNameAndId);
-				receivedMessage.setData(listAsJson);
-				try {
-					client.sendToClient(receivedMessage);
-					System.out.println(String.format("InTheaterMovieList request satisfied for branch %s", branchLocation));
-				} catch (IOException e) {
-					System.out.println("Message Failed");
-					e.printStackTrace();
-				}
+				message.setMessage("updated InTheaterMovie list successfully");
+				String listAsJson = mapper.writeValueAsString(movieToString);
+				message.setData(listAsJson);
+
+				client.sendToClient(message);
+				System.out.println(String.format("InTheaterMovieList request satisfied for branch %s", branchLocation));
 			}
+
+			else if (request.startsWith("get ScreeningTime list")){
+				// parse message (message_text,branch_location,movie_id)
+				String[] splitMessage = message.getMessage().split(",");
+				String branchLocation = splitMessage[1];
+				int movieId = Integer.parseInt(splitMessage[2]);
+				boolean forceRefresh = Boolean.parseBoolean(splitMessage[3]);
+				// get DatabaseBridge instance
+				DatabaseBridge db = DatabaseBridge.getInstance();
+				// get data
+				List<ScreeningTime> receivedData = db.getAll(ScreeningTime.class, forceRefresh);
+				ArrayList<String> screeningTimeToString = new ArrayList<>();
+				// filter movies
+				for (int i = 0; i < receivedData.size(); i++) {
+					if (receivedData.get(i).getInTheaterMovie().getId() == movieId && receivedData.get(i).getBranch().getLocation().equals(branchLocation)) {
+						screeningTimeToString.add(receivedData.get(i).toString());
+					}
+				}
+				// send message
+				message.setMessage("updated ScreeningTime list successfully");
+				String listAsJson = mapper.writeValueAsString(screeningTimeToString);
+
+				message.setData(listAsJson);
+
+				client.sendToClient(message);
+				System.out.println(String.format("ScreeningTime request satisfied for branch %s", branchLocation));
+			}
+
+			else if (request.equals("set ScreeningTime")) {
+				// id, day, time, theater.getTheaterID()
+				String[] splitMessage = message.getData().split(",");
+				ScreeningTime screening = db.executeNativeQuery(String.format("SELECT * FROM ScreeningTimes WHERE id=%s", splitMessage[0]), ScreeningTime.class).get(0);
+				screening.setTime(splitMessage[2]);
+				db.updateEntity(screening);
+				// send message
+				message.setMessage("set new ScreeningTime successfully");
+				message.setData(null);
+				client.sendToClient(message);
+				System.out.println(String.format("ScreeningTime update request satisfied"));
+			}
+
 			else if (request.startsWith("multiply")){
 				//add code here to multiply 2 numbers received in the message and send result back to client
 				//(use substring method as shown above)

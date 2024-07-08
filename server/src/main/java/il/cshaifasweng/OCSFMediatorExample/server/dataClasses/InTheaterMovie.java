@@ -57,4 +57,8 @@ public class InTheaterMovie extends AbstractMovie {
     public void setBranches(List<Branch> branches) {
         this.branches = branches;
     }
+    @Override
+    public String toString() {
+        return String.format("%s,%s,%s,%s,%s,%s", id, movieName, super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture());
+    }
 }

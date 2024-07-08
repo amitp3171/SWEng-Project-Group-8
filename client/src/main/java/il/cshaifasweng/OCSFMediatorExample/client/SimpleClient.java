@@ -1,19 +1,10 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import il.cshaifasweng.OCSFMediatorExample.client.dataClasses.Branch;
 import il.cshaifasweng.OCSFMediatorExample.client.events.*;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import org.greenrobot.eventbus.EventBus;
 
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.AbstractClient;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SimpleClient extends AbstractClient {
 	private static SimpleClient client = null;
@@ -37,6 +28,10 @@ public class SimpleClient extends AbstractClient {
 
 		else if(message.getMessage().equals("updated InTheaterMovie list successfully")){
 			EventBus.getDefault().post(new NewInTheaterMovieListEvent(message));
+		}
+
+		else if(message.getMessage().equals("updated ScreeningTime list successfully")){
+			EventBus.getDefault().post(new NewScreeningTimeListEvent(message));
 		}
 
 		else if(message.getMessage().equals("client added successfully")){
