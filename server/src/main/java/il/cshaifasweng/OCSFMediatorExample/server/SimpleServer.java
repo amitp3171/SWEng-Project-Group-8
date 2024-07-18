@@ -133,6 +133,23 @@ public class SimpleServer extends AbstractServer {
 				System.out.println(String.format("ScreeningTime update request satisfied"));
 			}
 
+			else if (request.equals("verify Customer id")) {
+				List<Customer> result = db.executeNativeQuery(String.format("SELECT * FROM customers WHERE idNum=%s", message.getData()), Customer.class);
+				if (result.isEmpty()) {//TODO: handle
+
+				}
+
+				else {
+					Customer customer = result.get(0);
+				}
+
+				// send message
+				message.setMessage("set new ScreeningTime successfully");
+				message.setData(null);
+				client.sendToClient(message);
+				System.out.println(String.format("ScreeningTime update request satisfied"));
+			}
+
 			else if (request.startsWith("multiply")){
 				//add code here to multiply 2 numbers received in the message and send result back to client
 				//(use substring method as shown above)

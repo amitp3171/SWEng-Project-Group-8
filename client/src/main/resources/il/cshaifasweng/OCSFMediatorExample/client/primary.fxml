@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
@@ -29,8 +30,24 @@
                   <Font size="56.0" />
                </font>
             </Label>
-            <Button mnemonicParsing="false" onAction="#showMovieList" text="לרשימת הסרטים" />
+            <Label text="כניסה למערכת">
+               <VBox.margin>
+                  <Insets bottom="3.0" />
+               </VBox.margin>
+            </Label>
+            <Button mnemonicParsing="false" onAction="#showMovieListCustomer" text="כניסת לקוחות קיימים">
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin></Button>
+            <Button mnemonicParsing="false" onAction="#showMovieListEmployee" text="כניסת עובדים" />
          </children>
       </VBox>
    </center>
+   <bottom>
+      <Button mnemonicParsing="false" onAction="#showMovieListGuest" text="כניסת אורחים" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets bottom="10.0" />
+         </BorderPane.margin>
+      </Button>
+   </bottom>
 </BorderPane>
