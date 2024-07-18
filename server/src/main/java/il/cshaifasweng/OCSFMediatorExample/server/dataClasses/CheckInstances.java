@@ -71,7 +71,6 @@ public class CheckInstances {
 
     }
 
-
     private static void generateScreeningTimes(Branch[] branches,Theater[] theaters,InTheaterMovie[] inTheaterMovies) throws Exception {
         Random random = new Random();
         ScreeningTime.Day[] daysOfWeek = ScreeningTime.Day.values();
@@ -115,7 +114,6 @@ public class CheckInstances {
         session.flush();
     }
 
-
     private static List<Branch> getAllBranches() throws Exception{
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Branch> query = builder.createQuery(Branch.class);
@@ -139,10 +137,6 @@ public class CheckInstances {
         List<Theater> data = session.createQuery(query).getResultList();
         return data;
     }
-
-
-
-
 
     private static void printAllBranches() throws Exception {
         List<Branch> branches = getAllBranches();
@@ -173,9 +167,6 @@ public class CheckInstances {
 
 
     public static void main( String[] args ) {
-
-
-
         try {
             SessionFactory sessionFactory = getSessionFactory();
             session = sessionFactory.openSession();
