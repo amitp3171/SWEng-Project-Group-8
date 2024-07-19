@@ -4,12 +4,15 @@ import javax.persistence.*;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class AbstractProduct{
+public abstract class AbstractProduct {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_seq")
+    @SequenceGenerator(name = "product_seq", sequenceName = "product_sequence", allocationSize = 1)
     private int id;
+
     @ManyToOne(cascade = CascadeType.ALL)
     private Customer owner;
+
     private int price;
 
     public AbstractProduct(Customer owner, int price) {

@@ -1,6 +1,5 @@
 package il.cshaifasweng.OCSFMediatorExample.server.dataClasses;
 
-import il.cshaifasweng.OCSFMediatorExample.server.dataClasses.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -45,9 +44,9 @@ public class CheckInstances {
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
+        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/sys?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "Gamal385");
+        configuration.setProperty("hibernate.connection.password", "babun13");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
@@ -181,6 +180,42 @@ public class CheckInstances {
             session.flush();
         }
     }
+    private static void generatePurchases(Purchase[] purchases) throws Exception {
+        for (Purchase purchase : purchases) {
+            session.save(purchase);
+            session.flush();
+        }
+    }
+
+    private static void generateComplaints(Complaint[] complaints) throws Exception {
+        for (Complaint complaint : complaints) {
+            session.save(complaint);
+            session.flush();
+        }
+    }
+
+    private static void generateServiceEmployees(ServiceEmployee[] serviceEmployees) throws Exception {
+        for (ServiceEmployee serviceEmployee : serviceEmployees) {
+            session.save(serviceEmployee);
+            session.flush();
+        }
+    }
+
+    private static void generateCompanyManagers(CompanyManager[] companyManagers) throws Exception {
+        for (CompanyManager companyManager : companyManagers) {
+            session.save(companyManager);
+            session.flush();
+        }
+    }
+
+    private static void generateBranchManagers(BranchManager[] branchManagers) throws Exception {
+        for (BranchManager branchManager : branchManagers) {
+            session.save(branchManager);
+            session.flush();
+        }
+    }
+
+
 
 
 
@@ -320,13 +355,52 @@ public class CheckInstances {
                 tickets[i] = new Ticket(customers[i],30,screeningTimes[i].getInTheaterMovie().getMovieName(),screeningTimes[i], screeningTimes[i].getTheater().getSeat(i));
             }
 
+            Purchase[] purchases = new Purchase[5];
+            purchases[0] = new Purchase(tickets[0], "Credit Card", LocalTime.now());
+            purchases[1] = new Purchase(tickets[1], "Credit Card", LocalTime.now());
+            purchases[2] = new Purchase(tickets[2], "Credit Card", LocalTime.now());
+            purchases[3] = new Purchase(tickets[3], "Credit Card", LocalTime.now());
+            purchases[4] = new Purchase(tickets[4], "Credit Card", LocalTime.now());
+
+            Complaint[] complaints = new Complaint[5];
+            complaints[0] = new Complaint(customers[0], LocalTime.now());
+            complaints[1] = new Complaint(customers[1], LocalTime.now());
+            complaints[2] = new Complaint(customers[2], LocalTime.now());
+            complaints[3] = new Complaint(customers[3], LocalTime.now());
+            complaints[4] = new Complaint(customers[4], LocalTime.now());
+
+            ServiceEmployee[] serviceEmployees = new ServiceEmployee[5];
+            serviceEmployees[0] = new ServiceEmployee("John", "Doe", "johndoe", "password1");
+            serviceEmployees[1] = new ServiceEmployee("Jane", "Smith", "janesmith", "password2");
+            serviceEmployees[2] = new ServiceEmployee("Michael", "Brown", "michaelbrown", "password3");
+            serviceEmployees[3] = new ServiceEmployee("Emily", "Davis", "emilydavis", "password4");
+            serviceEmployees[4] = new ServiceEmployee("David", "Wilson", "davidwilson", "password5");
+
+            CompanyManager[] companyManagers = new CompanyManager[5];
+            companyManagers[0] = new CompanyManager("Yosi", "Levi", "johndoe", "password1");
+            companyManagers[1] = new CompanyManager("Moshe", "Cohen", "janesmith", "password2");
+            companyManagers[2] = new CompanyManager("Yogev", "Perry", "michaelbrown", "password3");
+            companyManagers[3] = new CompanyManager("Noam", "Platipus", "emilydavis", "password4");
+            companyManagers[4] = new CompanyManager("Orpaz", "Filusim", "davidwilson", "password5");
+
+            BranchManager[] branchManagers = new BranchManager[5];
+            branchManagers[0] = new BranchManager("Alice", "Johnson", "alicejohnson", "password1", branches[0]);
+            branchManagers[1] = new BranchManager("Bob", "Williams", "bobwilliams", "password2", branches[1]);
+            branchManagers[2] = new BranchManager("Charlie", "Jones", "charliejones", "password3", branches[2]);
+            branchManagers[3] = new BranchManager("Diana", "Garcia", "dianagarcia", "password4", branches[3]);
+            branchManagers[4] = new BranchManager("Evan", "Martinez", "evanmartinez", "password5", branches[4]);
+
+
+            generatePurchases(purchases);
+            generateComplaints(complaints);
+            generateServiceEmployees(serviceEmployees);
+            generateCompanyManagers(companyManagers);
+            generateBranchManagers(branchManagers);
             generateCustomers(customers);
             generateTickets(tickets);
             generateLinks(links);
             generateSubscriptionCards(sc);
-
-
-
+            //___________________________________________________
             session.getTransaction().commit(); // Save everything.
 
         } catch (Exception exception) {

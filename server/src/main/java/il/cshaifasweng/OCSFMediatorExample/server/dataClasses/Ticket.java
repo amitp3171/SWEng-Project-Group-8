@@ -1,14 +1,15 @@
 package il.cshaifasweng.OCSFMediatorExample.server.dataClasses;
-
 import javax.persistence.*;
 
 @Entity
 @Table(name = "tickets")
-public class Ticket extends AbstractProduct{
+public class Ticket extends AbstractProduct {
 
     private String movieName;
+
     @ManyToOne(cascade = CascadeType.ALL)
     private ScreeningTime screeningTime;
+
     @OneToOne(cascade = CascadeType.ALL)
     private Seat seat;
 
