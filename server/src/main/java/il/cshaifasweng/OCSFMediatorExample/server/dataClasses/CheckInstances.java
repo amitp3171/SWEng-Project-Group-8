@@ -41,6 +41,12 @@ public class CheckInstances {
         configuration.addAnnotatedClass(Ticket.class);
         configuration.addAnnotatedClass(Purchase.class);
         configuration.addAnnotatedClass(Complaint.class);
+        configuration.addAnnotatedClass(Purchase.class);
+        configuration.addAnnotatedClass(Complaint.class);
+        configuration.addAnnotatedClass(ServiceEmployee.class);
+        configuration.addAnnotatedClass(CompanyManager.class);
+        configuration.addAnnotatedClass(BranchManager.class);
+
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
