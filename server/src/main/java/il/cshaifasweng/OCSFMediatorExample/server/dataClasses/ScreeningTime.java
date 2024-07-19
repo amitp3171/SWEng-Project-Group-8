@@ -2,6 +2,7 @@ package il.cshaifasweng.OCSFMediatorExample.server.dataClasses;
 
 import javax.persistence.*;
 import java.time.LocalTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Entity
@@ -13,23 +14,21 @@ public class ScreeningTime {
     private int id;
     @ManyToOne(cascade = CascadeType.ALL)
     private Branch branch;
-    // enum for day of the week
-    public enum Day {
-        SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
-    }
+
     @ManyToOne(cascade = CascadeType.ALL)
     InTheaterMovie inTheaterMovie;
-    @Enumerated(EnumType.STRING)
-    private Day day;
+
+    // date of screening
+    private LocalDate date;
     // time of screening
     private LocalTime time;
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Theater theater;
 
-    public ScreeningTime(Branch branch, Day day, LocalTime time, Theater theater, InTheaterMovie inTheaterMovie) {
+    public ScreeningTime(Branch branch, LocalDate date, LocalTime time, Theater theater, InTheaterMovie inTheaterMovie) {
         this.branch = branch;
-        this.day = day;
+        this.date = date;
         this.time = time;
         this.theater = theater;
         this.inTheaterMovie = inTheaterMovie;
@@ -61,12 +60,12 @@ public class ScreeningTime {
         this.time = LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
     }
 
-    public Day getDay() {
-        return day;
+    public LocalDate getDate() {
+        return date;
     }
 
-    public void setDay(Day day) {
-        this.day = day;
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public Theater getTheater() {
@@ -87,6 +86,6 @@ public class ScreeningTime {
 
     @Override
     public String toString() {
-        return String.format("%s,%s,%s,%s", id, day, time, theater.getTheaterID());
+        return String.format("%s,%s,%s,%s", id, date, time, theater.getTheaterID());
     }
 }

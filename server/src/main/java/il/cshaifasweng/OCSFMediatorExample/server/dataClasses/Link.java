@@ -9,14 +9,12 @@ import java.time.LocalTime;
 public class Link extends AbstractProduct{
 
     private String movieName;
-    private String screeningTime;
     private LocalTime availableAt;
     private LocalTime expiresAt;
 
-    public Link(Customer owner, int price, String movieName, String screeningTime, LocalTime availableAt, LocalTime expiresAt) {
+    public Link(Customer owner, int price, String movieName, LocalTime availableAt, LocalTime expiresAt) {
         super(owner, price);
         this.movieName = movieName;
-        this.screeningTime = screeningTime;
         this.availableAt = availableAt;
         this.expiresAt = expiresAt;
     }
@@ -31,14 +29,6 @@ public class Link extends AbstractProduct{
 
     public void setMovieName(String movieName) {
         this.movieName = movieName;
-    }
-
-    public String getScreeningTime() {
-        return screeningTime;
-    }
-
-    public void setScreeningTime(String screeningTime) {
-        this.screeningTime = screeningTime;
     }
 
     public LocalTime getAvailableAt() {
