@@ -1,23 +1,34 @@
 package il.cshaifasweng.OCSFMediatorExample.server.dataClasses;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "customers")
-public class Customer extends AbstractUser {
+public class Customer extends AbstractUser{
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Ticket> ownedTickets = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<SubscriptionCard> ownedSubscriptions = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Link> ownedLinks = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Complaint> activeComplaints = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Purchase> purchaseHistory = new ArrayList<>();
 
-    private String idNum;
-    // TODO: Add list for each product
+    public Customer(){
+        super();
+    }
 
-    public Customer(String firstName, String lastName, String idNum) {
+    public Customer(String firstName, String lastName) {
         super(firstName, lastName);
-        this.idNum = idNum;
     }
 
-    public Customer() {
-        super("John", "Doe");
+    public void cancelPurchase(Purchase purchase) {}
+    public Complaint makeAComplaint(Complaint complaint) {
+        return complaint;
     }
-
-    // TODO: Add cancelPurchase and makeAComplaint method
 }

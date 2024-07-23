@@ -18,6 +18,9 @@ public abstract class AbstractUser {
         this.lastName = lastName;
     }
 
+    public AbstractUser() {
+    }
+
     public int getId() {
         return id;
     }
