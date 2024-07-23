@@ -23,6 +23,23 @@ public class Customer extends AbstractUser{
         super();
     }
 
+    public void addTicketToList (Ticket ticket){
+        this.ownedTickets.add(ticket);
+    }
+    public void addSubscriptionCardToList (SubscriptionCard subscriptionCard){
+        this.ownedSubscriptions.add(subscriptionCard);
+    }
+    public void addLinkToList (Link link){
+        this.ownedLinks.add(link);
+    }
+    public void addComplaintToList (Complaint complaint){
+        this.activeComplaints.add(complaint);
+    }
+    public void addPurchaseToList (Purchase purchase){
+        this.purchaseHistory.add(purchase);
+    }
+
+
     public Customer(String firstName, String lastName) {
         super(firstName, lastName);
     }

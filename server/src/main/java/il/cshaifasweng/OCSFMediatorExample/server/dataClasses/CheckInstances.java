@@ -50,9 +50,9 @@ public class CheckInstances {
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
+        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/sys?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "20danny05");
+        configuration.setProperty("hibernate.connection.password", "babun13");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
@@ -337,6 +337,9 @@ public class CheckInstances {
 
             //new classes instances: ---------19.07---------
 
+            Purchase[] purchases = new Purchase[15];
+
+
             Customer[] customers = new Customer[5];
             customers[0] = new Customer("Zohar", "Sahar");
             customers[1] = new Customer("Dan", "Zingerman");
@@ -345,28 +348,30 @@ public class CheckInstances {
             customers[4] = new Customer("Kfir", "Back");
 
             Link[] links =new Link[5];
-            links[0] = new Link(customers[0],20,"Lion King",LocalTime.now(),LocalTime.now().plusHours(168));
-            links[1] = new Link(customers[1],20, "Star Wars", LocalTime.now(),LocalTime.now().plusHours(168));
-            links[2] = new Link(customers[2],20,"Mad Max", LocalTime.now(),LocalTime.now().plusHours(168));
-            links[3] = new Link(customers[3],20,"Avatar 2", LocalTime.now(),LocalTime.now().plusHours(168));
-            links[4] = new Link(customers[4],20, "Toy Story", LocalTime.now(),LocalTime.now().plusHours(168));
+            for(int i=0;i<links.length;i++){
+                links[i] = new Link(customers[i],20,"Lion King",LocalTime.now(),LocalTime.now().plusHours(168));
+                purchases[i] = new Purchase(links[i], "Credit Card", LocalTime.now());
+                customers[i].addPurchaseToList(purchases[i]);
+
+            }
+
 
             SubscriptionCard[] sc = new SubscriptionCard[5];
             for(int i=0;i<sc.length;i++) {
                 sc[i] = new SubscriptionCard(customers[i],200);
+                purchases[i+5] = new Purchase(sc[i], "Credit Card", LocalTime.now());
+                customers[i].addPurchaseToList(purchases[i+5]);
+
             }
 
             Ticket[] tickets = new Ticket[5];
             for(int i=0;i<tickets.length;i++) {
                 tickets[i] = new Ticket(customers[i],30,screeningTimes[i].getInTheaterMovie().getMovieName(),screeningTimes[i], screeningTimes[i].getTheater().getSeat(i));
+                purchases[i+10] = new Purchase(tickets[i], "Credit Card", LocalTime.now());
+                customers[i].addPurchaseToList(purchases[i+10]);
+
             }
 
-            Purchase[] purchases = new Purchase[5];
-            purchases[0] = new Purchase(tickets[0], "Credit Card", LocalTime.now());
-            purchases[1] = new Purchase(tickets[1], "Credit Card", LocalTime.now());
-            purchases[2] = new Purchase(tickets[2], "Credit Card", LocalTime.now());
-            purchases[3] = new Purchase(tickets[3], "Credit Card", LocalTime.now());
-            purchases[4] = new Purchase(tickets[4], "Credit Card", LocalTime.now());
 
             Complaint[] complaints = new Complaint[5];
             complaints[0] = new Complaint(customers[0], LocalTime.now());
@@ -395,6 +400,13 @@ public class CheckInstances {
             branchManagers[2] = new BranchManager("Charlie", "Jones", "charliejones", "password3", branches[2]);
             branchManagers[3] = new BranchManager("Diana", "Garcia", "dianagarcia", "password4", branches[3]);
             branchManagers[4] = new BranchManager("Evan", "Martinez", "evanmartinez", "password5", branches[4]);
+
+            for(int i=0;i<customers.length;i++) {
+                customers[i].addComplaintToList(complaints[i]);
+                customers[i].addLinkToList(links[i]);
+                customers[i].addSubscriptionCardToList(sc[i]);
+                customers[i].addTicketToList(tickets[i]);
+            }
 
 
             generatePurchases(purchases);
