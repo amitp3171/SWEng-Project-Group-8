@@ -20,6 +20,12 @@
                   <MenuItem mnemonicParsing="false" onAction="#onCloseProgram" text="סגור" />
             </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="משתמש" />
+            <Menu mnemonicParsing="false" text="עדכן">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onAddScreening" text="הוסף הקרנה" />
+               </items>
+            </Menu>
         </menus>
       </MenuBar>
    </top>

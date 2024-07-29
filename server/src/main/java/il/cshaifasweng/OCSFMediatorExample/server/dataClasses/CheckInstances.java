@@ -50,9 +50,9 @@ public class CheckInstances {
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/sys?serverTimezone=Asia/Jerusalem");
+        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "babun13");
+        configuration.setProperty("hibernate.connection.password", "20danny05");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
@@ -341,11 +341,11 @@ public class CheckInstances {
 
 
             Customer[] customers = new Customer[5];
-            customers[0] = new Customer("Zohar", "Sahar");
-            customers[1] = new Customer("Dan", "Zingerman");
-            customers[2] = new Customer("Amit", "Perry");
-            customers[3] = new Customer("Daniel", "Rubinstein");
-            customers[4] = new Customer("Kfir", "Back");
+            customers[0] = new Customer("Zohar", "Sahar", "530167976");
+            customers[1] = new Customer("Dan", "Zingerman", "122236188");
+            customers[2] = new Customer("Amit", "Perry", "209134389");
+            customers[3] = new Customer("Daniel", "Rubinstein", "252410942");
+            customers[4] = new Customer("Kfir", "Back", "421344941");
 
             Link[] links =new Link[5];
             for(int i=0;i<links.length;i++){

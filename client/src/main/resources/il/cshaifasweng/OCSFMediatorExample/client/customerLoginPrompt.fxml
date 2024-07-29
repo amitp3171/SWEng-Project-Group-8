@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="122.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.CustomerLoginController">
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="138.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.CustomerLoginController">
    <content>
       <StackPane prefHeight="88.0" prefWidth="359.0">
          <children>
@@ -31,6 +31,7 @@
                         <Button fx:id="loginButton" mnemonicParsing="false" onAction="#loginCustomer" text="עדכן" />
                      </children>
                   </HBox>
+                  <Label fx:id="invalidUserLabel" text="תעודת זהות שגויה" textFill="RED" visible="false" />
                </children>
             </VBox>
          </children>

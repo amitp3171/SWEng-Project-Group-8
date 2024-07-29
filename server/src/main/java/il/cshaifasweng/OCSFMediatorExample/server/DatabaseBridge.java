@@ -33,12 +33,25 @@ public class DatabaseBridge {
         configuration.addAnnotatedClass(InTheaterMovie.class);
         configuration.addAnnotatedClass(Seat.class);
         configuration.addAnnotatedClass(Theater.class);
+        configuration.addAnnotatedClass(ComingSoonMovie.class);
+        configuration.addAnnotatedClass(HomeMovie.class);
+        configuration.addAnnotatedClass(Customer.class);
+        configuration.addAnnotatedClass(Link.class);
+        configuration.addAnnotatedClass(SubscriptionCard.class);
+        configuration.addAnnotatedClass(Ticket.class);
+        configuration.addAnnotatedClass(Purchase.class);
+        configuration.addAnnotatedClass(Complaint.class);
+        configuration.addAnnotatedClass(Purchase.class);
+        configuration.addAnnotatedClass(Complaint.class);
+        configuration.addAnnotatedClass(ServiceEmployee.class);
+        configuration.addAnnotatedClass(CompanyManager.class);
+        configuration.addAnnotatedClass(BranchManager.class);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/sys?serverTimezone=Asia/Jerusalem");
+        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "babun13");
+        configuration.setProperty("hibernate.connection.password", "20danny05");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "update");
 
@@ -75,10 +88,43 @@ public class DatabaseBridge {
         return data;
     }
 
-    public static <T> List<T> executeNativeQuery(String sqlQuery, Class<T> resultClass) {
-        NativeQuery<T> query = session.createNativeQuery(sqlQuery, resultClass);
-        List<T> result = query.getResultList();
-        return result;
+//    public static <T> List<T> executeNativeQuery(String sqlQuery, Class<T> resultClass, String param) {
+//        try {
+//            NativeQuery<T> query = session.createNativeQuery(sqlQuery, resultClass);
+//            query.setParameter(1, param);
+//            List<T> result = query.getResultList();
+//            return result;
+//        } catch (Exception e) {
+//            System.err.println("An error occurred in executeNativeQuery: " + e.getMessage());
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+
+    public static <T> List<T> executeNativeQuery(String sqlQuery, Class<T> resultClass, Object... params) {
+        try {
+            NativeQuery<T> query = session.createNativeQuery(sqlQuery, resultClass);
+            for (int i = 0; i < params.length; i++) {
+                query.setParameter(i + 1, params[i]);
+            }
+            List<T> result = query.getResultList();
+            return result;
+        } catch (Exception e) {
+            System.err.println("An error occurred in executeNativeQuery: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static <T> void addInstance(T newInstance) {
+        try {
+            session.beginTransaction();
+            session.save(newInstance);
+            session.flush();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public static <T> void updateEntity(T entity) {

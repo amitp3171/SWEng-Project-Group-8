@@ -7,12 +7,31 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
+import javafx.scene.control.*;
 import org.greenrobot.eventbus.EventBus;
 
 public class MovieTypeSelectionController {
+
+    @FXML
+    private Label welcomeUserLabel;
+
+    private boolean isGuest = false;
+
+    private String firstName;
+    private String lastName;
+    private String govId;
+
+    void setCustomerData() {
+        this.isGuest = true;
+        welcomeUserLabel.setText("ברוח הבא, אורח!");
+    }
+
+    void setCustomerData(String firstName, String lastName, String govId) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.govId = govId;
+        welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", firstName, lastName));
+    }
 
     @FXML
     void onCloseProgram(ActionEvent event) {
@@ -42,6 +61,7 @@ public class MovieTypeSelectionController {
 
         // get controller
         BranchSelectorController branchSelectorController = dialogLoader.getController();
+        branchSelectorController.setCustomerData(this.firstName, this.lastName, this.govId);
 
         // create new dialog
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -61,8 +81,6 @@ public class MovieTypeSelectionController {
     }
 
     @FXML
-    void initialize() {
-
-    }
+    void initialize() {}
 
 }

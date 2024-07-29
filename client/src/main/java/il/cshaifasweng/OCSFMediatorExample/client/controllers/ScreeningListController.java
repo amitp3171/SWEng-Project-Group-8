@@ -1,7 +1,11 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
@@ -18,10 +22,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 public class ScreeningListController {
-    // enum for day of the week
-    public enum Day {
-        SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
-    }
 
     @FXML
     private Label movieLabel;
@@ -40,18 +40,28 @@ public class ScreeningListController {
     private List<String> screeningTimes;
 
     private String selectedMovie;
+    // yyyy-mm-dd
+    private ArrayList<String> availableDates = new ArrayList<>();
+    private String selectedDate;
 
-    // default value is sunday
-    private Day selectedDay = Day.SUNDAY;
+    private String firstName;
+    private String lastName;
+    private String govId;
 
     private boolean forceRefresh;
+
+    void setCustomerData(String firstName, String lastName, String govId) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.govId = govId;
+    }
 
     public void setSelectedBranch(String branch) {
         selectedBranch = branch;
     }
 
     private String concatTimeTheater(String screeningTime) {
-        // id, day, time, theater.getTheaterID()
+        // id, date, time, theater.getTheaterID()
         String[] parsedScreeningTime = screeningTime.split(",");
         // concat screening time with screening theater
         return String.format("%s, אולם %s", parsedScreeningTime[2], parsedScreeningTime[3]);
@@ -79,7 +89,7 @@ public class ScreeningListController {
     public void setSelectedMovie(String selectedMovie, boolean forceRefresh) throws IOException {
         this.selectedMovie = selectedMovie;
 
-        //id, movieName, super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture()
+        // id, movieName, super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture()
         String[] parsedMovie = selectedMovie.split(",");
 
         movieLabel.setText(parsedMovie[1]);
@@ -93,14 +103,28 @@ public class ScreeningListController {
 
     @FXML
     void chooseDay(ActionEvent event) {
+        // TODO
         // get selected day
-        Day newSelectedDay = Day.values()[selectDayListBox.getSelectionModel().getSelectedIndex()];
+        String newSelectedDate = selectDayListBox.getSelectionModel().getSelectedItem();
         // if no changes should be made
-        if (selectedDay == newSelectedDay) return;
+        if (selectedDate.equals(newSelectedDate)) return;
         // update selected day
-        selectedDay = newSelectedDay;
+        selectedDate = newSelectedDate;
         // init list
         initializeList();
+    }
+
+    public void initializeDayPicker() {
+        for (String screeningTime : screeningTimes) {
+            // id, day, time, theater.getTheaterID()
+            String dateAsString = screeningTime.split(",")[1];
+            if (!this.availableDates.contains(dateAsString))
+                this.availableDates.add(dateAsString);
+        }
+        Collections.sort(this.availableDates);
+        selectDayListBox.getItems().addAll(this.availableDates);
+        this.selectedDate = this.availableDates.get(0);
+        selectDayListBox.getSelectionModel().selectFirst();
     }
 
     public void initializeList() {
@@ -111,7 +135,7 @@ public class ScreeningListController {
         for (String screeningTime : screeningTimes) {
             // id, day, time, theater.getTheaterID()
             String[] parsedScreening = screeningTime.split(",");
-            if (Day.valueOf(parsedScreening[1]) == selectedDay)
+            if (parsedScreening[1].equals(selectedDate))
                 items.add(concatTimeTheater(screeningTime));
         }
         // display in list
@@ -128,7 +152,7 @@ public class ScreeningListController {
         EventBus.getDefault().unregister(this);
         // get controller
         InTheaterMovieListController controller = CinemaClient.setContent("inTheaterMovieList").getController();
-        // set selected branch
+        controller.setCustomerData(this.firstName, this.lastName, this.govId);
         controller.setSelectedBranch(selectedBranch);
     }
 
@@ -189,12 +213,40 @@ public class ScreeningListController {
         screeningListView.getSelectionModel().clearSelection();
     }
 
+    @FXML
+    void onAddScreening(ActionEvent event) throws IOException {
+        // load dialog fxml
+        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("screeningCreator");
+        DialogPane screeningCreatorDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
+
+        // get controller
+        ScreeningCreatorController screeningCreatorController = dialogLoader.getController();
+        screeningCreatorController.setData(this.selectedMovie, selectedBranch);
+
+        // create new dialog
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.getDialogPane().setContent(screeningCreatorDialogPane);
+        screeningCreatorController.setDialog(dialog);
+
+        // create hidden close button to support the close button (X)
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
+        closeButton.setVisible(false);
+
+        // show dialog
+        dialog.showAndWait();
+
+        // unregister dialog in case X button was pressed
+        if (EventBus.getDefault().isRegistered(screeningCreatorController)) EventBus.getDefault().unregister(screeningCreatorController);
+    }
+
     @Subscribe
     public void onUpdateScreeningTimeEvent(NewScreeningTimeListEvent event) {
         // on event received
         Platform.runLater(() -> {
             try {
                 screeningTimes = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+                initializeDayPicker();
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -210,11 +262,6 @@ public class ScreeningListController {
         forceRefresh = false;
         // register to EventBus
         EventBus.getDefault().register(this);
-
-        String[] items = {"יום ראשון", "יום שני", "יום שלישי", "יום רביעי", "יום חמישי", "יום שישי", "יום שבת"};
-        selectDayListBox.getItems().addAll(items);
-
-        selectDayListBox.getSelectionModel().selectFirst();
     }
 
 }

@@ -28,7 +28,14 @@ public class CustomerLoginController {
     @FXML
     private Button loginButton;
 
+    @FXML
+    private Label invalidUserLabel;
+
     private Dialog<ButtonType> dialog;
+
+    private String customerFirstName;
+    private String customerLastName;
+    private String customerGovId;
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
@@ -43,7 +50,7 @@ public class CustomerLoginController {
 
     private boolean inputIsValid() {
         String customerId = customerIdNumField.getText();
-        return (
+        return !(
                 // if blank
                 customerId.isBlank() ||
                 // id should be of 9 digits
@@ -56,11 +63,19 @@ public class CustomerLoginController {
     @FXML
     void loginCustomer(ActionEvent event) throws IOException {
         // avoid empty selection
-        if (!inputIsValid()) return;
+        if (!inputIsValid()) {
+            customerIdNumField.clear();
+            invalidUserLabel.setVisible(true);
+            return;
+        }
+        // hide label
+        invalidUserLabel.setVisible(false);
+        // get id
+        customerGovId = customerIdNumField.getText();
         // verify credentials
         int messageId = CinemaClient.getNextMessageId();
         Message newMessage = new Message(messageId, "verify Customer id");
-        newMessage.setData(customerIdNumField.getText());
+        newMessage.setData(customerGovId);
         CinemaClient.getClient().sendToServer(newMessage);
         System.out.println("verify Customer id request sent");
         // disable buttons
@@ -71,23 +86,30 @@ public class CustomerLoginController {
     @Subscribe
     public void onVerifiedCustomerIdEvent(NewVerifiedCustomerIdEvent event) {
         Platform.runLater(() -> {
-//            try {
-//
-//                availableBranches = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
-//            }
-//            catch (IOException e) {
-//                e.printStackTrace();
-//            }
-            // if credentials are correct
-            // TODO: implement
-            // create controller
-//            MovieTypeSelectionController movieTypeSelectionController = CinemaClient.setContent("movieTypeSelection").getController();
-//            // TODO: set user
-////        movieTypeSelectionController.setSelectedBranch(selectedBranch);
-//            // close dialog
-//            EventBus.getDefault().unregister(this);
-//            dialog.setResult(ButtonType.OK);
-//            dialog.close();
+            String messageData = event.getMessage().getData();
+
+            if (messageData.equals("user invalid")) {
+                invalidUserLabel.setVisible(true);
+                customerIdNumField.clear();
+                // enable buttons
+                loginButton.setDisable(false);
+                cancelButton.setDisable(false);
+            }
+            else {
+                customerFirstName = messageData.split(" ")[0];
+                customerLastName = messageData.split(" ")[1];
+                try {
+                    // set content
+                    MovieTypeSelectionController movieTypeSelectionController = CinemaClient.setContent("movieTypeSelection").getController();
+                    movieTypeSelectionController.setCustomerData(customerFirstName, customerLastName, customerGovId);
+                    // close dialog
+                    EventBus.getDefault().unregister(this);
+                    dialog.setResult(ButtonType.OK);
+                    dialog.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         });
     }
 

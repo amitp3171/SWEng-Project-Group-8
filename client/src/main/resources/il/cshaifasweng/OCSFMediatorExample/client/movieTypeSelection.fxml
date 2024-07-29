@@ -26,6 +26,10 @@
    <center>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
+            <Label fx:id="welcomeUserLabel" text="Label">
+               <font>
+                  <Font size="20.0" />
+               </font></Label>
             <Label text="בחרו בסוג הסרט">
                <font>
                   <Font size="45.0" />

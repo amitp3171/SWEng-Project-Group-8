@@ -28,8 +28,19 @@ public class BranchSelectorController {
 
     private String selectedBranch;
 
+    private String firstName;
+    private String lastName;
+    private String govId;
+
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
+    }
+
+    public void setCustomerData(String firstName, String lastName, String govId) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.govId = govId;
+//        welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", firstName, lastName));
     }
 
     @FXML
@@ -51,6 +62,7 @@ public class BranchSelectorController {
         if (selectedBranch == null) return;
         // create controller
         InTheaterMovieListController inTheaterMovieListController = CinemaClient.setContent("inTheaterMovieList").getController();
+        inTheaterMovieListController.setCustomerData(this.firstName, this.lastName, this.govId);
         // set selected branch
         inTheaterMovieListController.setSelectedBranch(selectedBranch);
         // close dialog

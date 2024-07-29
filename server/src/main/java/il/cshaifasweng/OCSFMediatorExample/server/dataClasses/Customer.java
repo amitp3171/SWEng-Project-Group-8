@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "customers")
-public class Customer extends AbstractUser{
+public class Customer extends AbstractUser {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Ticket> ownedTickets = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL)
@@ -19,8 +19,20 @@ public class Customer extends AbstractUser{
     @OneToMany(cascade = CascadeType.ALL)
     private List<Purchase> purchaseHistory = new ArrayList<>();
 
+    private String govId;
+
     public Customer(){
         super();
+    }
+
+    public Customer(String govId) {
+        super();
+        this.govId = govId;
+    }
+
+    public Customer(String firstName, String lastName, String govId) {
+        super(firstName, lastName);
+        this.govId = govId;
     }
 
     public void addTicketToList (Ticket ticket){
@@ -37,11 +49,6 @@ public class Customer extends AbstractUser{
     }
     public void addPurchaseToList (Purchase purchase){
         this.purchaseHistory.add(purchase);
-    }
-
-
-    public Customer(String firstName, String lastName) {
-        super(firstName, lastName);
     }
 
     public void cancelPurchase(Purchase purchase) {}

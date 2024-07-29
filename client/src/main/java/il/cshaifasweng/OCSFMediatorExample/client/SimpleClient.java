@@ -34,6 +34,14 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new NewScreeningTimeListEvent(message));
 		}
 
+		else if(message.getMessage().equals("updated Theater ID list successfully")){
+			EventBus.getDefault().post(new NewTheaterIdListEvent(message));
+		}
+
+		else if(message.getMessage().equals("verified Customer id successfully")){
+			EventBus.getDefault().post(new NewVerifiedCustomerIdEvent(message));
+		}
+
 		else if(message.getMessage().equals("client added successfully")){
 			EventBus.getDefault().post(new NewSubscriberEvent(message));
 		}

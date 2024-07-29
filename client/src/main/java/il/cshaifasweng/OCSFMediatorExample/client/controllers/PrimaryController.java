@@ -17,11 +17,6 @@ import org.greenrobot.eventbus.Subscribe;
 
 public class PrimaryController {
 
-//	@FXML
-//	void showMovieList(ActionEvent event) throws IOException {
-//		CinemaClient.setContent("movieTypeSelection");
-//	}
-
 	@FXML
 	void showMovieListCustomer(ActionEvent event) throws IOException {
 		// load dialog fxml
@@ -54,8 +49,9 @@ public class PrimaryController {
 	}
 
 	@FXML
-	void showMovieListGuest(ActionEvent event) {
-		// TODO: set guest flag to true
+	void showMovieListGuest(ActionEvent event) throws IOException {
+		MovieTypeSelectionController movieTypeSelectionController = CinemaClient.setContent("movieTypeSelection").getController();
+		movieTypeSelectionController.setCustomerData();
 	}
 
 	@FXML

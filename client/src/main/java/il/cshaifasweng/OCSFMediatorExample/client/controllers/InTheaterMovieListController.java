@@ -23,11 +23,22 @@ public class InTheaterMovieListController {
     @FXML
     private Label branchNameLabel;
 
+    private String firstName;
+    private String lastName;
+    private String govId;
+
     private ArrayList<String> inTheaterMovies;
 
     private String selectedBranch;
 
     private boolean forceRefresh;
+
+    void setCustomerData(String firstName, String lastName, String govId) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.govId = govId;
+//        welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", firstName, lastName));
+    }
 
     public void setSelectedBranch(String branchLocation) throws IOException {
         selectedBranch = branchLocation;
@@ -49,6 +60,7 @@ public class InTheaterMovieListController {
 
         // set selected movie
         ScreeningListController screeningController = screeningLoader.getController();
+        screeningController.setCustomerData(this.firstName, this.lastName, this.govId);
         screeningController.setSelectedBranch(selectedBranch);
         screeningController.setSelectedMovie(selectedMovie, forceRefresh);
 
@@ -57,8 +69,9 @@ public class InTheaterMovieListController {
 
     @FXML
     void onGoBack(ActionEvent event) throws IOException {
+        MovieTypeSelectionController movieTypeSelectionController = CinemaClient.setContent("movieTypeSelection").getController();
+        movieTypeSelectionController.setCustomerData(this.firstName, this.lastName, this.govId);
         EventBus.getDefault().unregister(this);
-        CinemaClient.setContent("movieTypeSelection");
     }
 
     @FXML

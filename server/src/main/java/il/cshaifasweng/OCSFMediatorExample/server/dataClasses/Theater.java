@@ -62,4 +62,9 @@ public class Theater
     public Seat getSeat(int seatNumber) {
         return this.seats.get(seatNumber);
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s,%s", theaterID, theaterNumber);
+    }
 }
