@@ -21,6 +21,7 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="פעולות">
                     <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onAddScreening" text="הוסף הקרנה" />
                         <MenuItem mnemonicParsing="false" onAction="#onRefreshList" text="רענן רשימה" />
                     </items>
                 </Menu>

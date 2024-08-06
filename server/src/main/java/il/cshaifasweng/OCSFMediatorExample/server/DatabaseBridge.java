@@ -46,6 +46,7 @@ public class DatabaseBridge {
         configuration.addAnnotatedClass(ServiceEmployee.class);
         configuration.addAnnotatedClass(CompanyManager.class);
         configuration.addAnnotatedClass(BranchManager.class);
+        configuration.addAnnotatedClass(AbstractProduct.class);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
@@ -88,21 +89,9 @@ public class DatabaseBridge {
         return data;
     }
 
-//    public static <T> List<T> executeNativeQuery(String sqlQuery, Class<T> resultClass, String param) {
-//        try {
-//            NativeQuery<T> query = session.createNativeQuery(sqlQuery, resultClass);
-//            query.setParameter(1, param);
-//            List<T> result = query.getResultList();
-//            return result;
-//        } catch (Exception e) {
-//            System.err.println("An error occurred in executeNativeQuery: " + e.getMessage());
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-
     public static <T> List<T> executeNativeQuery(String sqlQuery, Class<T> resultClass, Object... params) {
         try {
+            session.clear();
             NativeQuery<T> query = session.createNativeQuery(sqlQuery, resultClass);
             for (int i = 0; i < params.length; i++) {
                 query.setParameter(i + 1, params[i]);

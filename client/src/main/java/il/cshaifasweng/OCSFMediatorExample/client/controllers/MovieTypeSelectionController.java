@@ -15,11 +15,14 @@ public class MovieTypeSelectionController {
     @FXML
     private Label welcomeUserLabel;
 
-    private boolean isGuest = false;
-
     private String firstName;
     private String lastName;
-    private String govId;
+    private String govId = null;
+
+    private boolean isGuest = false;
+
+    private String employeeUserName = null;
+    private String employeeType = null;
 
     void setCustomerData() {
         this.isGuest = true;
@@ -30,6 +33,15 @@ public class MovieTypeSelectionController {
         this.firstName = firstName;
         this.lastName = lastName;
         this.govId = govId;
+        welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", firstName, lastName));
+    }
+
+    void setEmployeeData(String firstName, String lastName, String userName, String employeeType) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.employeeUserName = userName;
+        this.employeeType = employeeType;
+        this.isGuest = false;
         welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", firstName, lastName));
     }
 
@@ -61,8 +73,12 @@ public class MovieTypeSelectionController {
 
         // get controller
         BranchSelectorController branchSelectorController = dialogLoader.getController();
-        branchSelectorController.setCustomerData(this.firstName, this.lastName, this.govId);
-
+        if (this.isGuest)
+            branchSelectorController.setCustomerData();
+        else if (this.employeeType == null)
+            branchSelectorController.setCustomerData(this.firstName, this.lastName, this.govId);
+        else
+            branchSelectorController.setEmployeeData(this.firstName, this.lastName, this.employeeUserName, this.employeeType);
         // create new dialog
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.getDialogPane().setContent(branchSelectorDialogPane);

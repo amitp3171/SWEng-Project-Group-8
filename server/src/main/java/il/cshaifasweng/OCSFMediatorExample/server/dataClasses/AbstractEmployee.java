@@ -1,8 +1,10 @@
 package il.cshaifasweng.OCSFMediatorExample.server.dataClasses;
+import javax.persistence.*;
 
-import javax.persistence.MappedSuperclass;
 
-@MappedSuperclass
+//@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class AbstractEmployee extends AbstractUser {
 
     private String username;

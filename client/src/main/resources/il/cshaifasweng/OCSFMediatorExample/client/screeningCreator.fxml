@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningCreatorController">
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="343.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningCreatorController">
    <content>
       <StackPane prefHeight="150.0" prefWidth="360.0">
          <children>
@@ -21,7 +21,7 @@
                      <font>
                         <Font size="15.0" />
                      </font></Label>
-                  <Label fx:id="movieNameLabel" text="שם סרט" />
+                  <ChoiceBox fx:id="inTheaterMovieChoiceBox" prefWidth="150.0" />
                   <Label alignment="TOP_CENTER" text="תאריך הקרנה:">
                      <font>
                         <Font size="15.0" />
@@ -50,6 +50,7 @@
                         <Button mnemonicParsing="false" onAction="#createScreeningHour" text="עדכן" />
                      </children>
                   </HBox>
+                  <Label fx:id="creationStatusLabel" text="Status" visible="false" />
                </children>
             </VBox>
          </children>

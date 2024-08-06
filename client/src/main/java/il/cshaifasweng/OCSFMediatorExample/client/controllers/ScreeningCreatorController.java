@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewBranchListEvent;
+import il.cshaifasweng.OCSFMediatorExample.client.events.NewCreatedScreeningTimeEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewTheaterIdListEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewTheaterListEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
@@ -20,7 +21,7 @@ import org.greenrobot.eventbus.Subscribe;
 public class ScreeningCreatorController {
 
     @FXML
-    private Label movieNameLabel;
+    private ChoiceBox<String> inTheaterMovieChoiceBox;
 
     @FXML
     private TextField screeningDatePromptTF;
@@ -31,17 +32,25 @@ public class ScreeningCreatorController {
     @FXML
     private ChoiceBox<String> theaterChoiceBox;
 
+    @FXML
+    private Label creationStatusLabel;
+
     private Dialog<ButtonType> dialog;
 
-    private String movie;
+    private ArrayList<String> availableMovies;
     private String branchLocation;
     private ArrayList<String> theaters;
 
-    public void setData(String movie, String branchLocation) throws IOException {
-        this.movie = movie;
+    public void setData(ArrayList<String> availableMovies, String branchLocation) throws IOException {
+        this.availableMovies = availableMovies;
         this.branchLocation = branchLocation;
 
-        movieNameLabel.setText(movie.split(",")[1]);
+        String[] movieNames = new String[availableMovies.size()];
+
+        for (int i = 0; i < availableMovies.size(); i++)
+            movieNames[i] = availableMovies.get(i).split(",")[1];
+
+        inTheaterMovieChoiceBox.getItems().addAll(movieNames);
 
         // request theater list from server
         int messageId = CinemaClient.getNextMessageId();
@@ -63,6 +72,19 @@ public class ScreeningCreatorController {
         });
     }
 
+    //TODO
+    @Subscribe
+    public void onCreateScreeningTimeEvent(NewCreatedScreeningTimeEvent event) {
+        Platform.runLater(() -> {
+            String status = event.getMessage().getData();
+            if (status.equals("request successful"))
+                creationStatusLabel.setText("הקרנה נוצרה בהצלחה");
+            else
+                creationStatusLabel.setText("שגיאה (הקרנה קיימת)");
+            creationStatusLabel.setVisible(true);
+        });
+    }
+
     // TODO: handle case when screeningtime already exists
 
     public void setDialog(Dialog<ButtonType> dialog) {
@@ -81,13 +103,17 @@ public class ScreeningCreatorController {
         // get text-field input
         String selectedDate = screeningDatePromptTF.getText();
         String selectedTime = screeningTimePromptTF.getText();
-        // TODO: Modify
         String selectedTheaterId = theaters.get(theaterChoiceBox.getSelectionModel().getSelectedIndex());
         // send request to server
         int messageId = CinemaClient.getNextMessageId();
         Message newMessage = new Message(messageId, "create ScreeningTime");
         // branch, date, time, theater, movie
-        newMessage.setData(String.format("%s,%s,%s,%s,%s", branchLocation, selectedDate, selectedTime, selectedTheaterId, movie.split(",")[0]));
+        newMessage.setData(String.format("%s,%s,%s,%s,%s",
+                branchLocation,
+                selectedDate,
+                selectedTime,
+                selectedTheaterId,
+                availableMovies.get(inTheaterMovieChoiceBox.getSelectionModel().getSelectedIndex()).split(",")[0]));
         CinemaClient.getClient().sendToServer(newMessage);
         System.out.println("create ScreeningTime request sent");
     }

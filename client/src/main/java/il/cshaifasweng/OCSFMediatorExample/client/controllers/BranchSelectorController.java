@@ -32,15 +32,31 @@ public class BranchSelectorController {
     private String lastName;
     private String govId;
 
+    private boolean isGuest = false;
+
+    private String employeeUserName = null;
+    private String employeeType = null;
+
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
     }
 
-    public void setCustomerData(String firstName, String lastName, String govId) {
+    public void setCustomerData() {
+        this.isGuest = true;
+    }
+
+    void setCustomerData(String firstName, String lastName, String govId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.govId = govId;
-//        welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", firstName, lastName));
+    }
+
+    void setEmployeeData(String firstName, String lastName, String userName, String employeeType) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.employeeUserName = userName;
+        this.employeeType = employeeType;
+        this.isGuest = false;
     }
 
     @FXML
@@ -62,7 +78,12 @@ public class BranchSelectorController {
         if (selectedBranch == null) return;
         // create controller
         InTheaterMovieListController inTheaterMovieListController = CinemaClient.setContent("inTheaterMovieList").getController();
-        inTheaterMovieListController.setCustomerData(this.firstName, this.lastName, this.govId);
+        if (this.isGuest)
+            inTheaterMovieListController.setCustomerData();
+        else if (this.employeeType == null)
+            inTheaterMovieListController.setCustomerData(firstName, lastName, govId);
+        else
+            inTheaterMovieListController.setEmployeeData(this.firstName, this.lastName, this.employeeUserName, this.employeeType);
         // set selected branch
         inTheaterMovieListController.setSelectedBranch(selectedBranch);
         // close dialog

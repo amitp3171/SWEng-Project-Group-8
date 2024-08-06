@@ -21,11 +21,7 @@
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="משתמש" />
-            <Menu mnemonicParsing="false" text="עדכן">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onAddScreening" text="הוסף הקרנה" />
-               </items>
-            </Menu>
+            <Menu mnemonicParsing="false" text="עדכן" />
         </menus>
       </MenuBar>
    </top>

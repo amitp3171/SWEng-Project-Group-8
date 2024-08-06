@@ -46,14 +46,31 @@ public class ScreeningListController {
 
     private String firstName;
     private String lastName;
-    private String govId;
+    private String govId = null;
+
+    private boolean isGuest = false;
+
+    private String employeeUserName;
+    private String employeeType = null;
 
     private boolean forceRefresh;
+
+    void setCustomerData() {
+        this.isGuest = true;
+    }
 
     void setCustomerData(String firstName, String lastName, String govId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.govId = govId;
+    }
+
+    void setEmployeeData(String firstName, String lastName, String userName, String employeeType) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.employeeUserName = userName;
+        this.employeeType = employeeType;
+        this.isGuest = false;
     }
 
     public void setSelectedBranch(String branch) {
@@ -103,7 +120,6 @@ public class ScreeningListController {
 
     @FXML
     void chooseDay(ActionEvent event) {
-        // TODO
         // get selected day
         String newSelectedDate = selectDayListBox.getSelectionModel().getSelectedItem();
         // if no changes should be made
@@ -152,7 +168,12 @@ public class ScreeningListController {
         EventBus.getDefault().unregister(this);
         // get controller
         InTheaterMovieListController controller = CinemaClient.setContent("inTheaterMovieList").getController();
-        controller.setCustomerData(this.firstName, this.lastName, this.govId);
+        if (this.isGuest)
+            controller.setCustomerData();
+        if (this.employeeType == null)
+            controller.setCustomerData(this.firstName, this.lastName, this.govId);
+        else
+            controller.setEmployeeData(this.firstName, this.lastName, this.employeeUserName, this.employeeType);
         controller.setSelectedBranch(selectedBranch);
     }
 
@@ -211,33 +232,6 @@ public class ScreeningListController {
 
         // clear selection
         screeningListView.getSelectionModel().clearSelection();
-    }
-
-    @FXML
-    void onAddScreening(ActionEvent event) throws IOException {
-        // load dialog fxml
-        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("screeningCreator");
-        DialogPane screeningCreatorDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
-
-        // get controller
-        ScreeningCreatorController screeningCreatorController = dialogLoader.getController();
-        screeningCreatorController.setData(this.selectedMovie, selectedBranch);
-
-        // create new dialog
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.getDialogPane().setContent(screeningCreatorDialogPane);
-        screeningCreatorController.setDialog(dialog);
-
-        // create hidden close button to support the close button (X)
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
-        closeButton.setVisible(false);
-
-        // show dialog
-        dialog.showAndWait();
-
-        // unregister dialog in case X button was pressed
-        if (EventBus.getDefault().isRegistered(screeningCreatorController)) EventBus.getDefault().unregister(screeningCreatorController);
     }
 
     @Subscribe

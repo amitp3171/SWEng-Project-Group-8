@@ -1,14 +1,12 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
-import il.cshaifasweng.OCSFMediatorExample.client.events.NewBranchListEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewVerifiedCustomerIdEvent;
+import il.cshaifasweng.OCSFMediatorExample.client.events.NewVerifiedEmployeeCredentialsEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -17,25 +15,29 @@ import javafx.scene.control.*;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-public class CustomerLoginController {
-
-    @FXML
-    private TextField customerIdNumField;
+public class EmployeeLoginController {
 
     @FXML
     private Button cancelButton;
 
     @FXML
-    private Button loginButton;
+    private Button employeeLoginButton;
 
     @FXML
     private Label invalidUserLabel;
 
-    private Dialog<ButtonType> dialog;
+    @FXML
+    private PasswordField passwordField;
 
-    private String customerFirstName;
-    private String customerLastName;
-    private String customerGovId;
+    @FXML
+    private TextField userNameField;
+
+    private String employeeUserName;
+    private String employeeFirstName;
+    private String employeeLastName;
+    private String employeeRole;
+
+    private Dialog<ButtonType> dialog;
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
@@ -48,61 +50,51 @@ public class CustomerLoginController {
         dialog.close();
     }
 
-    private boolean inputIsValid() {
-        String customerId = customerIdNumField.getText();
-        return !(
-                // if blank
-                customerId.isBlank() ||
-                // id should be of 9 digits
-                customerId.length() != 9 ||
-                // id should be of numeric type
-                !customerId.matches("-?\\d+")
-        );
-    }
-
     @FXML
-    void loginCustomer(ActionEvent event) throws IOException {
+    void loginEmployeeCustomer(ActionEvent event) throws IOException {
         // avoid empty selection
-        if (!inputIsValid()) {
-            customerIdNumField.clear();
+        if (userNameField.getText().isEmpty() || passwordField.getText().isEmpty()) {
             invalidUserLabel.setVisible(true);
             return;
         }
         // hide label
         invalidUserLabel.setVisible(false);
         // get id
-        customerGovId = customerIdNumField.getText();
+        employeeUserName = userNameField.getText();
         // verify credentials
         int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "verify Customer id");
-        newMessage.setData(customerGovId);
+        Message newMessage = new Message(messageId, "verify Employee credentials");
+        // TODO: hash passwords!
+        newMessage.setData(String.format("%s,%s", employeeUserName, passwordField.getText()));
         CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("verify Customer id request sent");
+        System.out.println("verify Employee credentials request sent");
         // disable buttons
-        loginButton.setDisable(true);
+        employeeLoginButton.setDisable(true);
         cancelButton.setDisable(true);
     }
 
     @Subscribe
-    public void onVerifiedCustomerIdEvent(NewVerifiedCustomerIdEvent event) {
+    public void onVerifiedEmployeeCredentialsEvent(NewVerifiedEmployeeCredentialsEvent event) {
         Platform.runLater(() -> {
             String messageData = event.getMessage().getData();
 
             if (messageData.equals("user invalid")) {
                 invalidUserLabel.setVisible(true);
-                customerIdNumField.clear();
+                userNameField.clear();
+                passwordField.clear();
                 // enable buttons
-                loginButton.setDisable(false);
+                employeeLoginButton.setDisable(false);
                 cancelButton.setDisable(false);
             }
             else {
                 String[] splitData = messageData.split(",");
-                customerFirstName = splitData[0];
-                customerLastName = splitData[1];
+                employeeFirstName = splitData[0];
+                employeeLastName = splitData[1];
+                employeeRole = splitData[2];
                 try {
                     // set content
                     MovieTypeSelectionController movieTypeSelectionController = CinemaClient.setContent("movieTypeSelection").getController();
-                    movieTypeSelectionController.setCustomerData(customerFirstName, customerLastName, customerGovId);
+                    movieTypeSelectionController.setEmployeeData(employeeFirstName, employeeLastName, employeeUserName, employeeRole);
                     // close dialog
                     EventBus.getDefault().unregister(this);
                     dialog.setResult(ButtonType.OK);

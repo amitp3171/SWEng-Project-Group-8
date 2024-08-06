@@ -44,8 +44,29 @@ public class PrimaryController {
 	}
 
 	@FXML
-	void showMovieListEmployee(ActionEvent event) {
-		// TODO
+	void showMovieListEmployee(ActionEvent event) throws IOException {
+		// load dialog fxml
+		FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("employeeLoginPrompt");
+		DialogPane employeeLoginDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
+
+		// get controller
+		EmployeeLoginController employeeLoginController = dialogLoader.getController();
+
+		// create new dialog
+		Dialog<ButtonType> dialog = new Dialog<>();
+		dialog.getDialogPane().setContent(employeeLoginDialogPane);
+		employeeLoginController.setDialog(dialog);
+
+		// create hidden close button to support the close button (X)
+		dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+		Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
+		closeButton.setVisible(false);
+
+		// show dialog
+		dialog.showAndWait();
+
+		// unregister dialog in case X button was pressed
+		if (EventBus.getDefault().isRegistered(employeeLoginController)) EventBus.getDefault().unregister(employeeLoginController);
 	}
 
 	@FXML
