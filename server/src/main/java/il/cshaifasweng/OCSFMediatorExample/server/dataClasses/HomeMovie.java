@@ -34,4 +34,9 @@ public class HomeMovie extends AbstractMovie {
     public void setLink(String link) {
         this.link = link;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s,%s,%s,%s,%s,%s", id, movieName, super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture());
+    }
 }

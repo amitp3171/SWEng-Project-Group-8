@@ -56,7 +56,15 @@ public class MovieTypeSelectionController {
     }
 
     @FXML
-    void showComingSoonMovieList(ActionEvent event) {
+    void showComingSoonMovieList(ActionEvent event) throws IOException {
+       ComingSoonMovieListController comingSoonMovieListController = CinemaClient.setContent("comingSoonMovieList").getController();
+        if (this.isGuest)
+            comingSoonMovieListController.setCustomerData();
+        else if (this.employeeType == null)
+            comingSoonMovieListController.setCustomerData(firstName, lastName, govId);
+        else
+            comingSoonMovieListController.setEmployeeData(this.firstName, this.lastName, this.employeeUserName, this.employeeType);
+
 
     }
 

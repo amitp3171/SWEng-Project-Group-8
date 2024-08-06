@@ -30,6 +30,10 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new NewInTheaterMovieListEvent(message));
 		}
 
+		else if(message.getMessage().equals("updated ComingSoonMovie list successfully")){
+			EventBus.getDefault().post(new NewComingSoonMovieListEvent(message));
+		}
+
 		else if(message.getMessage().equals("updated ScreeningTime list successfully")){
 			EventBus.getDefault().post(new NewScreeningTimeListEvent(message));
 		}

@@ -88,6 +88,22 @@ public class SimpleServer extends AbstractServer {
 		sendMessage(message, "updated InTheaterMovie list successfully", movieToString, client);
 	}
 
+	private void handleComingSoonMovieListRequest(Message message, ConnectionToClient client) throws IOException {
+		String[] parsedData = message.getData().split(",");
+		boolean forceRefresh = Boolean.parseBoolean(parsedData[0]);  // Parse forceRefresh from the message data
+
+
+		// get data
+		List<ComingSoonMovie> receivedData = db.getAll(ComingSoonMovie.class, forceRefresh);
+		ArrayList<String> movieToString = new ArrayList<>();
+
+		for (ComingSoonMovie movie : receivedData) {
+			movieToString.add(movie.toString());
+		}
+
+		sendMessage(message, "updated ComingSoonMovie list successfully", movieToString, client);
+	}
+
 	private void handleScreeningTimeListRequest(Message message, ConnectionToClient client) throws IOException {
 		// parse message (message_text,branch_location,movie_id)
 		String[] splitMessage = message.getMessage().split(",");
@@ -184,6 +200,8 @@ public class SimpleServer extends AbstractServer {
 		sendMessage(message, "updated Theater list successfully", items, client);
 	}
 
+
+
 	private void handleVerifyCustomerIdRequest(Message message, ConnectionToClient client) throws IOException {
 		List<Customer> result = db.executeNativeQuery("SELECT * FROM customers WHERE govId=?", Customer.class, message.getData());
 		String data = "user invalid";
@@ -235,6 +253,10 @@ public class SimpleServer extends AbstractServer {
 
 			else if (request.startsWith("get InTheaterMovie list")){
 				handleInTheaterMovieListRequest(message, client);
+			}
+
+			else if (request.startsWith("get ComingSoonMovie list")){
+				handleComingSoonMovieListRequest(message, client);
 			}
 
 			else if (request.startsWith("get ScreeningTime list")){

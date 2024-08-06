@@ -36,4 +36,9 @@ public class ComingSoonMovie extends AbstractMovie {
     public void setReleaseDate(Date releaseDate) {
         this.releaseDate = releaseDate;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s,%s,%s,%s,%s,%s", id, movieName, super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture());
+    }
 }
