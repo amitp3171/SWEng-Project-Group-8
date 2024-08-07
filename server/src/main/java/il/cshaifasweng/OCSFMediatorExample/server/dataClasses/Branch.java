@@ -13,7 +13,7 @@ public class Branch implements Serializable {
     // location is the primary key
     @Id
     private String location;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Theater> theaterList = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.ALL)
     private List<InTheaterMovie> inTheaterMovieList = new ArrayList<>();

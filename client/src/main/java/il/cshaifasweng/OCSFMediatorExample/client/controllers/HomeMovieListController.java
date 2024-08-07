@@ -2,8 +2,7 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
-import il.cshaifasweng.OCSFMediatorExample.client.events.NewComingSoonMovieListEvent;
-import il.cshaifasweng.OCSFMediatorExample.client.events.NewInTheaterMovieListEvent;
+import il.cshaifasweng.OCSFMediatorExample.client.events.NewHomeMovieListEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -18,37 +17,37 @@ import org.greenrobot.eventbus.Subscribe;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ComingSoonMovieListController {
+public class HomeMovieListController {
     @FXML
-    private ListView<String> comingSoonMovieListView;
+    private ListView<String> homeMovieListView;
 
     UserDataManager userDataManager;
 
-    private ArrayList<String> comingSoonMovies;
+    private ArrayList<String> homeMovies;
 
     @FXML
     void onItemSelected(MouseEvent event) throws IOException {
         // if selected item is null
-        if (comingSoonMovieListView.getSelectionModel().getSelectedItem() == null) return;
+        if (homeMovieListView.getSelectionModel().getSelectedItem() == null) return;
 
         // get screeningTime object
-        int selectedIndex = comingSoonMovieListView.getSelectionModel().getSelectedIndex();
-        String selectedMovie = comingSoonMovies.get(selectedIndex);
+        int selectedIndex = homeMovieListView.getSelectionModel().getSelectedIndex();
+        String selectedMovie = homeMovies.get(selectedIndex);
 
         // TODO: display dialog with selected movie info
         // load dialog fxml
-        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("comingSoonMovieInfo");
+        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("homeMovieInfo");
         DialogPane screeningDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
 
         // get controller
-        ComingSoonMovieInfoController comingSoonMovieInfoController = dialogLoader.getController();
+        HomeMovieInfoController homeMovieInfoController = dialogLoader.getController();
         // set selected movie
-        comingSoonMovieInfoController.setComingSoonMovie(selectedMovie);
+        homeMovieInfoController.setHomeMovie(selectedMovie);
 
         // create new dialog
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.getDialogPane().setContent(screeningDialogPane);
-        comingSoonMovieInfoController.setDialog(dialog);
+        homeMovieInfoController.setDialog(dialog);
 
         // create hidden close button to support the close button (X)
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
@@ -70,46 +69,46 @@ public class ComingSoonMovieListController {
         System.exit(0);
     }
 
-    private void requestComingSoonMovieList(boolean forceRefresh) throws IOException {
+    private void requestHomeMovieList(boolean forceRefresh) throws IOException {
         // send request to server
         int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "get ComingSoonMovie list");
+        Message newMessage = new Message(messageId, "get HomeMovie list");
         newMessage.setData(String.valueOf(forceRefresh));
         CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("ComingSoonMovie request sent");;
+        System.out.println("HomeMovie request sent");
     }
 
     void initializeList() {
-        comingSoonMovieListView.getItems().clear();
+        homeMovieListView.getItems().clear();
         // get movie names
-        String[] movieNames = new String[comingSoonMovies.size()];
+        String[] movieNames = new String[homeMovies.size()];
         for (int i = 0; i < movieNames.length; i++) {
-            movieNames[i] = comingSoonMovies.get(i).split(",")[1];
+            movieNames[i] = homeMovies.get(i).split(",")[1];
         }
         // display movies
-        comingSoonMovieListView.getItems().addAll(movieNames);
+        homeMovieListView.getItems().addAll(movieNames);
     }
 
     @Subscribe
-    public void onUpdateComingSoonMovieEvent(NewComingSoonMovieListEvent event) {
+    public void onUpdateHomeMovieEvent(NewHomeMovieListEvent event) {
         // on event received
         Platform.runLater(() -> {
             try {
-                comingSoonMovies = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+                homeMovies = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
 
-                if (!comingSoonMovies.isEmpty())
+                if (!homeMovies.isEmpty())
                     initializeList();
             }
             catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println("ComingSoonMovie request received");
+            System.out.println("HomeMovie request received");
         });
     }
 
     @FXML
     void onRefreshList(ActionEvent event) throws IOException {
-        requestComingSoonMovieList(true);
+        requestHomeMovieList(true);
     }
 
     @FXML
@@ -119,6 +118,6 @@ public class ComingSoonMovieListController {
         // register to EventBus
         EventBus.getDefault().register(this);
 
-        requestComingSoonMovieList(false);
+        requestHomeMovieList(false);
     }
 }

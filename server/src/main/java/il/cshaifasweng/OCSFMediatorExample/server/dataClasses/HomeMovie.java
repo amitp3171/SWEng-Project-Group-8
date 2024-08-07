@@ -10,13 +10,13 @@ public class HomeMovie extends AbstractMovie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String link;
+    private double movieLength;
 
     public HomeMovie() {}
 
-    public HomeMovie(String movieName, String producerName, List<String> mainActors, String description, String picture, String link) {
+    public HomeMovie(String movieName, String producerName, List<String> mainActors, String description, String picture, double movieLength) {
         super(movieName, producerName, mainActors, description, picture);
-        this.link = link;
+        this.movieLength = movieLength;
     }
 
     public int getId() {
@@ -27,13 +27,9 @@ public class HomeMovie extends AbstractMovie {
         this.id = id;
     }
 
-    public String getLink() {
-        return link;
-    }
+    public double getMovieLength() { return movieLength; }
 
-    public void setLink(String link) {
-        this.link = link;
-    }
+    public void setMovieLength(double movieLength) { this.movieLength = movieLength; }
 
     @Override
     public String toString() {

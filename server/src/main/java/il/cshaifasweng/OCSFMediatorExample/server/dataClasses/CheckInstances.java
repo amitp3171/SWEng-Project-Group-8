@@ -52,7 +52,7 @@ public class CheckInstances {
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
         configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "20danny05");
+        configuration.setProperty("hibernate.connection.password", "Gamal385");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
@@ -149,13 +149,14 @@ public class CheckInstances {
         session.flush();
     }
 
-    private static void generateHomeMovie() throws Exception {
+    private static HomeMovie generateHomeMovie() throws Exception {
         List<String> mainActors = new ArrayList<>();
         mainActors.add("Simba");
         mainActors.add("Scar");
-        HomeMovie homeMovie = new HomeMovie("Lion King מלך האריות", "Don", mainActors, "Great movie, lots of animals", "pic", "link");
+        HomeMovie homeMovie = new HomeMovie("Lion King מלך האריות", "Don", mainActors, "Great movie, lots of animals", "pic", 2);
         session.save(homeMovie);
         session.flush();
+        return homeMovie;
     }
 
     private static void generateLinks(Link[] links) throws Exception {
@@ -340,7 +341,7 @@ public class CheckInstances {
             printAllSeats();
 
             generateComingSoonMovie();
-            generateHomeMovie();
+            HomeMovie homeMovie = generateHomeMovie();
 
             //new classes instances: ---------19.07---------
 
@@ -356,10 +357,9 @@ public class CheckInstances {
 
             Link[] links =new Link[5];
             for(int i=0;i<links.length;i++){
-                links[i] = new Link(customers[i],20,"Lion King",LocalTime.now(),LocalTime.now().plusHours(168));
+                links[i] = new Link(customers[i],20, homeMovie, LocalDate.now(), LocalTime.now(), LocalTime.now().plusHours((long)(homeMovie.getMovieLength())+1 ));
                 purchases[i] = new Purchase(links[i], "Credit Card", LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i]);
-
             }
 
 

@@ -34,8 +34,8 @@ public class MovieTypeSelectionController {
     }
 
     @FXML
-    void showHomeMovieList(ActionEvent event) {
-
+    void showHomeMovieList(ActionEvent event) throws IOException {
+        CinemaClient.setContent("homeMovieList");
     }
 
     @FXML
