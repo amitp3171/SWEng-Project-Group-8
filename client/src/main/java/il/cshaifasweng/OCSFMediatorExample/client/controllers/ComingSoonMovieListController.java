@@ -8,6 +8,8 @@ import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import org.greenrobot.eventbus.EventBus;
@@ -34,6 +36,27 @@ public class ComingSoonMovieListController {
         String selectedMovie = comingSoonMovies.get(selectedIndex);
 
         // TODO: display dialog with selected movie info
+        // load dialog fxml
+        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("comingSoonMovieInfo");
+        DialogPane screeningDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
+
+        // get controller
+        ComingSoonMovieInfoController comingSoonMovieInfoController = dialogLoader.getController();
+        // set selected movie
+        comingSoonMovieInfoController.setComingSoonMovie(selectedMovie);
+
+        // create new dialog
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.getDialogPane().setContent(screeningDialogPane);
+        comingSoonMovieInfoController.setDialog(dialog);
+
+        // create hidden close button to support the close button (X)
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
+        closeButton.setVisible(false);
+
+        // show dialog
+        dialog.showAndWait();
     }
 
     @FXML

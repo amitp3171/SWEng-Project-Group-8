@@ -90,16 +90,11 @@ public class ScreeningListController {
     }
 
     public void setSelectedMovie(String selectedMovie, boolean forceRefresh) throws IOException {
+        this.forceRefresh = forceRefresh;
+
         this.selectedMovie = selectedMovie;
 
         // id, movieName, super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture()
-//        int startIdx = selectedMovie.indexOf('[') + 1;
-//        int endIdx = selectedMovie.indexOf(']');
-//
-//        String mainActors = selectedMovie.substring(startIdx, endIdx);
-//
-//        String restOfMovieData = String.join("", selectedMovie.substring(0, startIdx - 2), selectedMovie.substring(endIdx + 1));
-
         String[] parsedMovie = selectedMovie.split(",(?![^\\[]*\\])");
 
         movieLabel.setText(parsedMovie[1]);
