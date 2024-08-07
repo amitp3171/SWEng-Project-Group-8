@@ -46,7 +46,7 @@ public class CheckInstances {
         configuration.addAnnotatedClass(ServiceEmployee.class);
         configuration.addAnnotatedClass(CompanyManager.class);
         configuration.addAnnotatedClass(BranchManager.class);
-
+        configuration.addAnnotatedClass(ContentManager.class);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
@@ -83,24 +83,23 @@ public class CheckInstances {
 
     }
 
-    private static ScreeningTime[] generateScreeningTimes(Branch[] branches, Theater[] theaters, InTheaterMovie[] inTheaterMovies) throws Exception {
+    private static ArrayList<ScreeningTime> generateScreeningTimes(Branch[] branches, Theater[] theaters, InTheaterMovie[] inTheaterMovies) throws Exception {
         // Create an array to hold ScreeningTime objects
-        ScreeningTime[] st = new ScreeningTime[5];
+//        ScreeningTime[] st = new ScreeningTime[5];
+        ArrayList<ScreeningTime> st = new ArrayList<>();
         Random random = new Random();
         LocalDate startDate = LocalDate.now(); // starting from today
         LocalDate endDate = startDate.plusDays(30); // up to 30 days in the future
 
-        int index = 0; // Index for the ScreeningTime array
-
         for (InTheaterMovie movie : inTheaterMovies) {
-            for (int i = 0; i < 5 && index < st.length; i++) {
+            for (int i = 0; i < 5; i++) {
                 // Generate a random date within the specified range
                 long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
                 LocalDate randomDate = startDate.plusDays(random.nextInt((int) daysBetween + 1));
 
                 int randomHour = random.nextInt(24);
-                Theater randomTheater = theaters[random.nextInt(theaters.length)];
                 Branch randomBranch = branches[random.nextInt(branches.length)];
+                Theater randomTheater = randomBranch.getTheaterList().get(random.nextInt(10));
 
                 ScreeningTime screeningTime = new ScreeningTime();
                 screeningTime.setBranch(randomBranch);
@@ -118,20 +117,20 @@ public class CheckInstances {
                 movie.addScreeningTime(screeningTime);
 
                 // Add the ScreeningTime object to the array
-                st[index++] = screeningTime;
+                st.add(screeningTime);
 
-                // Stop if the array is full
-                if (index >= st.length) {
-                    break;
-                }
+//                // Stop if the array is full
+//                if (index >= st.length) {
+//                    break;
+//                }
             }
             session.save(movie);
             session.flush();
 
             // Stop if the array is full
-            if (index >= st.length) {
-                break;
-            }
+//            if (index >= st.length) {
+//                break;
+//            }
         }
 
         return st;
@@ -186,6 +185,7 @@ public class CheckInstances {
             session.flush();
         }
     }
+
     private static void generatePurchases(Purchase[] purchases) throws Exception {
         for (Purchase purchase : purchases) {
             session.save(purchase);
@@ -217,6 +217,13 @@ public class CheckInstances {
     private static void generateBranchManagers(BranchManager[] branchManagers) throws Exception {
         for (BranchManager branchManager : branchManagers) {
             session.save(branchManager);
+            session.flush();
+        }
+    }
+
+    private static void generateContentManagers(ContentManager[] contentManagers) throws Exception {
+        for (ContentManager contentManager : contentManagers) {
+            session.save(contentManager);
             session.flush();
         }
     }
@@ -289,7 +296,7 @@ public class CheckInstances {
             branches[0] = new Branch("Haifa");
             branches[1] = new Branch("Tel-Aviv");
             branches[2] = new Branch("Eilat");
-            branches[3] = new Branch("Rishon");
+            branches[3] = new Branch("Rishon LeTsiyon");
             branches[4] = new Branch("Jerusalem");
             for(Branch branch : branches) {
                 Theater[] theaters = generateTheaters();
@@ -327,7 +334,7 @@ public class CheckInstances {
 
             Theater[] theaters = generateTheaters();
 
-            ScreeningTime[] screeningTimes = generateScreeningTimes(branches, theaters,inTheaterMovies);
+            ArrayList<ScreeningTime> screeningTimes = generateScreeningTimes(branches, theaters,inTheaterMovies);
 
             printAllBranches();
             printAllSeats();
@@ -366,7 +373,7 @@ public class CheckInstances {
 
             Ticket[] tickets = new Ticket[5];
             for(int i=0;i<tickets.length;i++) {
-                tickets[i] = new Ticket(customers[i],30,screeningTimes[i].getInTheaterMovie().getMovieName(),screeningTimes[i], screeningTimes[i].getTheater().getSeat(i));
+                tickets[i] = new Ticket(customers[i],30,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(i), screeningTimes.get(i).getTheater().getSeat(i));
                 purchases[i+10] = new Purchase(tickets[i], "Credit Card", LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i+10]);
 
@@ -388,11 +395,11 @@ public class CheckInstances {
             serviceEmployees[4] = new ServiceEmployee("David", "Wilson", "davidwilson", "password5");
 
             CompanyManager[] companyManagers = new CompanyManager[5];
-            companyManagers[0] = new CompanyManager("Yosi", "Levi", "johndoe", "password1");
-            companyManagers[1] = new CompanyManager("Moshe", "Cohen", "janesmith", "password2");
-            companyManagers[2] = new CompanyManager("Yogev", "Perry", "michaelbrown", "password3");
-            companyManagers[3] = new CompanyManager("Noam", "Platipus", "emilydavis", "password4");
-            companyManagers[4] = new CompanyManager("Orpaz", "Filusim", "davidwilson", "password5");
+            companyManagers[0] = new CompanyManager("Yosi", "Levi", "yosilevi", "password1");
+            companyManagers[1] = new CompanyManager("Moshe", "Cohen", "moshecohen", "password2");
+            companyManagers[2] = new CompanyManager("Yogev", "Perry", "yogevperry", "password3");
+            companyManagers[3] = new CompanyManager("Noam", "Platipus", "noamplatipus", "password4");
+            companyManagers[4] = new CompanyManager("Orpaz", "Filusim", "orpazfilusim", "password5");
 
             BranchManager[] branchManagers = new BranchManager[5];
             branchManagers[0] = new BranchManager("Alice", "Johnson", "alicejohnson", "password1", branches[0]);
@@ -400,6 +407,9 @@ public class CheckInstances {
             branchManagers[2] = new BranchManager("Charlie", "Jones", "charliejones", "password3", branches[2]);
             branchManagers[3] = new BranchManager("Diana", "Garcia", "dianagarcia", "password4", branches[3]);
             branchManagers[4] = new BranchManager("Evan", "Martinez", "evanmartinez", "password5", branches[4]);
+
+            ContentManager[] contentManagers = new ContentManager[1];
+            contentManagers[0] = new ContentManager("Ron", "Weasley", "ronweasly", "itsmagicinnit");
 
             for(int i=0;i<customers.length;i++) {
                 customers[i].addComplaintToList(complaints[i]);
@@ -414,6 +424,7 @@ public class CheckInstances {
             generateServiceEmployees(serviceEmployees);
             generateCompanyManagers(companyManagers);
             generateBranchManagers(branchManagers);
+            generateContentManagers(contentManagers);
             generateCustomers(customers);
             generateTickets(tickets);
             generateLinks(links);

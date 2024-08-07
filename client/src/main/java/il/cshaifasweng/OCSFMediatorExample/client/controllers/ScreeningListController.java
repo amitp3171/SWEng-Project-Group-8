@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewScreeningTimeListEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
@@ -17,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -27,7 +29,16 @@ public class ScreeningListController {
     private Label movieLabel;
 
     @FXML
-    private Label movieInfoLabel;
+    private Label movieSummaryLabel;
+
+    @FXML
+    private Label primaryActorsLabel;
+
+    @FXML
+    private Label producerNameLabel;
+
+    @FXML
+    private ImageView movieImageView;
 
     @FXML
     private ComboBox<String> selectDayListBox;
@@ -44,34 +55,9 @@ public class ScreeningListController {
     private ArrayList<String> availableDates = new ArrayList<>();
     private String selectedDate;
 
-    private String firstName;
-    private String lastName;
-    private String govId = null;
-
-    private boolean isGuest = false;
-
-    private String employeeUserName;
-    private String employeeType = null;
+    UserDataManager userDataManager;
 
     private boolean forceRefresh;
-
-    void setCustomerData() {
-        this.isGuest = true;
-    }
-
-    void setCustomerData(String firstName, String lastName, String govId) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.govId = govId;
-    }
-
-    void setEmployeeData(String firstName, String lastName, String userName, String employeeType) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.employeeUserName = userName;
-        this.employeeType = employeeType;
-        this.isGuest = false;
-    }
 
     public void setSelectedBranch(String branch) {
         selectedBranch = branch;
@@ -107,13 +93,19 @@ public class ScreeningListController {
         this.selectedMovie = selectedMovie;
 
         // id, movieName, super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture()
-        String[] parsedMovie = selectedMovie.split(",");
+//        int startIdx = selectedMovie.indexOf('[') + 1;
+//        int endIdx = selectedMovie.indexOf(']');
+//
+//        String mainActors = selectedMovie.substring(startIdx, endIdx);
+//
+//        String restOfMovieData = String.join("", selectedMovie.substring(0, startIdx - 2), selectedMovie.substring(endIdx + 1));
+
+        String[] parsedMovie = selectedMovie.split(",(?![^\\[]*\\])");
 
         movieLabel.setText(parsedMovie[1]);
-        movieInfoLabel.setText("תקציר: " + parsedMovie[2] + '\n'
-                + "שחקנים ראשיים: " + parsedMovie[3] + '\n'
-                + "מפיק: " + parsedMovie[4] + '\n'
-                + parsedMovie[5]);
+        movieSummaryLabel.setText(String.format("תקציר: %s", parsedMovie[2]));
+        primaryActorsLabel.setText(String.format("שחקנים ראשיים: %s", parsedMovie[3].substring(1, parsedMovie[3].length() - 1)));
+        producerNameLabel.setText(String.format("מפיק: %s",parsedMovie[4]));
 
         requestServerData();
     }
@@ -168,17 +160,19 @@ public class ScreeningListController {
         EventBus.getDefault().unregister(this);
         // get controller
         InTheaterMovieListController controller = CinemaClient.setContent("inTheaterMovieList").getController();
-        if (this.isGuest)
-            controller.setCustomerData();
-        if (this.employeeType == null)
-            controller.setCustomerData(this.firstName, this.lastName, this.govId);
-        else
-            controller.setEmployeeData(this.firstName, this.lastName, this.employeeUserName, this.employeeType);
         controller.setSelectedBranch(selectedBranch);
     }
 
     @FXML
     void onItemSelected(MouseEvent event) throws IOException {
+        if (!userDataManager.isEmployee()) onItemSelectedCustomer();
+        // TODO: make sure this works!
+        else /*(this.employeeType.equals("ContentManager"))*/ onItemSelectedContentManager();
+    }
+
+    void onItemSelectedCustomer() {}
+
+    void onItemSelectedContentManager() throws IOException {
         // get screening time
         String selectedScreeningTime = screeningListView.getSelectionModel().getSelectedItem();
 
@@ -253,6 +247,7 @@ public class ScreeningListController {
 
     @FXML
     void initialize() {
+        userDataManager = CinemaClient.getUserDataManager();
         forceRefresh = false;
         // register to EventBus
         EventBus.getDefault().register(this);

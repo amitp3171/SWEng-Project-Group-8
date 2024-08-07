@@ -1,11 +1,20 @@
 package il.cshaifasweng.OCSFMediatorExample.server.dataClasses;
 
 import java.time.LocalTime;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "contentmanagers")
 public class ContentManager extends AbstractEmployee {
 
     public ContentManager(String firstName, String lastName, String username, String password) {
         super(firstName, lastName, username, password);
+    }
+
+    public ContentManager() {
+        super();
     }
 
     public void removeFromMovieList(Branch branch, InTheaterMovie movie){

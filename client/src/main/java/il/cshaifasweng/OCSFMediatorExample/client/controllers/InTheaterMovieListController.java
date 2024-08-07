@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.*;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewInTheaterMovieListEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
@@ -23,14 +24,10 @@ public class InTheaterMovieListController {
     @FXML
     private Label branchNameLabel;
 
-    private String firstName;
-    private String lastName;
-    private String govId = null;
+    @FXML
+    private MenuItem addScreeningMenuitem;
 
-    private boolean isGuest = false;
-
-    private String employeeUserName = null;
-    private String employeeType = null;
+    UserDataManager userDataManager;
 
     private ArrayList<String> allInTheaterMovies;
 
@@ -39,24 +36,6 @@ public class InTheaterMovieListController {
     private String selectedBranch;
 
     private boolean forceRefresh;
-
-    void setCustomerData() {
-        this.isGuest = true;
-    }
-
-    void setCustomerData(String firstName, String lastName, String govId) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.govId = govId;
-    }
-
-    void setEmployeeData(String firstName, String lastName, String userName, String employeeType) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.employeeUserName = userName;
-        this.employeeType = employeeType;
-        this.isGuest = false;
-    }
 
     public void setSelectedBranch(String branchLocation) throws IOException {
         selectedBranch = branchLocation;
@@ -78,12 +57,6 @@ public class InTheaterMovieListController {
 
         // set selected movie
         ScreeningListController screeningController = screeningLoader.getController();
-        if (this.isGuest)
-            screeningController.setCustomerData();
-        else if (this.employeeType == null)
-            screeningController.setCustomerData(this.firstName, this.lastName, this.govId);
-        else
-            screeningController.setEmployeeData(this.firstName, this.lastName, this.employeeUserName, this.employeeType);
         screeningController.setSelectedBranch(selectedBranch);
         screeningController.setSelectedMovie(selectedMovie, forceRefresh);
 
@@ -92,13 +65,7 @@ public class InTheaterMovieListController {
 
     @FXML
     void onGoBack(ActionEvent event) throws IOException {
-        MovieTypeSelectionController movieTypeSelectionController = CinemaClient.setContent("movieTypeSelection").getController();
-        if (isGuest)
-            movieTypeSelectionController.setCustomerData();
-        else if (this.employeeType == null)
-            movieTypeSelectionController.setCustomerData(this.firstName, this.lastName, this.govId);
-        else
-            movieTypeSelectionController.setEmployeeData(this.firstName, this.lastName, this.employeeUserName, this.employeeType);
+        CinemaClient.setContent("movieTypeSelection");
         EventBus.getDefault().unregister(this);
     }
 
@@ -163,7 +130,7 @@ public class InTheaterMovieListController {
                 allInTheaterMovies = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
 
                 for (String movie : allInTheaterMovies) {
-                    boolean isInBranch = Boolean.parseBoolean(movie.split(",")[7]);
+                    boolean isInBranch = Boolean.parseBoolean(movie.split(",(?![^\\[]*\\])")[6]);
                     if (isInBranch)
                         inTheaterMovies.add(movie);
                 }
@@ -188,6 +155,12 @@ public class InTheaterMovieListController {
     @FXML
     void initialize() throws IOException {
         forceRefresh = false;
+
+        userDataManager = CinemaClient.getUserDataManager();
+
+        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager"))
+            addScreeningMenuitem.setVisible(true);
+
         // register to EventBus
         EventBus.getDefault().register(this);
     }

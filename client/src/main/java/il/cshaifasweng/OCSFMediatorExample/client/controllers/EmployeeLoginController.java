@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewVerifiedCustomerIdEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewVerifiedEmployeeCredentialsEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
@@ -93,8 +94,8 @@ public class EmployeeLoginController {
                 employeeRole = splitData[2];
                 try {
                     // set content
-                    MovieTypeSelectionController movieTypeSelectionController = CinemaClient.setContent("movieTypeSelection").getController();
-                    movieTypeSelectionController.setEmployeeData(employeeFirstName, employeeLastName, employeeUserName, employeeRole);
+                    CinemaClient.setUserDataManager(employeeFirstName, employeeLastName, employeeUserName, employeeRole);
+                    CinemaClient.setContent("movieTypeSelection");
                     // close dialog
                     EventBus.getDefault().unregister(this);
                     dialog.setResult(ButtonType.OK);

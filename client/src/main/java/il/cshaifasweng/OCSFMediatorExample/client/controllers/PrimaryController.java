@@ -71,8 +71,7 @@ public class PrimaryController {
 
 	@FXML
 	void showMovieListGuest(ActionEvent event) throws IOException {
-		MovieTypeSelectionController movieTypeSelectionController = CinemaClient.setContent("movieTypeSelection").getController();
-		movieTypeSelectionController.setCustomerData();
+		CinemaClient.setContent("movieTypeSelection");
 	}
 
 	@FXML

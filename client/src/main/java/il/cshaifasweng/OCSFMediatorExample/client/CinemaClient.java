@@ -28,6 +28,8 @@ public class CinemaClient extends Application {
     private static SimpleClient client;
     private static ObjectMapper mapper = new ObjectMapper();
 
+    private static UserDataManager userDataManager;
+
     private static int nextMessageId;
 
     @Override
@@ -35,10 +37,11 @@ public class CinemaClient extends Application {
     	EventBus.getDefault().register(this);
         mapper.registerModule(new JavaTimeModule());
     	client = SimpleClient.getClient();
+        userDataManager = UserDataManager.getInstance();
         appStage = stage;
     	client.openConnection();
         client.sendToServer(new Message(0, "add client"));
-        scene = new Scene(loadFXML("primary"), 640, 480);
+        scene = new Scene(loadFXML("primary"), 640, 640);
         stage.setScene(scene);
         stage.show();
     }
@@ -54,6 +57,23 @@ public class CinemaClient extends Application {
 
     public static ObjectMapper getMapper() {
         return mapper;
+    }
+
+    public static UserDataManager getUserDataManager() {
+        return userDataManager;
+    }
+
+    public static void setUserDataManager(String customerFirstName, String customerLastName, String customerGovId) {
+        userDataManager.setFirstName(customerFirstName);
+        userDataManager.setLastName(customerLastName);
+        userDataManager.setGovId(customerGovId);
+    }
+
+    public static void setUserDataManager(String employeeFirstName, String employeeLastName, String employeeUserName, String employeeRole) {
+        userDataManager.setFirstName(employeeFirstName);
+        userDataManager.setLastName(employeeLastName);
+        userDataManager.setEmployeeUserName(employeeUserName);
+        userDataManager.setEmployeeType(employeeRole);
     }
 
     // set scene root

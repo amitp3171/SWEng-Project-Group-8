@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 import java.io.IOException;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,35 +16,7 @@ public class MovieTypeSelectionController {
     @FXML
     private Label welcomeUserLabel;
 
-    private String firstName;
-    private String lastName;
-    private String govId = null;
-
-    private boolean isGuest = false;
-
-    private String employeeUserName = null;
-    private String employeeType = null;
-
-    void setCustomerData() {
-        this.isGuest = true;
-        welcomeUserLabel.setText("ברוח הבא, אורח!");
-    }
-
-    void setCustomerData(String firstName, String lastName, String govId) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.govId = govId;
-        welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", firstName, lastName));
-    }
-
-    void setEmployeeData(String firstName, String lastName, String userName, String employeeType) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.employeeUserName = userName;
-        this.employeeType = employeeType;
-        this.isGuest = false;
-        welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", firstName, lastName));
-    }
+    UserDataManager userDataManager;
 
     @FXML
     void onCloseProgram(ActionEvent event) {
@@ -56,8 +29,8 @@ public class MovieTypeSelectionController {
     }
 
     @FXML
-    void showComingSoonMovieList(ActionEvent event) {
-
+    void showComingSoonMovieList(ActionEvent event) throws IOException {
+        CinemaClient.setContent("comingSoonMovieList");
     }
 
     @FXML
@@ -73,12 +46,6 @@ public class MovieTypeSelectionController {
 
         // get controller
         BranchSelectorController branchSelectorController = dialogLoader.getController();
-        if (this.isGuest)
-            branchSelectorController.setCustomerData();
-        else if (this.employeeType == null)
-            branchSelectorController.setCustomerData(this.firstName, this.lastName, this.govId);
-        else
-            branchSelectorController.setEmployeeData(this.firstName, this.lastName, this.employeeUserName, this.employeeType);
         // create new dialog
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.getDialogPane().setContent(branchSelectorDialogPane);
@@ -97,6 +64,12 @@ public class MovieTypeSelectionController {
     }
 
     @FXML
-    void initialize() {}
+    void initialize() {
+        userDataManager = CinemaClient.getUserDataManager();
+        if (userDataManager.isGuest())
+            welcomeUserLabel.setText("ברוך הבא אורח!");
+        else
+            welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", userDataManager.getFirstName(), userDataManager.getLastName()));
+    }
 
 }

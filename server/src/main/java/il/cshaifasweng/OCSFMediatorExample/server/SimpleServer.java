@@ -125,6 +125,20 @@ public class SimpleServer extends AbstractServer {
 		sendMessage(message, "updated Theater ID list successfully", items, client);
 	}
 
+	private void handleComingSoonMovieListRequest(Message message, ConnectionToClient client) throws IOException {
+		// parse forceRefresh from the message data
+		boolean forceRefresh = Boolean.parseBoolean(message.getData());
+
+		// get data
+		List<ComingSoonMovie> receivedData = db.getAll(ComingSoonMovie.class, forceRefresh);
+		ArrayList<String> movieToString = new ArrayList<>();
+
+		for (ComingSoonMovie movie : receivedData)
+			movieToString.add(movie.toString());
+
+		sendMessage(message, "updated ComingSoonMovie list successfully", movieToString, client);
+	}
+
 	private void handleSetScreeningTimeRequest(Message message, ConnectionToClient client) throws IOException {
 		// id, day, time, theater.getTheaterID()
 		String[] splitMessage = message.getData().split(",");
@@ -235,6 +249,10 @@ public class SimpleServer extends AbstractServer {
 
 			else if (request.startsWith("get InTheaterMovie list")){
 				handleInTheaterMovieListRequest(message, client);
+			}
+
+			else if (request.startsWith("get ComingSoonMovie list")){
+				handleComingSoonMovieListRequest(message, client);
 			}
 
 			else if (request.startsWith("get ScreeningTime list")){

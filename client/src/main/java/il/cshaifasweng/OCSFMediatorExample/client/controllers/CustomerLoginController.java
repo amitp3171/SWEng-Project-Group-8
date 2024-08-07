@@ -7,6 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewBranchListEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewVerifiedCustomerIdEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
@@ -101,8 +102,8 @@ public class CustomerLoginController {
                 customerLastName = splitData[1];
                 try {
                     // set content
-                    MovieTypeSelectionController movieTypeSelectionController = CinemaClient.setContent("movieTypeSelection").getController();
-                    movieTypeSelectionController.setCustomerData(customerFirstName, customerLastName, customerGovId);
+                    CinemaClient.setUserDataManager(customerFirstName, customerLastName, customerGovId);
+                    CinemaClient.setContent("movieTypeSelection");
                     // close dialog
                     EventBus.getDefault().unregister(this);
                     dialog.setResult(ButtonType.OK);

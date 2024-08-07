@@ -46,6 +46,7 @@ public class DatabaseBridge {
         configuration.addAnnotatedClass(ServiceEmployee.class);
         configuration.addAnnotatedClass(CompanyManager.class);
         configuration.addAnnotatedClass(BranchManager.class);
+        configuration.addAnnotatedClass(ContentManager.class);
         configuration.addAnnotatedClass(AbstractProduct.class);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
@@ -131,7 +132,7 @@ public class DatabaseBridge {
         }
     }
 
-    public static DatabaseBridge getInstance() {
+    public static synchronized DatabaseBridge getInstance() {
         // if first access to class
         if (instance == null) {
             // create instance
