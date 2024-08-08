@@ -27,8 +27,8 @@ public class CinemaClient extends Application {
     private static Scene scene;
     private static SimpleClient client;
     private static ObjectMapper mapper = new ObjectMapper();
-
     private static UserDataManager userDataManager;
+    private static DialogCreationManager dialogCreationManager;
 
     private static int nextMessageId;
 
@@ -38,6 +38,7 @@ public class CinemaClient extends Application {
         mapper.registerModule(new JavaTimeModule());
     	client = SimpleClient.getClient();
         userDataManager = UserDataManager.getInstance();
+        dialogCreationManager = DialogCreationManager.getInstance();
         appStage = stage;
     	client.openConnection();
         client.sendToServer(new Message(0, "add client"));
@@ -74,6 +75,10 @@ public class CinemaClient extends Application {
         userDataManager.setLastName(employeeLastName);
         userDataManager.setEmployeeUserName(employeeUserName);
         userDataManager.setEmployeeType(employeeRole);
+    }
+
+    public static DialogCreationManager getDialogCreationManager() {
+        return dialogCreationManager;
     }
 
     // set scene root
@@ -126,18 +131,7 @@ public class CinemaClient extends Application {
 
     @Subscribe
     public void onMessageEvent(MessageEvent message) {
-//        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
-//        Platform.runLater(() -> {
-//            Alert alert = new Alert(AlertType.INFORMATION,
-//                    String.format("Message:\nId: %d\nData: %s\nTimestamp: %s\n",
-//                            message.getMessage().getId(),
-//                            message.getMessage().getMessage(),
-//                            message.getMessage().getTimeStamp().format(dtf))
-//            );
-//            alert.setTitle("new message");
-//            alert.setHeaderText("New Message:");
-//            alert.show();
-//        });
+
     }
 
 	public static void main(String[] args) {

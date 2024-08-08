@@ -33,7 +33,13 @@ public class Seat {
     public Theater getTheater() {
         return theater;
     }
+
     public void setTheater(Theater theater) {
         this.theater = theater;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s,%s", this.id, this.isTaken);
     }
 }

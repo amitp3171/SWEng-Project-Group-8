@@ -12,12 +12,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.lang.*;
-import java.util.Map;
 
 public class SimpleServer extends AbstractServer {
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
@@ -90,10 +87,10 @@ public class SimpleServer extends AbstractServer {
 
 	private void handleScreeningTimeListRequest(Message message, ConnectionToClient client) throws IOException {
 		// parse message (message_text,branch_location,movie_id)
-		String[] splitMessage = message.getMessage().split(",");
-		String branchLocation = splitMessage[1];
-		int movieId = Integer.parseInt(splitMessage[2]);
-		boolean forceRefresh = Boolean.parseBoolean(splitMessage[3]);
+		String[] splitMessage = message.getData().split(",");
+		String branchLocation = splitMessage[0];
+		int movieId = Integer.parseInt(splitMessage[1]);
+		boolean forceRefresh = Boolean.parseBoolean(splitMessage[2]);
 
 		// get data
 		List<ScreeningTime> receivedData = db.getAll(ScreeningTime.class, forceRefresh);
@@ -106,6 +103,42 @@ public class SimpleServer extends AbstractServer {
 		}
 
 		sendMessage(message, "updated ScreeningTime list successfully", screeningTimeToString, client);
+	}
+
+	private void handleSeatListRequest(Message message, ConnectionToClient client) throws IOException {
+		String theaterId = message.getData();
+		// get data
+		List<Seat> receivedSeats = db.executeNativeQuery(
+				"SELECT * FROM seats WHERE theater_theaterID = ?",
+				Seat.class,
+				theaterId
+		);
+
+		List<String> items = new ArrayList<>();
+
+		for (Seat seat : receivedSeats)
+			items.add(seat.toString());
+
+		// send message
+		sendMessage(message, "updated Seat list successfully", items, client);
+	}
+
+	private void handleTheaterListRequest(Message message, ConnectionToClient client) throws IOException {
+		String branchLocation = message.getData();
+		// get data
+		List<Theater> receivedTheaters = db.executeNativeQuery(
+				"SELECT theaterID, theaterNumber FROM theaters JOIN branches_theaters ON theaters.theaterID = branches_theaters.theaterList_theaterID WHERE branches_theaters.branch_location = ?",
+				Theater.class,
+				branchLocation
+		);
+
+		List<String> items = new ArrayList<>();
+
+		for (Theater theater : receivedTheaters)
+			items.add(theater.toString());
+
+		// send message
+		sendMessage(message, "updated Theater list successfully", items, client);
 	}
 
 	private void handleTheaterIdListRequest(Message message, ConnectionToClient client) throws IOException {
@@ -194,24 +227,6 @@ public class SimpleServer extends AbstractServer {
 		sendMessage(message, "created new ScreeningTime successfully", data, client);
 	}
 
-	private void handleTheaterListRequest(Message message, ConnectionToClient client) throws IOException {
-		String branchLocation = message.getData();
-		// get data
-		List<Theater> receivedTheaters = db.executeNativeQuery(
-				"SELECT theaterID, theaterNumber FROM theaters JOIN branches_theaters ON theaters.theaterID = branches_theaters.theaterList_theaterID WHERE branches_theaters.branch_location = ?",
-				Theater.class,
-				branchLocation
-		);
-
-		List<String> items = new ArrayList<>();
-
-		for (Theater theater : receivedTheaters)
-			items.add(String.format("%s,%s", theater.getTheaterID(), theater.getTheaterNumber()));
-
-		// send message
-		sendMessage(message, "updated Theater list successfully", items, client);
-	}
-
 	private void handleVerifyCustomerIdRequest(Message message, ConnectionToClient client) throws IOException {
 		List<Customer> result = db.executeNativeQuery("SELECT * FROM customers WHERE govId=?", Customer.class, message.getData());
 		String data = "user invalid";
@@ -241,6 +256,26 @@ public class SimpleServer extends AbstractServer {
 		sendMessage(message, "verified Employee credentials successfully", data, client);
 	}
 
+	private void handleCreateCustomerCredentials(Message message, ConnectionToClient client) throws IOException {
+		// id, firstname, lastname
+		String[] providedCredentials = message.getData().split(",");
+
+		List<Customer> result = db.executeNativeQuery("SELECT * FROM customers WHERE govId=?", Customer.class, providedCredentials[0]);
+		String data = "user created";
+
+		// user exists
+		if (!result.isEmpty()) {
+			Customer customer = result.get(0);
+			data = String.format("%s,%s", customer.getFirstName(), customer.getLastName());
+		}
+		else {
+			Customer newCustomer = new Customer(providedCredentials[1], providedCredentials[2], providedCredentials[0]);
+			db.addInstance(newCustomer);
+		}
+
+		sendMessage(message, "created Customer credentials successfully", data, client);
+	}
+
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
@@ -261,27 +296,31 @@ public class SimpleServer extends AbstractServer {
 				handleBranchListRequest(message, client);
 			}
 
-			else if (request.startsWith("get InTheaterMovie list")){
+			else if (request.equals("get InTheaterMovie list")){
 				handleInTheaterMovieListRequest(message, client);
 			}
 
-			else if (request.startsWith("get ComingSoonMovie list")){
+			else if (request.equals("get ComingSoonMovie list")){
 				handleComingSoonMovieListRequest(message, client);
 			}
 
-			else if(request.startsWith("get HomeMovie list")) {
+			else if(request.equals("get HomeMovie list")) {
 				handleHomeMovieListRequest(message, client);
 			}
 
-			else if (request.startsWith("get ScreeningTime list")){
+			else if (request.equals("get ScreeningTime list")){
 				handleScreeningTimeListRequest(message, client);
 			}
 
-			else if (request.startsWith("get Theater ID list")) {
+			else if (request.equals("get Seat list")) {
+				handleSeatListRequest(message, client);
+			}
+
+			else if (request.equals("get Theater ID list")) {
 				handleTheaterIdListRequest(message, client);
 			}
 
-			else if (request.startsWith("get Theater list")){
+			else if (request.equals("get Theater list")){
 				handleTheaterListRequest(message, client);
 			}
 
@@ -299,6 +338,10 @@ public class SimpleServer extends AbstractServer {
 
 			else if (request.equals("verify Employee credentials")) {
 				handleVerifyEmployeeCredentialsRequest(message, client);
+			}
+
+			else if (request.equals("create Customer credentials")) {
+				handleCreateCustomerCredentials(message, client);
 			}
 
 			else {

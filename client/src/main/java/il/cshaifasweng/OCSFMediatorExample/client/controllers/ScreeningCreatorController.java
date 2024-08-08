@@ -18,7 +18,7 @@ import javafx.scene.control.*;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-public class ScreeningCreatorController {
+public class ScreeningCreatorController implements DialogInterface {
 
     @FXML
     private ChoiceBox<String> inTheaterMovieChoiceBox;
@@ -41,9 +41,9 @@ public class ScreeningCreatorController {
     private String branchLocation;
     private ArrayList<String> theaters;
 
-    public void setData(ArrayList<String> availableMovies, String branchLocation) throws IOException {
-        this.availableMovies = availableMovies;
-        this.branchLocation = branchLocation;
+    public void setData(Object... items) /*ArrayList<String> availableMovies, String branchLocation*/ {
+        this.availableMovies = (ArrayList<String>) items[0];
+        this.branchLocation = (String) items[1];
 
         String[] movieNames = new String[availableMovies.size()];
 
@@ -56,7 +56,11 @@ public class ScreeningCreatorController {
         int messageId = CinemaClient.getNextMessageId();
         Message newMessage = new Message(messageId, "get Theater ID list");
         newMessage.setData(branchLocation);
-        CinemaClient.getClient().sendToServer(newMessage);
+        try {
+            CinemaClient.getClient().sendToServer(newMessage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println("Theater ID request sent");
     }
 

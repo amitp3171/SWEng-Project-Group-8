@@ -16,7 +16,7 @@ import javafx.scene.control.*;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-public class EmployeeLoginController {
+public class EmployeeLoginController implements DialogInterface {
 
     @FXML
     private Button cancelButton;
@@ -43,6 +43,8 @@ public class EmployeeLoginController {
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
     }
+
+    public void setData(Object... items) {}
 
     @FXML
     void cancelLogin(ActionEvent event) {

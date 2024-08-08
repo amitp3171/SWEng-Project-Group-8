@@ -46,6 +46,10 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new NewTheaterIdListEvent(message));
 		}
 
+		else if(message.getMessage().equals("updated Seat list successfully")){
+			EventBus.getDefault().post(new NewSeatListEvent(message));
+		}
+
 		else if(message.getMessage().equals("created new ScreeningTime successfully")){
 			EventBus.getDefault().post(new NewCreatedScreeningTimeEvent(message));
 		}
@@ -56,6 +60,10 @@ public class SimpleClient extends AbstractClient {
 
 		else if(message.getMessage().equals("verified Employee credentials successfully")){
 			EventBus.getDefault().post(new NewVerifiedEmployeeCredentialsEvent(message));
+		}
+
+		else if(message.getMessage().equals("created Customer credentials successfully")){
+			EventBus.getDefault().post(new NewCreateCustomerCredentialsEvent(message));
 		}
 
 		else if(message.getMessage().equals("client added successfully")){

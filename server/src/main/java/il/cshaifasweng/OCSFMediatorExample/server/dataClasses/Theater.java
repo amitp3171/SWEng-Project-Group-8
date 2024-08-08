@@ -9,7 +9,7 @@ import java.util.List;
 public class Theater
 {
     // max seat capacity
-    static int MAX_CAPACITY = 40;
+    static int MAX_CAPACITY = 36;
 
     // primary key
     @Id

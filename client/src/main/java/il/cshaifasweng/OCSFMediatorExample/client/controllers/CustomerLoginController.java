@@ -18,7 +18,7 @@ import javafx.scene.control.*;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-public class CustomerLoginController {
+public class CustomerLoginController implements DialogInterface {
 
     @FXML
     private TextField customerIdNumField;
@@ -41,6 +41,8 @@ public class CustomerLoginController {
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
     }
+
+    public void setData(Object... items) {}
 
     @FXML
     void cancelLogin(ActionEvent event) {
