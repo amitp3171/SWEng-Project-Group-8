@@ -60,21 +60,22 @@ public class ScreeningListController {
     private boolean forceRefresh;
 
     public void setSelectedBranch(String branch) {
-        selectedBranch = branch;
+        this.selectedBranch = branch;
     }
 
     private String concatTimeTheater(String screeningTime) {
         // id, date, time, theater.getTheaterID()
         String[] parsedScreeningTime = screeningTime.split(",");
         // concat screening time with screening theater
-        return String.format("%s, אולם %s", parsedScreeningTime[2], parsedScreeningTime[3]);
+        return String.format("%s, אולם %s", parsedScreeningTime[2], (1 + (Integer.parseInt(parsedScreeningTime[3])-1) % 10));
     }
 
     private void requestServerData() throws IOException {
         // send request to server
         int messageId = CinemaClient.getNextMessageId();
         // message_text,branch_location,movie_id
-        Message newMessage = new Message(messageId, String.format("get ScreeningTime list,%s,%s,%s", selectedBranch, selectedMovie.split(",")[0], forceRefresh));
+        Message newMessage = new Message(messageId, "get ScreeningTime list");
+        newMessage.setData(String.join(",", selectedBranch, selectedMovie.split(",")[0], String.valueOf(forceRefresh)));
         CinemaClient.getClient().sendToServer(newMessage);
         System.out.println("ScreeningTime request sent");
     }
@@ -97,10 +98,20 @@ public class ScreeningListController {
         // id, movieName, super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture()
         String[] parsedMovie = selectedMovie.split(",(?![^\\[]*\\])");
 
-        movieLabel.setText(parsedMovie[1]);
-        movieSummaryLabel.setText(String.format("תקציר: %s", parsedMovie[2]));
-        primaryActorsLabel.setText(String.format("שחקנים ראשיים: %s", parsedMovie[3].substring(1, parsedMovie[3].length() - 1)));
-        producerNameLabel.setText(String.format("מפיק: %s",parsedMovie[4]));
+        String title = parsedMovie[1];
+        String description = parsedMovie[2].substring(1, parsedMovie[2].length() - 1);
+        String mainActors = parsedMovie[3].substring(1, parsedMovie[3].length() - 1);
+        String producerName = parsedMovie[4];
+
+        movieLabel.setText(title);
+        movieSummaryLabel.setText(String.format("תקציר: %s", description));
+        primaryActorsLabel.setText(String.format("שחקנים ראשיים: %s", mainActors));
+        producerNameLabel.setText(String.format("מפיק: %s", producerName));
+
+        movieLabel.setTooltip(new Tooltip(title));
+        movieSummaryLabel.setTooltip(new Tooltip(description));
+        primaryActorsLabel.setTooltip(new Tooltip(mainActors));
+        producerNameLabel.setTooltip(new Tooltip(producerName));
 
         requestServerData();
     }
@@ -160,50 +171,63 @@ public class ScreeningListController {
 
     @FXML
     void onItemSelected(MouseEvent event) throws IOException {
-        if (!userDataManager.isEmployee()) onItemSelectedCustomer();
-        // TODO: make sure this works!
-        else /*(this.employeeType.equals("ContentManager"))*/ onItemSelectedContentManager();
-    }
-
-    void onItemSelectedCustomer() {}
-
-    void onItemSelectedContentManager() throws IOException {
         // get screening time
-        String selectedScreeningTime = screeningListView.getSelectionModel().getSelectedItem();
+        String selectedItem = screeningListView.getSelectionModel().getSelectedItem();
 
-        if (selectedScreeningTime == null) return;
+        if (selectedItem == null) return;
 
         // get screeningTime object
         int selectedIndex = screeningListView.getSelectionModel().getSelectedIndex();
         String screeningTime = screeningTimes.get(selectedIndex);
 
-        // load dialog fxml
-        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("screeningEditor");
-        DialogPane screeningDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
+        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager"))
+            onItemSelectedContentManager(selectedItem, selectedIndex, screeningTime);
+        // TODO: might need to add a dialog for price changes
+        else
+            onItemSelectedCustomer(selectedItem, selectedIndex, screeningTime);
+    }
 
-        // get controller
-        ScreeningEditorController screeningEditorController = dialogLoader.getController();
-        // set current screening hour
-        screeningEditorController.setScreeningHour(selectedScreeningTime);
+    void onItemSelectedCustomer(String selectedItem, int selectedIndex, String screeningTime) throws IOException {
+        // TODO: redirect to purchase screen
+        InTheaterMoviePurchaseScreenController inTheaterMoviePurchaseScreenController = CinemaClient.setContent("inTheaterMoviePurchaseScreen").getController();
+        inTheaterMoviePurchaseScreenController.setSelectedMovie(this.selectedMovie);
+        inTheaterMoviePurchaseScreenController.setSelectedBranch(this.selectedBranch);
+        inTheaterMoviePurchaseScreenController.setSelectedScreening(screeningTime);
+
+        EventBus.getDefault().unregister(this);
+    }
+
+    void onItemSelectedContentManager(String selectedItem, int selectedIndex, String screeningTime) throws IOException {
+//        // load dialog fxml
+//        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("screeningEditor");
+//        DialogPane screeningDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
+//
+//        // get controller
+//        ScreeningEditorController screeningEditorController = dialogLoader.getController();
+//        // set current screening hour
+//        screeningEditorController.setScreeningHour(selectedItem);
+//        StringBuilder mutableScreeningTime = new StringBuilder(screeningTime);
+//        screeningEditorController.setSelectedScreeningTime(mutableScreeningTime);
+//
+//        // create new dialog
+//        Dialog<ButtonType> dialog = new Dialog<>();
+//        dialog.getDialogPane().setContent(screeningDialogPane);
+//        screeningEditorController.setDialog(dialog);
+//
+//        // create hidden close button to support the close button (X)
+//        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+//        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
+//        closeButton.setVisible(false);
+//
+//        // show dialog
+//        dialog.showAndWait();
+
         StringBuilder mutableScreeningTime = new StringBuilder(screeningTime);
-        screeningEditorController.setSelectedScreeningTime(mutableScreeningTime);
 
-        // create new dialog
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.getDialogPane().setContent(screeningDialogPane);
-        screeningEditorController.setDialog(dialog);
-
-        // create hidden close button to support the close button (X)
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
-        closeButton.setVisible(false);
-
-        // show dialog
-        dialog.showAndWait();
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("screeningEditor", selectedItem, mutableScreeningTime);
 
         // if change was performed
-        if (dialog.getResult() == ButtonType.OK) {
-            // get new time
+        if (result == ButtonType.OK) {
             String newTime = mutableScreeningTime.toString();
             // update ScreeningTime
             String[] parsedSelectedScreeningTime =  screeningTimes.get(selectedIndex).split(",");
@@ -216,10 +240,6 @@ public class ScreeningListController {
             requestUpdateScreeningHour(reconstructedScreeningTime);
         };
 
-        // unregister dialog in case X button was pressed
-        if (EventBus.getDefault().isRegistered(screeningEditorController)) EventBus.getDefault().unregister(screeningEditorController);
-
-        // clear selection
         screeningListView.getSelectionModel().clearSelection();
     }
 

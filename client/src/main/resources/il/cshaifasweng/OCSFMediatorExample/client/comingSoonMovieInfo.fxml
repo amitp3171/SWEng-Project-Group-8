@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<DialogPane prefHeight="122.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ComingSoonMovieInfoController">
+<DialogPane maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="122.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ComingSoonMovieInfoController">
    <content>
       <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0">
          <children>
@@ -18,22 +18,22 @@
                <children>
                   <VBox nodeOrientation="RIGHT_TO_LEFT" prefHeight="130.0" prefWidth="462.0">
                      <children>
-                        <Label fx:id="movieLabel" alignment="TOP_LEFT" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" prefHeight="54.0" prefWidth="462.0" text="שם סרט">
+                        <Label fx:id="movieLabel" alignment="TOP_LEFT" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" prefHeight="54.0" prefWidth="462.0" text="שם סרט" wrapText="true">
                            <font>
                               <Font size="22.0" />
                            </font>
                         </Label>
-                        <Label fx:id="movieSummaryLabel" alignment="TOP_LEFT" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="400.0" text="תקציר הסרט" textAlignment="CENTER">
+                        <Label fx:id="movieSummaryLabel" alignment="TOP_LEFT" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="400.0" text="תקציר הסרט" textAlignment="CENTER" wrapText="true">
                            <font>
                               <Font size="17.0" />
                            </font>
                         </Label>
-                        <Label fx:id="primaryActorsLabel" maxWidth="1.7976931348623157E308" text="שחקנים ראשיים">
+                        <Label fx:id="primaryActorsLabel" maxWidth="1.7976931348623157E308" text="שחקנים ראשיים" wrapText="true">
                            <font>
                               <Font size="17.0" />
                            </font>
                         </Label>
-                        <Label fx:id="producerNameLabel" maxWidth="1.7976931348623157E308" text="מפיק">
+                        <Label fx:id="producerNameLabel" maxWidth="1.7976931348623157E308" text="מפיק" wrapText="true">
                            <font>
                               <Font size="17.0" />
                            </font>

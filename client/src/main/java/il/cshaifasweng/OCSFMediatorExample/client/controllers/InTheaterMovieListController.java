@@ -52,11 +52,8 @@ public class InTheaterMovieListController {
         int selectedIndex = movieListView.getSelectionModel().getSelectedIndex();
         String selectedMovie = inTheaterMovies.get(selectedIndex);
 
-        // load screening list selector
-        FXMLLoader screeningLoader = CinemaClient.setContent("screeningList");
-
         // set selected movie
-        ScreeningListController screeningController = screeningLoader.getController();
+        ScreeningListController screeningController = CinemaClient.setContent("screeningList").getController();
         screeningController.setSelectedBranch(selectedBranch);
         screeningController.setSelectedMovie(selectedMovie, forceRefresh);
 
@@ -76,29 +73,7 @@ public class InTheaterMovieListController {
 
     @FXML
     void onAddScreening(ActionEvent event) throws IOException {
-        // load dialog fxml
-        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("screeningCreator");
-        DialogPane screeningCreatorDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
-
-        // get controller
-        ScreeningCreatorController screeningCreatorController = dialogLoader.getController();
-        screeningCreatorController.setData(this.allInTheaterMovies, this.selectedBranch);
-
-        // create new dialog
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.getDialogPane().setContent(screeningCreatorDialogPane);
-        screeningCreatorController.setDialog(dialog);
-
-        // create hidden close button to support the close button (X)
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
-        closeButton.setVisible(false);
-
-        // show dialog
-        dialog.showAndWait();
-
-        // unregister dialog in case X button was pressed
-        if (EventBus.getDefault().isRegistered(screeningCreatorController)) EventBus.getDefault().unregister(screeningCreatorController);
+        CinemaClient.getDialogCreationManager().loadDialog("screeningCreator", this.allInTheaterMovies, this.selectedBranch);
     }
 
     private void requestInTheaterMovieList(boolean forceRefresh) throws IOException {

@@ -40,27 +40,7 @@ public class MovieTypeSelectionController {
 
     @FXML
     void showInTheaterMovieList(ActionEvent event) throws IOException {
-        // load dialog fxml
-        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("branchSelector");
-        DialogPane branchSelectorDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
-
-        // get controller
-        BranchSelectorController branchSelectorController = dialogLoader.getController();
-        // create new dialog
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.getDialogPane().setContent(branchSelectorDialogPane);
-        branchSelectorController.setDialog(dialog);
-
-        // create hidden close button to support the close button (X)
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
-        closeButton.setVisible(false);
-
-        // show dialog
-        dialog.showAndWait();
-
-        // unregister dialog in case X button was pressed
-        if (EventBus.getDefault().isRegistered(branchSelectorController)) EventBus.getDefault().unregister(branchSelectorController);
+        CinemaClient.getDialogCreationManager().loadDialog("branchSelector");
     }
 
     @FXML

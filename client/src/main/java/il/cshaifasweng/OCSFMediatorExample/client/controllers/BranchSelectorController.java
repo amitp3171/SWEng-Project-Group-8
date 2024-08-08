@@ -19,7 +19,7 @@ import javafx.scene.control.Dialog;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-public class BranchSelectorController {
+public class BranchSelectorController implements DialogInterface {
     @FXML
     private ComboBox<String> selectBranchListBox;
 
@@ -34,6 +34,8 @@ public class BranchSelectorController {
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
     }
+
+    public void setData(Object... items) {}
 
     @FXML
     void chooseBranch(ActionEvent event) {

@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 
 public class HomeMovieInfoController {
@@ -36,10 +37,20 @@ public class HomeMovieInfoController {
         // id, movieName, super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture()
         String[] parsedMovie = movie.split(",(?![^\\[]*\\])");
 
-        movieLabel.setText(parsedMovie[1]);
-        movieSummaryLabel.setText(String.format("תקציר: %s", parsedMovie[2]));
-        primaryActorsLabel.setText(String.format("שחקנים ראשיים: %s", parsedMovie[3].substring(1, parsedMovie[3].length() - 1)));
-        producerNameLabel.setText(String.format("מפיק: %s",parsedMovie[4]));
+        String title = parsedMovie[1];
+        String description = parsedMovie[2].substring(1, parsedMovie[2].length() - 1);
+        String mainActors = parsedMovie[3].substring(1, parsedMovie[3].length() - 1);
+        String producerName = parsedMovie[4];
+
+        movieLabel.setText(title);
+        movieSummaryLabel.setText(String.format("תקציר: %s", description));
+        primaryActorsLabel.setText(String.format("שחקנים ראשיים: %s", mainActors));
+        producerNameLabel.setText(String.format("מפיק: %s", producerName));
+
+        movieLabel.setTooltip(new Tooltip(title));
+        movieSummaryLabel.setTooltip(new Tooltip(description));
+        primaryActorsLabel.setTooltip(new Tooltip(mainActors));
+        producerNameLabel.setTooltip(new Tooltip(producerName));
     }
 
     @FXML

@@ -52,7 +52,7 @@ public class CheckInstances {
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
         configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "Gamal385");
+        configuration.setProperty("hibernate.connection.password", "20danny05");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
@@ -144,7 +144,7 @@ public class CheckInstances {
 
         // Convert LocalDate to java.util.Date
         Date specificDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        ComingSoonMovie comingSoonMovie = new ComingSoonMovie("Deadpool דדפול", "Shon", mainActors, "Funny Movie", "pic", specificDate);
+        ComingSoonMovie comingSoonMovie = new ComingSoonMovie("Deadpool דדפול", "Shon", mainActors, "[Funny Movie]", "pic", specificDate);
         session.save(comingSoonMovie);
         session.flush();
     }
@@ -153,7 +153,7 @@ public class CheckInstances {
         List<String> mainActors = new ArrayList<>();
         mainActors.add("Simba");
         mainActors.add("Scar");
-        HomeMovie homeMovie = new HomeMovie("Lion King מלך האריות", "Don", mainActors, "Great movie, lots of animals", "pic", 2);
+        HomeMovie homeMovie = new HomeMovie("Lion King מלך האריות", "Don", mainActors, "[Great movie, lots of animals]", "pic", 2);
         session.save(homeMovie);
         session.flush();
         return homeMovie;
@@ -313,25 +313,25 @@ public class CheckInstances {
             List<String> mainActors1 = new ArrayList<String>();
             mainActors1.add("Zohar");
             mainActors1.add("Dan");
-            inTheaterMovies[0] = new InTheaterMovie("Mad Max מקס הזועם", "Amit Perry", mainActors1, "Good movie", "pic1");
+            inTheaterMovies[0] = new InTheaterMovie("Mad Max מקס הזועם", "Amit Perry", mainActors1, "[Good movie]", "pic1");
 
             List<String> mainActors2 = new ArrayList<>();
             mainActors2.add("Ceaser");
-            inTheaterMovies[1] = new InTheaterMovie("Planet of the Apes כוכב הקופים", "Peter", mainActors2, "Movie about apes", "pic2");
+            inTheaterMovies[1] = new InTheaterMovie("Planet of the Apes כוכב הקופים", "Peter", mainActors2, "[Movie about apes]", "pic2");
 
             List<String> mainActors3 = new ArrayList<>();
             mainActors3.add("Daniel");
-            inTheaterMovies[2] = new InTheaterMovie("Harry Potter הארי פוטר", "David", mainActors3, "Movie about friendship and magics", "pic3");
+            inTheaterMovies[2] = new InTheaterMovie("Harry Potter הארי פוטר", "David", mainActors3, "[Movie about friendship and magics]", "pic3");
 
             List<String> mainActors4 = new ArrayList<>();
             mainActors4.add("Luke");
             mainActors4.add("Han");
             mainActors4.add("Lia");
-            inTheaterMovies[3] = new InTheaterMovie("Star Wars מלחמת הכוכבים", "George Lucas", mainActors4, "Movie about some guys waving light swords", "pic4" );
+            inTheaterMovies[3] = new InTheaterMovie("Star Wars מלחמת הכוכבים", "George Lucas", mainActors4, "[Movie about some guys waving light swords]", "pic4" );
 
             List<String> mainActors5 = new ArrayList<>();
             mainActors5.add("Kevin");
-            inTheaterMovies[4] = new InTheaterMovie("The Usual Suspects החשוד המיידי", "Bryan", mainActors5, "Thrilling movie", "pic5");
+            inTheaterMovies[4] = new InTheaterMovie("The Usual Suspects החשוד המיידי", "Bryan", mainActors5, "[Thrilling movie]", "pic5");
 
             Theater[] theaters = generateTheaters();
 

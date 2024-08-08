@@ -8,7 +8,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
 
-public class ScreeningEditorController {
+public class ScreeningEditorController implements DialogInterface {
     @FXML
     private TextField screeningHourTF;
     private Dialog<ButtonType> dialog;
@@ -19,12 +19,9 @@ public class ScreeningEditorController {
         this.dialog = dialog;
     }
 
-    public void setScreeningHour(String screeningHour) {
-        screeningHourTF.setText(screeningHour.split(",")[0]);
-    }
-
-    public void setSelectedScreeningTime(StringBuilder selectedScreeningTime) {
-        this.selectedScreeningTime = selectedScreeningTime;
+    public void setData(Object... params) { // String screeningHour, StringBuilder selectedScreeningTime
+        screeningHourTF.setText(((String)params[0]).split(",")[0]);
+        this.selectedScreeningTime = (StringBuilder) params[1];
     }
 
     @FXML
