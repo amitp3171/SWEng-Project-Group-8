@@ -21,6 +21,7 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="פעולות">
                     <items>
+                        <MenuItem fx:id="addComingSoonMovieMenuItem" mnemonicParsing="false" onAction="#onAddComingSoonMovie" text="הוספת סרט" visible="false" />
                         <MenuItem mnemonicParsing="false" onAction="#onRefreshList" text="רענן רשימה" />
                     </items>
                 </Menu>
