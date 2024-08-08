@@ -191,6 +191,7 @@ public class SimpleServer extends AbstractServer {
 		String[] splitMessage = message.getData().split(",");
 		ScreeningTime screening = db.executeNativeQuery("SELECT * FROM ScreeningTimes WHERE id=?", ScreeningTime.class, splitMessage[0]).get(0);
 		screening.setTime(splitMessage[2]);
+		screening.setDate(LocalDate.parse(splitMessage[1], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 		db.updateEntity(screening);
 
 		sendMessage(message, "set new ScreeningTime successfully", "null", client);

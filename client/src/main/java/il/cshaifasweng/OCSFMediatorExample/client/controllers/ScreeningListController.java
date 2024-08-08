@@ -204,16 +204,17 @@ public class ScreeningListController {
 
         // if change was performed
         if (result == ButtonType.OK) {
-            String newTime = mutableScreeningTime.toString();
+            String newScreeningTime = mutableScreeningTime.toString();
             // update ScreeningTime
-            String[] parsedSelectedScreeningTime =  screeningTimes.get(selectedIndex).split(",");
-            parsedSelectedScreeningTime[2] = newTime;
-            String reconstructedScreeningTime = String.join(",", parsedSelectedScreeningTime);
-            // update listView
-            screeningTimes.set(selectedIndex, reconstructedScreeningTime);
-            screeningListView.getItems().set(selectedIndex, concatTimeTheater(reconstructedScreeningTime));
+            //if(!screeningTimes.get(selectedIndex).equals(newScreeningTime)){
+                screeningTimes.set(selectedIndex, newScreeningTime);
+                screeningListView.getItems().set(selectedIndex, concatTimeTheater(newScreeningTime));
 
-            requestUpdateScreeningHour(reconstructedScreeningTime);
+                requestUpdateScreeningHour(newScreeningTime);
+           // }
+//            String[] parsedSelectedScreeningTime =  screeningTimes.get(selectedIndex).split(",");
+//            parsedSelectedScreeningTime[2] = newTime;
+//            String reconstructedScreeningTime = String.join(",", parsedSelectedScreeningTime);
         };
 
         screeningListView.getSelectionModel().clearSelection();

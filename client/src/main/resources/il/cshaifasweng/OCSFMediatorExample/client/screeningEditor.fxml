@@ -2,7 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonType?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.DialogPane?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="122.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningEditorController">
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="172.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningEditorController">
    <content>
       <StackPane prefHeight="88.0" prefWidth="359.0">
          <children>
@@ -22,6 +22,12 @@
                         <Font size="15.0" />
                      </font></Label>
                   <TextField fx:id="screeningHourTF" alignment="TOP_RIGHT" prefWidth="225.0" promptText="XX:XX" />
+                  <Label alignment="TOP_CENTER" text="בחר תאריך:">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <DatePicker fx:id="screeningDatePicker" onAction="#onDateSelected" />
                   <HBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="340.0">
                      <children>
                         <Button mnemonicParsing="false" onAction="#cancelScreeningUpdate" text="בטל">
