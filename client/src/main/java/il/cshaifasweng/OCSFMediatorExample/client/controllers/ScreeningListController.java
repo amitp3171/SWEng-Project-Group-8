@@ -198,30 +198,6 @@ public class ScreeningListController {
     }
 
     void onItemSelectedContentManager(String selectedItem, int selectedIndex, String screeningTime) throws IOException {
-//        // load dialog fxml
-//        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("screeningEditor");
-//        DialogPane screeningDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
-//
-//        // get controller
-//        ScreeningEditorController screeningEditorController = dialogLoader.getController();
-//        // set current screening hour
-//        screeningEditorController.setScreeningHour(selectedItem);
-//        StringBuilder mutableScreeningTime = new StringBuilder(screeningTime);
-//        screeningEditorController.setSelectedScreeningTime(mutableScreeningTime);
-//
-//        // create new dialog
-//        Dialog<ButtonType> dialog = new Dialog<>();
-//        dialog.getDialogPane().setContent(screeningDialogPane);
-//        screeningEditorController.setDialog(dialog);
-//
-//        // create hidden close button to support the close button (X)
-//        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-//        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
-//        closeButton.setVisible(false);
-//
-//        // show dialog
-//        dialog.showAndWait();
-
         StringBuilder mutableScreeningTime = new StringBuilder(screeningTime);
 
         ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("screeningEditor", selectedItem, mutableScreeningTime);
@@ -262,10 +238,10 @@ public class ScreeningListController {
 
     @FXML
     void initialize() {
-        userDataManager = CinemaClient.getUserDataManager();
-        forceRefresh = false;
         // register to EventBus
         EventBus.getDefault().register(this);
+        userDataManager = CinemaClient.getUserDataManager();
+        forceRefresh = false;
     }
 
 }

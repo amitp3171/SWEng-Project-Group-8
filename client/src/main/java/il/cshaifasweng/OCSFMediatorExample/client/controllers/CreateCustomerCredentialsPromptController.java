@@ -65,7 +65,9 @@ public class CreateCustomerCredentialsPromptController implements DialogInterfac
 
     @FXML
     void cancelCreation(ActionEvent event) {
-        // TODO: handle
+        EventBus.getDefault().unregister(this);
+        dialog.setResult(ButtonType.CLOSE);
+        dialog.close();
     }
 
     // TODO: handle
@@ -103,7 +105,10 @@ public class CreateCustomerCredentialsPromptController implements DialogInterfac
 
             if (messageData.equals("user created")) {
                 CinemaClient.setUserDataManager(this.customerFirstName, this.customerLastName, this.customerGovId);
-                // TODO: move to next screen (payment?) - do this as a function, will be used in login as well
+                // close dialog
+                EventBus.getDefault().unregister(this);
+                dialog.setResult(ButtonType.OK);
+                dialog.close();
             }
             else {
                 invalidUserLabel.setText("משתמש קיים, נא להתחבר");
@@ -129,7 +134,7 @@ public class CreateCustomerCredentialsPromptController implements DialogInterfac
         // hide label
         invalidUserLabel.setVisible(false);
         // get credentials
-        this.customerGovId = customerIdNumField.getText();
+        this.customerGovId = customerLoginIdNumField.getText();
         // verify credentials
         int messageId = CinemaClient.getNextMessageId();
         Message newMessage = new Message(messageId, "verify Customer id");
@@ -160,17 +165,12 @@ public class CreateCustomerCredentialsPromptController implements DialogInterfac
                 String[] splitData = messageData.split(",");
                 customerFirstName = splitData[0];
                 customerLastName = splitData[1];
-                try {
-                    // set content
-                    CinemaClient.setUserDataManager(customerFirstName, customerLastName, customerGovId);
-                    CinemaClient.setContent("movieTypeSelection");
-                    // close dialog
-                    EventBus.getDefault().unregister(this);
-                    dialog.setResult(ButtonType.OK);
-                    dialog.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                // set content
+                CinemaClient.setUserDataManager(customerFirstName, customerLastName, customerGovId);
+                // close dialog
+                EventBus.getDefault().unregister(this);
+                dialog.setResult(ButtonType.OK);
+                dialog.close();
             }
         });
     }

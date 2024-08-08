@@ -65,8 +65,7 @@ public class InTheaterMoviePurchaseScreenController {
     private String selectedScreening;
     private String selectedTheaterId;
     private ArrayList<String> seats;
-    private String selectedSeat;
-    private Circle selectedSeatCircle;
+    private ArrayList<String> selectedSeats = new ArrayList<>();
 
     public void setSelectedBranch(String branch) {
         this.selectedBranch = branch;
@@ -155,19 +154,16 @@ public class InTheaterMoviePurchaseScreenController {
     private void handleSeatClick(Circle seat, int row, int col) {
         String newSelectedSeat = Integer.toString(row*6 + col);
 
-        if (this.selectedSeat != null) {
-            this.selectedSeatCircle.setFill(Color.GREEN);
+        boolean isOccupied = (seat.getFill() == Color.YELLOW);
 
-            if (this.selectedSeat.equals(newSelectedSeat)) {
-                this.selectedSeat = null;
-                this.selectedSeatCircle = null;
-                return;
-            }
+        if (isOccupied) {
+            seat.setFill(Color.GREEN);
+            selectedSeats.remove(newSelectedSeat);
         }
-
-        this.selectedSeat = newSelectedSeat;
-        this.selectedSeatCircle = seat;
-        seat.setFill(Color.YELLOW);
+        else {
+            seat.setFill(Color.YELLOW);
+            selectedSeats.add(newSelectedSeat);
+        }
     }
 
     @Subscribe
@@ -190,6 +186,8 @@ public class InTheaterMoviePurchaseScreenController {
         if (CinemaClient.getUserDataManager().isGuest()) {
               CinemaClient.getDialogCreationManager().loadDialog("createCustomerCredentialsPrompt");
         }
+        // TODO: move to next screen (payment?) - do this as a function, will be used in login as well
+        // TODO: make sure selectedSeats is not empty
     }
 
     @FXML
@@ -198,8 +196,11 @@ public class InTheaterMoviePurchaseScreenController {
     }
 
     @FXML
-    void onGoBack(ActionEvent event) {
-        // TODO: transfer data back to screeningTimeList
+    void onGoBack(ActionEvent event) throws IOException {
+        EventBus.getDefault().unregister(this);
+        ScreeningListController screeningListController = CinemaClient.setContent("screeningList").getController();
+        screeningListController.setSelectedBranch(this.selectedBranch);
+        screeningListController.setSelectedMovie(this.selectedMovie, false);
     }
 
     @FXML
