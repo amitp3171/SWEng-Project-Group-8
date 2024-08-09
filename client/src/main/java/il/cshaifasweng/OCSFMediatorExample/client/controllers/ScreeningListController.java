@@ -1,6 +1,8 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -36,19 +39,20 @@ public class ScreeningListController {
     private ImageView movieImageView;
 
     @FXML
-    private ComboBox<String> selectDayListBox;
+    private DatePicker screeningDatePicker;
 
     @FXML
     private ListView<String> screeningListView;
 
     private String selectedBranch;
 
-    private List<String> screeningTimes;
-
+//    private ArrayList<DateCell> highlightedDateCells = new ArrayList<>();
+    private ArrayList<LocalDate> availableDates = new ArrayList<>();
     private String selectedMovie;
     // yyyy-mm-dd
-    private ArrayList<String> availableDates = new ArrayList<>();
-    private String selectedDate;
+    private List<String> screeningTimes;
+    private ArrayList<String> availableDatesStrings = new ArrayList<>();
+    private LocalDate selectedDate;
 
     UserDataManager userDataManager;
 
@@ -112,9 +116,9 @@ public class ScreeningListController {
     }
 
     @FXML
-    void chooseDay(ActionEvent event) {
+    void onDateSelected(ActionEvent event) {
         // get selected day
-        String newSelectedDate = selectDayListBox.getSelectionModel().getSelectedItem();
+        LocalDate newSelectedDate = screeningDatePicker.getValue();
         // if no changes should be made
         if (selectedDate.equals(newSelectedDate)) return;
         // update selected day
@@ -123,17 +127,51 @@ public class ScreeningListController {
         initializeList();
     }
 
-    public void initializeDayPicker() {
-        for (String screeningTime : screeningTimes) {
-            // id, day, time, theater.getTheaterID()
-            String dateAsString = screeningTime.split(",")[1];
-            if (!this.availableDates.contains(dateAsString))
-                this.availableDates.add(dateAsString);
+//    public void initializeDayPicker() {
+//        for (String screeningTime : screeningTimes) {
+//            // id, day, time, theater.getTheaterID()
+//            String dateAsString = screeningTime.split(",")[1];
+//            if (!this.availableDatesStrings.contains(dateAsString)){
+//                this.availableDatesStrings.add(dateAsString);
+//                this.availableDates.add(LocalDate.parse(screeningTime.split(",")[1]));
+//            }
+//        }
+//        Collections.sort(this.availableDatesStrings);
+//        selectDayListBox.getItems().addAll(this.availableDatesStrings);
+//        this.selectedDate = this.availableDatesStrings.get(0);
+//        selectDayListBox.getSelectionModel().selectFirst();
+//    }
+
+    public void setAvailableDates() {
+        for (String screeningTime : screeningTimes){
+            LocalDate screeningDate = LocalDate.parse(screeningTime.split(",")[1], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            if (!this.availableDates.contains(screeningDate))
+                this.availableDates.add(screeningDate);
         }
         Collections.sort(this.availableDates);
-        selectDayListBox.getItems().addAll(this.availableDates);
         this.selectedDate = this.availableDates.get(0);
-        selectDayListBox.getSelectionModel().selectFirst();
+    }
+
+    public void initializeDatePicker() {
+        screeningDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
+            @Override
+            public DateCell call(DatePicker param) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (!empty && item != null) {
+                            if (availableDates.contains(item))
+                                this.setStyle("-fx-background-color: lightgreen");
+                            else
+                                this.setDisable(true);
+                        }
+                    }
+                };
+            }
+        });
+        screeningDatePicker.setValue(this.selectedDate);
     }
 
     public void initializeList() {
@@ -144,7 +182,7 @@ public class ScreeningListController {
         for (String screeningTime : screeningTimes) {
             // id, day, time, theater.getTheaterID()
             String[] parsedScreening = screeningTime.split(",");
-            if (parsedScreening[1].equals(selectedDate))
+            if (parsedScreening[1].equals(this.selectedDate.toString()))
                 items.add(concatTimeTheater(screeningTime));
         }
         // display in list
@@ -203,21 +241,26 @@ public class ScreeningListController {
             // update ScreeningTime
             if (!screeningTimes.get(selectedIndex).equals(newScreeningTime)) {
                 screeningTimes.set(selectedIndex, newScreeningTime);
-                // TODO: sorting the listbox might be necessary, however we are about to replace it with a datepicker..
-                String oldDate = selectDayListBox.getSelectionModel().getSelectedItem();
-                String newDate = newScreeningTime.split(",")[1];
+
+                LocalDate oldDate = screeningDatePicker.getValue();
+                LocalDate newDate = LocalDate.parse(newScreeningTime.split(",")[1], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
                 // if the new date is not present in the list
-                if (!selectDayListBox.getItems().contains(newDate))
-                    selectDayListBox.getItems().add(newDate);
+                if (!this.availableDates.contains(newDate)) {
+                    this.availableDates.add(newDate);
+                    initializeDatePicker();
+                }
+
                 // if edited screening was the only one for the date, and the date was changed.
                 if(!newDate.equals(oldDate) && screeningListView.getItems().size() == 1) {
                     this.availableDates.remove(oldDate);
-                    this.availableDates.add(newDate);
-                    selectDayListBox.getItems().remove(oldDate);
                     this.selectedDate = newDate;
-                    selectDayListBox.getSelectionModel().select(newDate);
                     initializeList();
+                    initializeDatePicker();
                 }
+                else
+                    this.screeningListView.getItems().remove(selectedItem);
+
                 requestUpdateScreening(newScreeningTime);
             }
         }
@@ -231,7 +274,8 @@ public class ScreeningListController {
         Platform.runLater(() -> {
             try {
                 screeningTimes = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
-                initializeDayPicker();
+                setAvailableDates();
+                initializeDatePicker();
             }
             catch (IOException e) {
                 e.printStackTrace();

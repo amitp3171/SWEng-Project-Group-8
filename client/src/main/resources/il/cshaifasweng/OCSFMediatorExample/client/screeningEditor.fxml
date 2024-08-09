@@ -27,7 +27,7 @@
                         <Font size="15.0" />
                      </font>
                   </Label>
-                  <DatePicker fx:id="screeningDatePicker" onAction="#onDateSelected" />
+                  <DatePicker fx:id="screeningDatePicker" editable="false" onAction="#onDateSelected" />
                   <HBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="340.0">
                      <children>
                         <Button mnemonicParsing="false" onAction="#cancelScreeningUpdate" text="בטל">

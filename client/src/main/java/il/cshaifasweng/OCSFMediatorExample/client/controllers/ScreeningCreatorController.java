@@ -24,7 +24,7 @@ public class ScreeningCreatorController implements DialogInterface {
     private ChoiceBox<String> inTheaterMovieChoiceBox;
 
     @FXML
-    private TextField screeningDatePromptTF;
+    private DatePicker screeningDatePicker;
 
     @FXML
     private TextField screeningTimePromptTF;
@@ -105,7 +105,8 @@ public class ScreeningCreatorController implements DialogInterface {
     @FXML
     void createScreeningHour(ActionEvent event) throws IOException {
         // get text-field input
-        String selectedDate = screeningDatePromptTF.getText();
+        String selectedDate = screeningDatePicker.getValue().toString();
+        System.out.println(selectedDate);
         String selectedTime = screeningTimePromptTF.getText();
         String selectedTheaterId = theaters.get(theaterChoiceBox.getSelectionModel().getSelectedIndex());
         // send request to server
@@ -121,6 +122,9 @@ public class ScreeningCreatorController implements DialogInterface {
         CinemaClient.getClient().sendToServer(newMessage);
         System.out.println("create ScreeningTime request sent");
     }
+
+    @FXML
+    void onDateSelected(ActionEvent event) {}
 
     @FXML
     void initialize() {
