@@ -40,15 +40,12 @@ public class ScreeningEditorController implements DialogInterface {
     void updateScreeningHour(ActionEvent event) throws ParseException {
         // get the new time
         String newTime = screeningHourTF.getText();
-        String[] parsedScreeningTime = selectedScreeningTime.toString().split(",");
-        int startingIndex = parsedScreeningTime[0].length() + parsedScreeningTime[1].length() + 2;
-        int endingIndex = startingIndex + parsedScreeningTime[3].length() + 3;
-        selectedScreeningTime.replace(startingIndex, endingIndex, newTime);
-        // get the new date
         String newDate = screeningDatePicker.getValue().toString();
-        int startingIndex2 = parsedScreeningTime[0].length() + 1;
-        int endingIndex2 = startingIndex2 + parsedScreeningTime[1].length();
-        selectedScreeningTime.replace(startingIndex2, endingIndex2, newDate);
+        String[] parsedScreeningTime = selectedScreeningTime.toString().split(",");
+        parsedScreeningTime[2] = newTime;
+        parsedScreeningTime[1] = newDate;
+        selectedScreeningTime.delete(0, selectedScreeningTime.length());
+        selectedScreeningTime.append(String.join(",", parsedScreeningTime));
         dialog.setResult(ButtonType.OK);
         dialog.close();
     }

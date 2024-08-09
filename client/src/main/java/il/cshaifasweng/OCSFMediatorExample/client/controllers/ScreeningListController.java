@@ -1,9 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,8 +12,6 @@ import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -80,7 +75,7 @@ public class ScreeningListController {
         System.out.println("ScreeningTime request sent");
     }
 
-    private void requestUpdateScreeningHour(String updatedScreeningTime) throws IOException {
+    private void requestUpdateScreening(String updatedScreeningTime) throws IOException {
         // send request to server
         int messageId = CinemaClient.getNextMessageId();
         // message_text,branch_location,movie_id
@@ -206,16 +201,26 @@ public class ScreeningListController {
         if (result == ButtonType.OK) {
             String newScreeningTime = mutableScreeningTime.toString();
             // update ScreeningTime
-            //if(!screeningTimes.get(selectedIndex).equals(newScreeningTime)){
+            if (!screeningTimes.get(selectedIndex).equals(newScreeningTime)) {
                 screeningTimes.set(selectedIndex, newScreeningTime);
-                screeningListView.getItems().set(selectedIndex, concatTimeTheater(newScreeningTime));
-
-                requestUpdateScreeningHour(newScreeningTime);
-           // }
-//            String[] parsedSelectedScreeningTime =  screeningTimes.get(selectedIndex).split(",");
-//            parsedSelectedScreeningTime[2] = newTime;
-//            String reconstructedScreeningTime = String.join(",", parsedSelectedScreeningTime);
-        };
+                // TODO: sorting the listbox might be necessary, however we are about to replace it with a datepicker..
+                String oldDate = selectDayListBox.getSelectionModel().getSelectedItem();
+                String newDate = newScreeningTime.split(",")[1];
+                // if the new date is not present in the list
+                if (!selectDayListBox.getItems().contains(newDate))
+                    selectDayListBox.getItems().add(newDate);
+                // if edited screening was the only one for the date, and the date was changed.
+                if(!newDate.equals(oldDate) && screeningListView.getItems().size() == 1) {
+                    this.availableDates.remove(oldDate);
+                    this.availableDates.add(newDate);
+                    selectDayListBox.getItems().remove(oldDate);
+                    this.selectedDate = newDate;
+                    selectDayListBox.getSelectionModel().select(newDate);
+                    initializeList();
+                }
+                requestUpdateScreening(newScreeningTime);
+            }
+        }
 
         screeningListView.getSelectionModel().clearSelection();
     }
