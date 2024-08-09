@@ -11,7 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import org.greenrobot.eventbus.EventBus;
 
-public class MovieTypeSelectionController {
+public class AccountController {
 
     @FXML
     private Label welcomeUserLabel;
@@ -28,23 +28,23 @@ public class MovieTypeSelectionController {
         CinemaClient.setContent("primary");
     }
     @FXML
-    void onGoBack2(ActionEvent event) throws IOException {
+    void goToAccount(ActionEvent event) throws IOException {
         CinemaClient.setContent("account");
     }
 
     @FXML
-    void showComingSoonMovieList(ActionEvent event) throws IOException {
-        CinemaClient.setContent("comingSoonMovieList");
+    void purchases(ActionEvent event) throws IOException {
+        CinemaClient.setContent("purchasesList");
     }
 
     @FXML
-    void showHomeMovieList(ActionEvent event) throws IOException {
-        CinemaClient.setContent("homeMovieList");
+    void messages(ActionEvent event) throws IOException {
+        CinemaClient.setContent("messagesList");
     }
 
     @FXML
-    void showInTheaterMovieList(ActionEvent event) throws IOException {
-        CinemaClient.getDialogCreationManager().loadDialog("branchSelector");
+    void complaints(ActionEvent event) throws IOException {
+        CinemaClient.setContent("complaintsList");
     }
 
     @FXML

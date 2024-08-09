@@ -1,3 +1,4 @@
+
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
@@ -9,9 +10,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import org.greenrobot.eventbus.EventBus;
+        import org.greenrobot.eventbus.EventBus;
 
-public class MovieTypeSelectionController {
+public class MessagesController {
 
     @FXML
     private Label welcomeUserLabel;
@@ -28,32 +29,33 @@ public class MovieTypeSelectionController {
         CinemaClient.setContent("primary");
     }
     @FXML
-    void onGoBack2(ActionEvent event) throws IOException {
+    void goToAccount(ActionEvent event) throws IOException {
         CinemaClient.setContent("account");
     }
 
     @FXML
-    void showComingSoonMovieList(ActionEvent event) throws IOException {
-        CinemaClient.setContent("comingSoonMovieList");
+    void purchases(ActionEvent event) throws IOException {
+        CinemaClient.setContent("purchasesList");
     }
 
     @FXML
-    void showHomeMovieList(ActionEvent event) throws IOException {
-        CinemaClient.setContent("homeMovieList");
+    void messages(ActionEvent event) throws IOException {
+        CinemaClient.setContent("messagesList");
     }
 
     @FXML
-    void showInTheaterMovieList(ActionEvent event) throws IOException {
-        CinemaClient.getDialogCreationManager().loadDialog("branchSelector");
+    void complaints(ActionEvent event) throws IOException {
+        CinemaClient.getDialogCreationManager().loadDialog("complaintsList");
     }
 
     @FXML
     void initialize() {
         userDataManager = CinemaClient.getUserDataManager();
-        if (userDataManager.isGuest())
+       /* if (userDataManager.isGuest())
             welcomeUserLabel.setText("ברוך הבא אורח!");
         else
             welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", userDataManager.getFirstName(), userDataManager.getLastName()));
-    }
+    */}
 
 }
+
