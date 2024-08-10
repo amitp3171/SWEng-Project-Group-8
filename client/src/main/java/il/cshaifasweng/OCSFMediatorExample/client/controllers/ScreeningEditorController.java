@@ -20,23 +20,32 @@ import org.greenrobot.eventbus.Subscribe;
 public class ScreeningEditorController implements DialogInterface {
     @FXML
     private TextField screeningHourTF;
-    private Dialog<ButtonType> dialog;
+
     @FXML
     private DatePicker screeningDatePicker;
+
     @FXML
     private ChoiceBox<String> theaterChoiceBox;
 
+    @FXML
+    private Label screeningExistsLabel;
+
+    private Dialog<ButtonType> dialog;
+
     private ArrayList<String> theaterIds;
-    //private Dictionary<String, String> selectedScreeningTime;
+
+    private ArrayList<Map<String, String>> availableScreeningTimes;
+
     private Map<String, String> selectedScreeningTime;
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
     }
 
-    public void setData(Object... params) { // String screeningHour, Dictionary<String, String> selectedScreeningTime
+    public void setData(Object... params) { // String screeningHour, Map<String, String> selectedScreeningTime, ArrayList<Map<String,String>> availableScreeningTimes;
         screeningHourTF.setText(((String)params[0]).split(",")[0]);
         this.selectedScreeningTime = (Map<String, String>) params[1];
+        this.availableScreeningTimes = (ArrayList<Map<String, String>>) params[3];
         screeningDatePicker.setValue(LocalDate.parse(selectedScreeningTime.get("date"), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         theaterChoiceBox.setValue(String.valueOf(1 + (Integer.parseInt(selectedScreeningTime.get("theaterId"))-1) % 10));
 
@@ -71,15 +80,22 @@ public class ScreeningEditorController implements DialogInterface {
     void updateScreeningHour(ActionEvent event) throws ParseException {
         String newTime = screeningHourTF.getText();
         String newDate = screeningDatePicker.getValue().toString();
-        String newTheater = theaterChoiceBox.getValue();
+        String newTheaterId = theaterIds.get(Integer.parseInt(theaterChoiceBox.getValue())-1);
 
-        if (newTime.equals(selectedScreeningTime.get("time")) && newDate.equals(selectedScreeningTime.get("date")) && newTheater.equals(selectedScreeningTime.get("theaterId"))) {
+        for (Map<String, String> screening : availableScreeningTimes) {
+            if (screening.get("time").equals(newTime) && screening.get("date").equals(newDate) && screening.get("theaterId").equals(newTheaterId)) {
+                screeningExistsLabel.setVisible(true);
+                return;
+            }
+        }
+
+        if (newTime.equals(selectedScreeningTime.get("time")) && newDate.equals(selectedScreeningTime.get("date")) && newTheaterId.equals(selectedScreeningTime.get("theaterId"))) {
             dialog.setResult(ButtonType.CANCEL);
         }
         else {
             selectedScreeningTime.replace("time", screeningHourTF.getText());
             selectedScreeningTime.replace("date", screeningDatePicker.getValue().toString());
-            selectedScreeningTime.replace("theaterId", theaterIds.get(Integer.parseInt(theaterChoiceBox.getValue())-1));
+            selectedScreeningTime.replace("theaterId", newTheaterId);
             dialog.setResult(ButtonType.OK);
         }
         EventBus.getDefault().unregister(this);

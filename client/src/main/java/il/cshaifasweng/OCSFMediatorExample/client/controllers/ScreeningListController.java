@@ -200,7 +200,7 @@ public class ScreeningListController {
 
     void onItemSelectedContentManager(String selectedItem, int selectedIndex, Map<String, String> selectedScreeningTime) throws IOException {
 
-        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("screeningEditor", selectedItem, selectedScreeningTime, selectedBranch);
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("screeningEditor", selectedItem, selectedScreeningTime, this.selectedBranch, this.screeningTimes);
 
         // if change was performed
         if (result == ButtonType.OK) {

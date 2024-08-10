@@ -79,10 +79,4 @@ public class RemoveHomeMovieController implements DialogInterface {
         statusLabel.setText("סרט לא קיים!");
         return null;
     }
-
-
-
-
-
-
 }

@@ -383,7 +383,7 @@ public class CheckInstances {
 
             Ticket[] tickets = new Ticket[5];
             for(int i=0;i<tickets.length;i++) {
-                tickets[i] = new Ticket(customers[i], 40,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(i), screeningTimes.get(i).getTheater().getSeat(i));
+                tickets[i] = new Ticket(customers[i], 40,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(i), screeningTimes.get(i).getSeat(i));
                 purchases[i+10] = new Purchase(tickets[i], "Credit Card", LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i+10]);
 

@@ -62,6 +62,7 @@ public class InTheaterMoviePurchaseScreenController {
     private Map<String, String> selectedScreening;
     private String selectedTheaterId;
     private ArrayList<Map<String, String>> seats = new ArrayList<>();
+    private ArrayList<Map<String, String>> selectedSeats = new ArrayList<>();
     private ArrayList<String> selectedSeatIds = new ArrayList<>();
 
     public void setSelectedBranch(String branch) {
@@ -100,7 +101,7 @@ public class InTheaterMoviePurchaseScreenController {
     }
 
     public void requestSeatList() throws IOException {
-        CinemaClient.sendToServer("get Seat list", this.selectedTheaterId);
+        CinemaClient.sendToServer("get Seat list", this.selectedScreening.get("id"));
     }
 
     private void populateSeats() {
@@ -124,7 +125,7 @@ public class InTheaterMoviePurchaseScreenController {
                 final int finalCol = col;
 
                 // if taken, no listener!
-                if (isTaken) return;
+                if (isTaken) continue;
 
                 cellPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
@@ -142,13 +143,17 @@ public class InTheaterMoviePurchaseScreenController {
 
         boolean isOccupied = (seat.getFill() == Color.YELLOW);
 
+        Map<String, String> newSelectedSeat = this.seats.get(newSelectedSeatIdx);
+
         if (isOccupied) {
             seat.setFill(Color.GREEN);
-            this.selectedSeatIds.remove(this.seats.get(newSelectedSeatIdx).get("id"));
+            this.selectedSeats.remove(newSelectedSeat);
+            this.selectedSeatIds.remove(newSelectedSeat.get("id"));
         }
         else {
             seat.setFill(Color.YELLOW);
-            this.selectedSeatIds.add(this.seats.get(newSelectedSeatIdx).get("id"));
+            this.selectedSeats.add(newSelectedSeat);
+            this.selectedSeatIds.add(newSelectedSeat.get("id"));
         }
 
         cardPurchaseButton.setDisable(selectedSeatIds.isEmpty());
@@ -177,15 +182,20 @@ public class InTheaterMoviePurchaseScreenController {
     void onCardPurchase(ActionEvent event) throws IOException {
         if (CinemaClient.getUserDataManager().isGuest()) {
               CinemaClient.getDialogCreationManager().loadDialog("createCustomerCredentialsPrompt");
+              return;
         }
 
         // TODO: move to next screen (payment selection - credit)
         ButtonType status = CinemaClient.getDialogCreationManager().loadDialog("cardPaymentPrompt", selectedScreening, selectedSeatIds);
 
         if (status == ButtonType.OK) {
-            for (String seat : this.selectedSeatIds) {
-
+            for (Map<String, String> seat : this.selectedSeats) {
+                seat.replace("isTaken", String.valueOf(true));
             }
+
+            populateSeats();
+
+            this.selectedSeats.clear();
             this.selectedSeatIds.clear();
         }
     }

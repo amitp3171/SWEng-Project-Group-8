@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.lang.*;
 
@@ -108,13 +109,15 @@ public class SimpleServer extends AbstractServer {
 	}
 
 	private void handleSeatListRequest(Message message, ConnectionToClient client) throws IOException {
-		String theaterId = message.getData();
+		String screeningId = message.getData();
 		// get data
 		List<Seat> receivedSeats = db.executeNativeQuery(
-				"SELECT * FROM seats WHERE theater_theaterID = ?",
+				"SELECT * FROM seats WHERE screeningtime_id = ?",
 				Seat.class,
-				theaterId
+				screeningId
 		);
+
+		System.out.println(receivedSeats);
 
 		List<String> items = new ArrayList<>();
 
@@ -193,13 +196,22 @@ public class SimpleServer extends AbstractServer {
 	private void handleSetScreeningTimeRequest(Message message, ConnectionToClient client) throws IOException {
 		// id, day, time, theater.getTheaterID()
 		String[] splitMessage = message.getData().split(",");
-		ScreeningTime screening = db.executeNativeQuery("SELECT * FROM ScreeningTimes WHERE id=?", ScreeningTime.class, splitMessage[0]).get(0);
-		screening.setTime(splitMessage[2]);
-		screening.setDate(LocalDate.parse(splitMessage[1], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-		screening.setTheater(db.executeNativeQuery("SELECT * FROM Theaters WHERE theaterID=?", Theater.class, splitMessage[3]).get(0));
-		db.updateEntity(screening);
 
-		sendMessage(message, "set new ScreeningTime successfully", "null", client);
+		// check for existing screenings in the specified theater
+		List<ScreeningTime> existingScreenings = db.executeNativeQuery("SELECT * FROM ScreeningTimes WHERE theater_theaterID=? AND time=? AND date=?", ScreeningTime.class, splitMessage[3], splitMessage[2], splitMessage[1]);
+
+		String data = "request failed";
+
+		if (existingScreenings.isEmpty()) {
+			ScreeningTime screening = db.executeNativeQuery("SELECT * FROM ScreeningTimes WHERE id=?", ScreeningTime.class, splitMessage[0]).get(0);
+			screening.setTime(splitMessage[2]);
+			screening.setDate(LocalDate.parse(splitMessage[1], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+			screening.setTheater(db.executeNativeQuery("SELECT * FROM Theaters WHERE theaterID=?", Theater.class, splitMessage[3]).get(0));
+			db.updateEntity(screening);
+			data = "request successful";
+		}
+
+		sendMessage(message, "set new ScreeningTime successfully", data, client);
 	}
 
 	private void handleCreateScreeningTimeRequest(Message message, ConnectionToClient client) throws IOException {
@@ -350,9 +362,14 @@ public class SimpleServer extends AbstractServer {
 
 		String customerGovId = messageData[0];
 		String screeningTimeId = messageData[1];
-		String selectedSeatIds = messageData[2].substring(1, messageData[2].length()-1);
+		String[] selectedSeatIds = messageData[2].substring(1, messageData[2].length()-1).split(",");
 
-		List<Seat> selectedSeats = db.executeNativeQuery("SELECT * FROM seats WHERE id IN (?)", Seat.class, selectedSeatIds);
+		System.out.println(messageData[2]);
+		System.out.println(selectedSeatIds);
+
+		List<Seat> selectedSeats = db.executeNativeQuery("SELECT * FROM seats WHERE id IN (" + String.join(",", Collections.nCopies(selectedSeatIds.length, "?")) + ")", Seat.class, selectedSeatIds);
+
+		System.out.println(selectedSeats);
 
 		String productPrice = messageData[3];
 
@@ -362,8 +379,11 @@ public class SimpleServer extends AbstractServer {
 		for (int i = 0; i < selectedSeats.size(); i++) {
 			Ticket newTicket = new Ticket(owner, Double.parseDouble(productPrice), screeningTime.getInTheaterMovie().getMovieName(), screeningTime, selectedSeats.get(i));
 			Purchase newPurchase = new Purchase(newTicket, "Credit Card", LocalTime.now());
+			Seat selectedSeat = selectedSeats.get(i);
+			selectedSeat.setTaken(true);
 			db.addInstance(newTicket);
 			db.addInstance(newPurchase);
+			db.updateEntity(selectedSeat);
 		}
 
 		sendMessage(message, "created Ticket Purchase successfully", "payment successful", client);

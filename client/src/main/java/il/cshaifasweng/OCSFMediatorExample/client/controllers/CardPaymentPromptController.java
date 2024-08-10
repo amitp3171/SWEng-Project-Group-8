@@ -43,12 +43,15 @@ public class CardPaymentPromptController implements DialogInterface {
 
     Dialog<ButtonType> dialog;
 
+    boolean resultOK;
+
     Map<String, String> selectedScreeningTime;
     ArrayList<String> selectedSeatIds;
     double ticketPrice;
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
+        dialog.setResult(ButtonType.CANCEL);
     }
 
     public void setData(Object... items) { // Map<String,String> selectedScreeningTime, ArrayList<String> selectedSeatIds
@@ -64,7 +67,12 @@ public class CardPaymentPromptController implements DialogInterface {
     @FXML
     void cancelPayment(ActionEvent event) {
         EventBus.getDefault().unregister(this);
-        dialog.setResult(ButtonType.OK);
+
+        if (resultOK)
+            dialog.setResult(ButtonType.OK);
+        else
+            dialog.setResult(ButtonType.CANCEL);
+
         dialog.close();
     }
 
@@ -101,6 +109,8 @@ public class CardPaymentPromptController implements DialogInterface {
                 statusLabel.setTextFill(Color.GREEN);
                 statusLabel.setVisible(true);
 
+                resultOK = true;
+
                 // disable all fields except exit
                 creditCardNumberField.setDisable(true);
                 creditCardCVCField.setDisable(true);
@@ -114,6 +124,7 @@ public class CardPaymentPromptController implements DialogInterface {
 
     @FXML
     void initialize() {
+        resultOK = false;
         EventBus.getDefault().register(this);
     }
 

@@ -4,10 +4,15 @@ import javax.persistence.*;
 import java.time.LocalTime;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "screeningTimes")
 public class ScreeningTime {
+    // max seat capacity
+    static int MAX_CAPACITY = 36;
+
     // primary key
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,15 +31,32 @@ public class ScreeningTime {
     @ManyToOne(cascade = CascadeType.ALL)
     private Theater theater;
 
+    // list of seats
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Seat> seats = new ArrayList<>(MAX_CAPACITY);
+
     public ScreeningTime(Branch branch, LocalDate date, LocalTime time, Theater theater, InTheaterMovie inTheaterMovie) {
         this.branch = branch;
         this.date = date;
         this.time = time;
         this.theater = theater;
         this.inTheaterMovie = inTheaterMovie;
+        instantiateSeats();
     }
 
-    public ScreeningTime() {}
+    public ScreeningTime() {
+        instantiateSeats();
+    }
+
+    private void instantiateSeats() {
+        // add MAX_CAPACITY new seats
+        for (int i = 0; i < MAX_CAPACITY; i++) {
+            Seat seat = new Seat();
+            seat.setTheater(this.theater); // Set the theater reference in the seat
+            seat.setScreening(this);
+            seats.add(seat); // Use add instead of set
+        }
+    }
 
     public int getId() {
         return id;
@@ -74,6 +96,10 @@ public class ScreeningTime {
 
     public void setTheater(Theater theater) {
         this.theater = theater;
+
+        for (Seat seat : seats) {
+            seat.setTheater(theater);
+        }
     }
 
     public InTheaterMovie getInTheaterMovie() {
@@ -82,6 +108,10 @@ public class ScreeningTime {
 
     public void setInTheaterMovie(InTheaterMovie inTheaterMovie) {
         this.inTheaterMovie = inTheaterMovie;
+    }
+
+    public Seat getSeat(int i) {
+        return this.seats.get(i);
     }
 
     @Override

@@ -14,6 +14,9 @@ public class Seat {
     @ManyToOne(cascade = CascadeType.ALL)
     private Theater theater;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    private ScreeningTime screeningTime;
+
     public Seat() {
         this.isTaken = false;
     }
@@ -36,6 +39,10 @@ public class Seat {
 
     public void setTheater(Theater theater) {
         this.theater = theater;
+    }
+
+    public void setScreening(ScreeningTime screeningTime) {
+        this.screeningTime = screeningTime;
     }
 
     @Override
