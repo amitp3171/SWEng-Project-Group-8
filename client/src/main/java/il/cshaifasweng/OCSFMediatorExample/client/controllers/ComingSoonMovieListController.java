@@ -72,11 +72,7 @@ public class ComingSoonMovieListController {
 
     private void requestComingSoonMovieList(boolean forceRefresh) throws IOException {
         // send request to server
-        int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "get ComingSoonMovie list");
-        newMessage.setData(String.valueOf(forceRefresh));
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("ComingSoonMovie request sent");;
+        CinemaClient.sendToServer("get ComingSoonMovie list", String.valueOf(forceRefresh));
     }
 
     void initializeList() {

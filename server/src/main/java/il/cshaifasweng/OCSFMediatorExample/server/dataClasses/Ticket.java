@@ -13,7 +13,7 @@ public class Ticket extends AbstractProduct {
     @OneToOne(cascade = CascadeType.ALL)
     private Seat seat;
 
-    public Ticket(Customer owner, int price, String movieName, ScreeningTime screeningTime, Seat seat) {
+    public Ticket(Customer owner, double price, String movieName, ScreeningTime screeningTime, Seat seat) {
         super(owner, price);
         this.movieName = movieName;
         this.screeningTime = screeningTime;

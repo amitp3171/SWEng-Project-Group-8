@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
@@ -37,31 +38,27 @@ public class ScreeningCreatorController implements DialogInterface {
 
     private Dialog<ButtonType> dialog;
 
-    private ArrayList<String> availableMovies;
+    private ArrayList<Map<String, String>> availableMovies;
     private String branchLocation;
     private ArrayList<String> theaters;
 
-    public void setData(Object... items) /*ArrayList<String> availableMovies, String branchLocation*/ {
-        this.availableMovies = (ArrayList<String>) items[0];
+    public void setData(Object... items) /*ArrayList<Map<String, String>> availableMovies, String branchLocation*/ {
+        this.availableMovies = (ArrayList<Map<String, String>>) items[0];
         this.branchLocation = (String) items[1];
 
         String[] movieNames = new String[availableMovies.size()];
 
         for (int i = 0; i < availableMovies.size(); i++)
-            movieNames[i] = availableMovies.get(i).split(",")[1];
+            movieNames[i] = availableMovies.get(i).get("movieName");
 
         inTheaterMovieChoiceBox.getItems().addAll(movieNames);
 
         // request theater list from server
-        int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "get Theater ID list");
-        newMessage.setData(branchLocation);
         try {
-            CinemaClient.getClient().sendToServer(newMessage);
+            CinemaClient.sendToServer("get Theater ID list", branchLocation);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Theater ID request sent");
     }
 
     @Subscribe
@@ -110,17 +107,14 @@ public class ScreeningCreatorController implements DialogInterface {
         String selectedTime = screeningTimePromptTF.getText();
         String selectedTheaterId = theaters.get(theaterChoiceBox.getSelectionModel().getSelectedIndex());
         // send request to server
-        int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "create ScreeningTime");
-        // branch, date, time, theater, movie
-        newMessage.setData(String.format("%s,%s,%s,%s,%s",
-                branchLocation,
-                selectedDate,
-                selectedTime,
-                selectedTheaterId,
-                availableMovies.get(inTheaterMovieChoiceBox.getSelectionModel().getSelectedIndex()).split(",")[0]));
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("create ScreeningTime request sent");
+        CinemaClient.sendToServer("create ScreeningTime",
+                String.join(",",
+                        branchLocation,
+                        selectedDate,
+                        selectedTime,
+                        selectedTheaterId,
+                        availableMovies.get(inTheaterMovieChoiceBox.getSelectionModel().getSelectedIndex()).get("id"))
+                );
     }
 
     @FXML

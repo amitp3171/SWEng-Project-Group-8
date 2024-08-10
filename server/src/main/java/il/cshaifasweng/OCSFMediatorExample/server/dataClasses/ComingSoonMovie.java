@@ -39,7 +39,7 @@ public class ComingSoonMovie extends AbstractMovie {
 
     @Override
     public String toString() {
-        return String.format("%s,%s,%s,%s,%s,%s", this.id, super.getMovieName(), super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture());
+        return String.join(",", String.valueOf(this.id), super.getMovieName(), super.getDescription(), super.getMainActors().toString(), super.getProducerName(), super.getPicture());
     }
 
 }

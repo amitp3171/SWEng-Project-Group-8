@@ -1,5 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import java.util.ArrayList;
+
 public class UserDataManager {
 
     private static UserDataManager instance;
@@ -23,6 +25,12 @@ public class UserDataManager {
         }
         return instance;
     }
+
+//    public static ArrayList<String> fetchUserData() {
+//        if (!isCustomer()) return null;
+//
+//
+//    }
 
     public static boolean isCustomer() {
         return govId != null;

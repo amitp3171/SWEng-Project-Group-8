@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
+import il.cshaifasweng.OCSFMediatorExample.server.creationalClasses.DatabaseBridge;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.SubscribedClient;
@@ -249,12 +250,18 @@ public class SimpleServer extends AbstractServer {
 
 		for (AbstractEmployee employee : employees) {
 			if (employee.getUsername().equals(providedCredentials[0]) && employee.getPassword().equals(providedCredentials[1]))
-				data = String.format("%s,%s,%s", employee.getFirstName(), employee.getLastName(), employee.getClass().getName().substring(55));
+				data = String.join(",", employee.getFirstName(), employee.getLastName(), employee.getClass().getName().substring(55));
 		}
 
 		System.out.println(data);
 
 		sendMessage(message, "verified Employee credentials successfully", data, client);
+	}
+
+	private void handleProductPriceRequest(Message message, ConnectionToClient client) throws IOException {
+		Price productPrice = db.executeNativeQuery("SELECT * FROM prices WHERE productClass=?", Price.class, message.getMessage().split("\\s+")[1]).get(0);
+
+		sendMessage(message, "updated Product price successfully", String.valueOf(productPrice.getPrice()), client);
 	}
 
 	private void handleCreateCustomerCredentials(Message message, ConnectionToClient client) throws IOException {
@@ -276,6 +283,32 @@ public class SimpleServer extends AbstractServer {
 
 		sendMessage(message, "created Customer credentials successfully", data, client);
 	}
+
+	private void handleCreateTicketPurchase(Message message, ConnectionToClient client) throws IOException {
+		// govId, screeningId, seatIds, amountOfTickets, ticketPrice
+		String[] messageData = message.getData().split(",(?![^\\[]*\\])");
+
+		String customerGovId = messageData[0];
+		String screeningTimeId = messageData[1];
+		String selectedSeatIds = messageData[2].substring(1, messageData[2].length()-1);
+
+		List<Seat> selectedSeats = db.executeNativeQuery("SELECT * FROM seats WHERE id IN (?)", Seat.class, selectedSeatIds);
+
+		String productPrice = messageData[3];
+
+		Customer owner = db.executeNativeQuery("SELECT * FROM customers WHERE govId=?", Customer.class, customerGovId).get(0);
+		ScreeningTime screeningTime = db.executeNativeQuery("SELECT * FROM screeningtimes WHERE id=?", ScreeningTime.class, screeningTimeId).get(0);
+
+		for (int i = 0; i < selectedSeats.size(); i++) {
+			Ticket newTicket = new Ticket(owner, Double.parseDouble(productPrice), screeningTime.getInTheaterMovie().getMovieName(), screeningTime, selectedSeats.get(i));
+			Purchase newPurchase = new Purchase(newTicket, "Credit Card", LocalTime.now());
+			db.addInstance(newTicket);
+			db.addInstance(newPurchase);
+		}
+
+		sendMessage(message, "created Ticket Purchase successfully", "payment successful", client);
+	}
+
 
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -343,6 +376,14 @@ public class SimpleServer extends AbstractServer {
 
 			else if (request.equals("create Customer credentials")) {
 				handleCreateCustomerCredentials(message, client);
+			}
+
+			else if (request.equals("get Ticket price")) {
+				handleProductPriceRequest(message, client);
+			}
+
+			else if (request.equals("create Ticket Purchase")) {
+				handleCreateTicketPurchase(message, client);
 			}
 
 			else {

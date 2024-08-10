@@ -86,6 +86,6 @@ public class ScreeningTime {
 
     @Override
     public String toString() {
-        return String.format("%s,%s,%s,%s", id, date.toString(), time.toString(), theater.getTheaterID());
+        return String.join(",", String.valueOf(id), date.toString(), time.toString(), String.valueOf(theater.getTheaterID()));
     }
 }

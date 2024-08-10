@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.CardPaymentPromptController">
+   <content>
+      <StackPane prefHeight="88.0" prefWidth="359.0">
+         <children>
+            <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="0.0" prefWidth="340.0" spacing="10.0" StackPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="paymentSumLabel" text="סכום לתשלום" />
+                  <Label alignment="TOP_CENTER" text="הכנס פרטי תשלום:">
+                     <font>
+                        <Font size="15.0" />
+                     </font></Label>
+                  <TextField fx:id="creditCardNumberField" alignment="CENTER" promptText="XXXX-XXXX-XXXX-XXXX" />
+                  <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <TextField fx:id="creditCardDateField" alignment="CENTER" promptText="MM-DD">
+                           <HBox.margin>
+                              <Insets right="10.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <TextField fx:id="creditCardCVCField" alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="50.0" promptText="CVC" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="340.0">
+                     <children>
+                        <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelPayment" text="בטל">
+                           <HBox.margin>
+                              <Insets right="3.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="payButton" mnemonicParsing="false" onAction="#onPayPressed" text="תשלום" />
+                     </children>
+                  </HBox>
+                  <Label fx:id="statusLabel" text="פורמט קלט שגוי" textFill="RED" visible="false">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin></Label>
+                  <Button fx:id="closeDialogButton" mnemonicParsing="false" onAction="#cancelPayment" text="סגור" visible="false" />
+               </children>
+            </VBox>
+         </children>
+      </StackPane>
+   </content>
+</DialogPane>

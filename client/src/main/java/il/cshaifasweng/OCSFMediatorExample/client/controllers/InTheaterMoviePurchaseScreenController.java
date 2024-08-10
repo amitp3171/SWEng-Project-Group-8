@@ -2,32 +2,24 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewSeatListEvent;
-import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 
-import javafx.collections.ObservableList;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
-import javafx.util.Callback;
-import javafx.beans.value.ObservableValue;
-import javafx.beans.property.SimpleBooleanProperty;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -58,29 +50,31 @@ public class InTheaterMoviePurchaseScreenController {
     private GridPane seatSelectionGridPane;
 
     @FXML
-    private GridPane purchaseTicketButton;
+    private Button cardPurchaseButton;
+
+    @FXML
+    private Button subscriptionCardPurchaseButton;
+
+    private DataParser dataParser;
 
     private String selectedBranch;
-    private String selectedMovie;
-    private String selectedScreening;
+    private Map<String, String> selectedMovie;
+    private Map<String, String> selectedScreening;
     private String selectedTheaterId;
-    private ArrayList<String> seats;
-    private ArrayList<String> selectedSeats = new ArrayList<>();
+    private ArrayList<Map<String, String>> seats = new ArrayList<>();
+    private ArrayList<String> selectedSeatIds = new ArrayList<>();
 
     public void setSelectedBranch(String branch) {
         this.selectedBranch = branch;
     }
 
-    public void setSelectedMovie(String selectedMovie) throws IOException {
+    public void setSelectedMovie(Map<String, String> selectedMovie) throws IOException {
         this.selectedMovie = selectedMovie;
 
-        // id, movieName, super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture()
-        String[] parsedMovie = selectedMovie.split(",(?![^\\[]*\\])");
-
-        String title = parsedMovie[1];
-        String description = parsedMovie[2].substring(1, parsedMovie[2].length() - 1);
-        String mainActors = parsedMovie[3].substring(1, parsedMovie[3].length() - 1);
-        String producerName = parsedMovie[4];
+        String title = selectedMovie.get("movieName");
+        String description = selectedMovie.get("description").substring(1, selectedMovie.get("description").length() - 1);
+        String mainActors = selectedMovie.get("mainActors").substring(1, selectedMovie.get("mainActors").length() - 1);
+        String producerName = selectedMovie.get("producerName");
 
         movieLabel.setText(title);
         movieSummaryLabel.setText(String.format("תקציר: %s", description));
@@ -93,28 +87,20 @@ public class InTheaterMoviePurchaseScreenController {
         producerNameLabel.setTooltip(new Tooltip(producerName));
     }
 
-    public void setSelectedScreening(String selectedScreening) throws IOException {
+    public void setSelectedScreening(Map<String, String> selectedScreening) throws IOException {
         this.selectedScreening = selectedScreening;
 
-        String[] parsedScreeningTime = selectedScreening.split(",");
+        this.selectedTheaterId = selectedScreening.get("theaterId");
 
-        this.selectedTheaterId = parsedScreeningTime[3];
+        this.theaterNumberLabel.setText(String.format("אולם %s", (1 + (Integer.parseInt(this.selectedTheaterId)-1) % 10)));
 
-        this.theaterNumberLabel.setText(String.format("אולם %s", (1 + (Integer.parseInt(parsedScreeningTime[3])-1) % 10)));
-
-        this.screeningTimeAndDateLabel.setText(String.format("מועד הקרנה: %s, %s", parsedScreeningTime[2], parsedScreeningTime[1]));
+        this.screeningTimeAndDateLabel.setText(String.format("מועד הקרנה: %s, %s", selectedScreening.get("time"), selectedScreening.get("date")));
 
         this.requestSeatList();
     }
 
     public void requestSeatList() throws IOException {
-        // send request to server
-        int messageId = CinemaClient.getNextMessageId();
-        // message_text,branch_location,movie_id
-        Message newMessage = new Message(messageId, "get Seat list");
-        newMessage.setData(this.selectedTheaterId);
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("Theater data request sent");
+        CinemaClient.sendToServer("get Seat list", this.selectedTheaterId);
     }
 
     private void populateSeats() {
@@ -122,7 +108,7 @@ public class InTheaterMoviePurchaseScreenController {
             for (int col = 0; col < 6; col++) {
                 Circle seat = new Circle(10);
 
-                boolean isTaken = Boolean.parseBoolean(this.seats.get(row*6 + col).split(",")[1]);
+                boolean isTaken = Boolean.parseBoolean(this.seats.get(row*6 + col).get("isTaken"));
 
                 seat.setFill(isTaken ? Color.RED : Color.GREEN);
                 seat.setStroke(Color.BLACK);
@@ -152,18 +138,20 @@ public class InTheaterMoviePurchaseScreenController {
 
     /* handlers are created for previously non-taken seats */
     private void handleSeatClick(Circle seat, int row, int col) {
-        String newSelectedSeat = Integer.toString(row*6 + col);
+        int newSelectedSeatIdx = row*6 + col;
 
         boolean isOccupied = (seat.getFill() == Color.YELLOW);
 
         if (isOccupied) {
             seat.setFill(Color.GREEN);
-            selectedSeats.remove(newSelectedSeat);
+            this.selectedSeatIds.remove(this.seats.get(newSelectedSeatIdx).get("id"));
         }
         else {
             seat.setFill(Color.YELLOW);
-            selectedSeats.add(newSelectedSeat);
+            this.selectedSeatIds.add(this.seats.get(newSelectedSeatIdx).get("id"));
         }
+
+        cardPurchaseButton.setDisable(selectedSeatIds.isEmpty());
     }
 
     @Subscribe
@@ -171,7 +159,10 @@ public class InTheaterMoviePurchaseScreenController {
         // on event received
         Platform.runLater(() -> {
             try {
-                this.seats = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+                ArrayList<String> receivedData = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+                for (String seat : receivedData)
+                    this.seats.add(dataParser.parseSeat(seat));
+
                 populateSeats();
             }
             catch (IOException e) {
@@ -181,13 +172,31 @@ public class InTheaterMoviePurchaseScreenController {
         });
     }
 
+    // TODO: if successfull, set seat to red and remove listener
     @FXML
-    void purchaseTicketButton(ActionEvent event) throws IOException {
+    void onCardPurchase(ActionEvent event) throws IOException {
         if (CinemaClient.getUserDataManager().isGuest()) {
               CinemaClient.getDialogCreationManager().loadDialog("createCustomerCredentialsPrompt");
         }
-        // TODO: move to next screen (payment?) - do this as a function, will be used in login as well
-        // TODO: make sure selectedSeats is not empty
+
+        // TODO: move to next screen (payment selection - credit)
+        ButtonType status = CinemaClient.getDialogCreationManager().loadDialog("cardPaymentPrompt", selectedScreening, selectedSeatIds);
+
+        if (status == ButtonType.OK) {
+            for (String seat : this.selectedSeatIds) {
+
+            }
+            this.selectedSeatIds.clear();
+        }
+    }
+
+    @FXML
+    void onSubscriptionCardPurchase(ActionEvent event) throws IOException {
+        if (CinemaClient.getUserDataManager().isGuest()) {
+            CinemaClient.getDialogCreationManager().loadDialog("createCustomerCredentialsPrompt");
+        }
+
+
     }
 
     @FXML
@@ -205,6 +214,7 @@ public class InTheaterMoviePurchaseScreenController {
 
     @FXML
     void initialize() {
+        dataParser = CinemaClient.getDataParser();
         EventBus.getDefault().register(this);
     }
 }

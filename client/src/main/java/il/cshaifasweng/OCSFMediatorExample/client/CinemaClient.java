@@ -28,6 +28,7 @@ public class CinemaClient extends Application {
     private static SimpleClient client;
     private static ObjectMapper mapper = new ObjectMapper();
     private static UserDataManager userDataManager;
+    private static DataParser dataParser;
     private static DialogCreationManager dialogCreationManager;
 
     private static int nextMessageId;
@@ -38,6 +39,7 @@ public class CinemaClient extends Application {
         mapper.registerModule(new JavaTimeModule());
     	client = SimpleClient.getClient();
         userDataManager = UserDataManager.getInstance();
+        dataParser = DataParser.getInstance();
         dialogCreationManager = DialogCreationManager.getInstance();
         appStage = stage;
     	client.openConnection();
@@ -47,7 +49,7 @@ public class CinemaClient extends Application {
         stage.show();
     }
 
-    public static int getNextMessageId() {
+    private static int getNextMessageId() {
         nextMessageId++;
         return nextMessageId;
     }
@@ -62,6 +64,10 @@ public class CinemaClient extends Application {
 
     public static UserDataManager getUserDataManager() {
         return userDataManager;
+    }
+
+    public static DataParser getDataParser() {
+        return dataParser;
     }
 
     public static void setUserDataManager(String customerFirstName, String customerLastName, String customerGovId) {
@@ -120,6 +126,19 @@ public class CinemaClient extends Application {
 
     public static void setWindowTitle(String title) {
         appStage.setTitle(title);
+    }
+
+    public static void sendToServer(String messageHeader) throws IOException {
+        Message newMessage = new Message(getNextMessageId(), messageHeader);
+        getClient().sendToServer(newMessage);
+        System.out.printf("%s request sent.%n", messageHeader);
+    }
+
+    public static void sendToServer(String messageHeader, String messageData) throws IOException {
+        Message newMessage = new Message(getNextMessageId(), messageHeader);
+        newMessage.setData(messageData);
+        getClient().sendToServer(newMessage);
+        System.out.printf("%s request sent.%n", messageHeader);
     }
 
     @Override

@@ -2,9 +2,12 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Dictionary;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewVerifiedCustomerIdEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewVerifiedEmployeeCredentialsEvent;
@@ -33,6 +36,8 @@ public class EmployeeLoginController implements DialogInterface {
     @FXML
     private TextField userNameField;
 
+    DataParser dataParser;
+
     private String employeeUserName;
     private String employeeFirstName;
     private String employeeLastName;
@@ -53,6 +58,7 @@ public class EmployeeLoginController implements DialogInterface {
         dialog.close();
     }
 
+    // TODO: hash passwords!
     @FXML
     void loginEmployeeCustomer(ActionEvent event) throws IOException {
         // avoid empty selection
@@ -63,14 +69,9 @@ public class EmployeeLoginController implements DialogInterface {
         // hide label
         invalidUserLabel.setVisible(false);
         // get id
-        employeeUserName = userNameField.getText();
+        this.employeeUserName = userNameField.getText();
         // verify credentials
-        int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "verify Employee credentials");
-        // TODO: hash passwords!
-        newMessage.setData(String.format("%s,%s", employeeUserName, passwordField.getText()));
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("verify Employee credentials request sent");
+        CinemaClient.sendToServer("verify Employee credentials", String.join(",", this.employeeUserName, passwordField.getText()));
         // disable buttons
         employeeLoginButton.setDisable(true);
         cancelButton.setDisable(true);
@@ -90,13 +91,10 @@ public class EmployeeLoginController implements DialogInterface {
                 cancelButton.setDisable(false);
             }
             else {
-                String[] splitData = messageData.split(",");
-                employeeFirstName = splitData[0];
-                employeeLastName = splitData[1];
-                employeeRole = splitData[2];
+                Map<String, String> employeeDictionary = dataParser.parseEmployee(messageData);
                 try {
                     // set content
-                    CinemaClient.setUserDataManager(employeeFirstName, employeeLastName, employeeUserName, employeeRole);
+                    CinemaClient.setUserDataManager(employeeDictionary.get("firstName"), employeeDictionary.get("lastName"), this.employeeUserName, employeeDictionary.get("employeeType"));
                     CinemaClient.setContent("movieTypeSelection");
                     // close dialog
                     EventBus.getDefault().unregister(this);
@@ -111,6 +109,7 @@ public class EmployeeLoginController implements DialogInterface {
 
     @FXML
     void initialize() {
+        dataParser = CinemaClient.getDataParser();
         // register to EventBus
         EventBus.getDefault().register(this);
     }

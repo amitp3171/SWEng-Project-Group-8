@@ -66,6 +66,14 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new NewCreateCustomerCredentialsEvent(message));
 		}
 
+		else if (message.getMessage().equals("updated Product price successfully")){
+			EventBus.getDefault().post(new NewProductPriceEvent(message));
+		}
+
+		else if (message.getMessage().equals("created Ticket Purchase successfully")){
+			EventBus.getDefault().post(new NewPurchaseStatusEvent(message));
+		}
+
 		else if(message.getMessage().equals("client added successfully")){
 			EventBus.getDefault().post(new NewSubscriberEvent(message));
 		}

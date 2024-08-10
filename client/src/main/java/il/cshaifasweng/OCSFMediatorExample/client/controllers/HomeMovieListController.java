@@ -71,11 +71,7 @@ public class HomeMovieListController {
 
     private void requestHomeMovieList(boolean forceRefresh) throws IOException {
         // send request to server
-        int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "get HomeMovie list");
-        newMessage.setData(String.valueOf(forceRefresh));
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("HomeMovie request sent");
+        CinemaClient.sendToServer("get HomeMovie list", String.valueOf(forceRefresh));
     }
 
     void initializeList() {

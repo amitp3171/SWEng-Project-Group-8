@@ -1,8 +1,10 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
+import java.util.Map;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewCreateCustomerCredentialsEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewVerifiedCustomerIdEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
@@ -38,6 +40,8 @@ public class CreateCustomerCredentialsPromptController implements DialogInterfac
 
     @FXML
     private Label invalidUserLabel;
+
+    DataParser dataParser;
 
     private Dialog<ButtonType> dialog;
 
@@ -87,11 +91,7 @@ public class CreateCustomerCredentialsPromptController implements DialogInterfac
         this.customerFirstName = customerFirstNameField.getText();
         this.customerLastName = customerLastNameField.getText();
         // verify credentials
-        int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "create Customer credentials");
-        newMessage.setData(String.join(",", this.customerGovId, this.customerFirstName, this.customerLastName));
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("create Customer credentials request sent");
+        CinemaClient.sendToServer("create Customer credentials", String.join(",", this.customerGovId, this.customerFirstName, this.customerLastName));
         // disable buttons
         createCustomerButton.setDisable(true);
         cancelButton.setDisable(true);
@@ -136,11 +136,7 @@ public class CreateCustomerCredentialsPromptController implements DialogInterfac
         // get credentials
         this.customerGovId = customerLoginIdNumField.getText();
         // verify credentials
-        int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "verify Customer id");
-        newMessage.setData(this.customerGovId);
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("verify Customer id request sent");
+        CinemaClient.sendToServer("verify Customer id", this.customerGovId);
         // disable buttons
         createCustomerButton.setDisable(true);
         cancelButton.setDisable(true);
@@ -162,11 +158,9 @@ public class CreateCustomerCredentialsPromptController implements DialogInterfac
                 customerExistsLogin.setDisable(false);
             }
             else {
-                String[] splitData = messageData.split(",");
-                customerFirstName = splitData[0];
-                customerLastName = splitData[1];
+                Map<String, String> customerMap = dataParser.parseCustomer(messageData);
                 // set content
-                CinemaClient.setUserDataManager(customerFirstName, customerLastName, customerGovId);
+                CinemaClient.setUserDataManager(customerMap.get("firstName"), customerMap.get("lastName"), customerGovId);
                 // close dialog
                 EventBus.getDefault().unregister(this);
                 dialog.setResult(ButtonType.OK);
@@ -177,6 +171,7 @@ public class CreateCustomerCredentialsPromptController implements DialogInterfac
 
     @FXML
     void initialize() {
+        dataParser = CinemaClient.getDataParser();
         EventBus.getDefault().register(this);
     }
 

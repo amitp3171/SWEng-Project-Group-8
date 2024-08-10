@@ -47,12 +47,13 @@ public class CheckInstances {
         configuration.addAnnotatedClass(CompanyManager.class);
         configuration.addAnnotatedClass(BranchManager.class);
         configuration.addAnnotatedClass(ContentManager.class);
+        configuration.addAnnotatedClass(Price.class);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
         configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "amit1717");
+        configuration.setProperty("hibernate.connection.password", "20danny05");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
@@ -229,6 +230,13 @@ public class CheckInstances {
         }
     }
 
+    private static void generatePrices(Price[] prices) throws Exception {
+        for (Price price : prices) {
+            session.save(price);
+            session.flush();
+        }
+    }
+
 
 
 
@@ -365,7 +373,7 @@ public class CheckInstances {
 
             SubscriptionCard[] sc = new SubscriptionCard[5];
             for(int i=0;i<sc.length;i++) {
-                sc[i] = new SubscriptionCard(customers[i],200);
+                sc[i] = new SubscriptionCard(customers[i], 700);
                 purchases[i+5] = new Purchase(sc[i], "Credit Card", LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i+5]);
 
@@ -373,7 +381,7 @@ public class CheckInstances {
 
             Ticket[] tickets = new Ticket[5];
             for(int i=0;i<tickets.length;i++) {
-                tickets[i] = new Ticket(customers[i],30,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(i), screeningTimes.get(i).getTheater().getSeat(i));
+                tickets[i] = new Ticket(customers[i], 40,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(i), screeningTimes.get(i).getTheater().getSeat(i));
                 purchases[i+10] = new Purchase(tickets[i], "Credit Card", LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i+10]);
 
@@ -418,6 +426,11 @@ public class CheckInstances {
                 customers[i].addTicketToList(tickets[i]);
             }
 
+            Price ticketPrice = new Price("Ticket", 40);
+            Price linkPrice = new Price("Link", 20);
+            Price subscriptionCardPrice = new Price("SubscriptionCard", 700);
+
+            generatePrices(new Price[]{ticketPrice, linkPrice, subscriptionCardPrice});
 
             generatePurchases(purchases);
             generateComplaints(complaints);
