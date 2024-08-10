@@ -13,6 +13,9 @@ import org.greenrobot.eventbus.EventBus;
 
 public class ComplaintsController {
 
+
+    private String customerGovId;
+
     @FXML
     private Label welcomeUserLabel;
 
@@ -44,8 +47,15 @@ public class ComplaintsController {
 
     @FXML
     void complaints(ActionEvent event) throws IOException {
-        CinemaClient.getDialogCreationManager().loadDialog("complaintsList");
+        CinemaClient.setContent("complaintsList");
     }
+
+    @FXML
+    void getComplaintId(ActionEvent event) throws IOException {
+        // Assuming customer ID is valid and other user data is set
+        CinemaClient.sendToServer("get active complaints", customerGovId);
+    }
+
 
     @FXML
     void initialize() {

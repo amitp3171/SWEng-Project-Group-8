@@ -45,7 +45,7 @@ public class PurchasesController {
 
     @FXML
     void complaints(ActionEvent event) throws IOException {
-        CinemaClient.getDialogCreationManager().loadDialog("complaintsList");
+        CinemaClient.setContent("complaintsList");
     }
 
     @FXML

@@ -10,11 +10,15 @@ public class Complaint {
     private int id;
     @ManyToOne(cascade = CascadeType.ALL)
     private Customer creator;
-    private LocalTime recievedAt;
+    private LocalTime receivedAt;
+    private String complaintContent;
 
-    public Complaint(Customer creator, LocalTime recievedAt) {
+
+
+    public Complaint(Customer creator, LocalTime receivedAt,String complaintContent1) {
         this.creator = creator;
-        this.recievedAt = recievedAt;
+        this.receivedAt = receivedAt;
+        this.complaintContent = complaintContent1;
     }
 
     public Complaint() {
@@ -29,11 +33,11 @@ public class Complaint {
         this.creator = creator;
     }
 
-    public LocalTime getRecievedAt() {
-        return recievedAt;
+    public LocalTime getreceivedAt() {
+        return receivedAt;
     }
 
-    public void setRecievedAt(LocalTime recievedAt) {
-        this.recievedAt = recievedAt;
+    public void setreceivedAt(LocalTime receivedAt) {
+        this.receivedAt = receivedAt;
     }
 }

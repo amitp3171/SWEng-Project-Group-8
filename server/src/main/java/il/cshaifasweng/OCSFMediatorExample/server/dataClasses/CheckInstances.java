@@ -52,9 +52,9 @@ public class CheckInstances {
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
+        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/sys?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "20danny05");
+        configuration.setProperty("hibernate.connection.password", "babun13");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
@@ -391,11 +391,11 @@ public class CheckInstances {
 
 
             Complaint[] complaints = new Complaint[5];
-            complaints[0] = new Complaint(customers[0], LocalTime.now());
-            complaints[1] = new Complaint(customers[1], LocalTime.now());
-            complaints[2] = new Complaint(customers[2], LocalTime.now());
-            complaints[3] = new Complaint(customers[3], LocalTime.now());
-            complaints[4] = new Complaint(customers[4], LocalTime.now());
+            complaints[0] = new Complaint(customers[0], LocalTime.now(), "too expensive ");
+            complaints[1] = new Complaint(customers[1], LocalTime.now(),"too long ");
+            complaints[2] = new Complaint(customers[2], LocalTime.now(), "too short");
+            complaints[3] = new Complaint(customers[3], LocalTime.now(), "bad service ");
+            complaints[4] = new Complaint(customers[4], LocalTime.now()," ");
 
             ServiceEmployee[] serviceEmployees = new ServiceEmployee[5];
             serviceEmployees[0] = new ServiceEmployee("John", "Doe", "johndoe", "password1");
