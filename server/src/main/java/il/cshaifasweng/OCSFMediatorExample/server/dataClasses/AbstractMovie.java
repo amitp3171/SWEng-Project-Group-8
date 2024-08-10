@@ -65,4 +65,6 @@ public abstract class AbstractMovie {
     public void setPicture(String picture) {
         this.picture = picture;
     }
+
+
 }

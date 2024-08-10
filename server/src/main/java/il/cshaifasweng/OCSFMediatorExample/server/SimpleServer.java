@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.lang.*;
 
@@ -167,8 +168,10 @@ public class SimpleServer extends AbstractServer {
 		List<ComingSoonMovie> receivedData = db.getAll(ComingSoonMovie.class, forceRefresh);
 		ArrayList<String> movieToString = new ArrayList<>();
 
-		for (ComingSoonMovie movie : receivedData)
+
+		for (ComingSoonMovie movie : receivedData) {
 			movieToString.add(movie.toString());
+		}
 
 		sendMessage(message, "updated ComingSoonMovie list successfully", movieToString, client);
 	}
@@ -229,6 +232,61 @@ public class SimpleServer extends AbstractServer {
 		}
 
 		sendMessage(message, "created new ScreeningTime successfully", data, client);
+	}
+
+	private void handleAddComingSoonMovie(Message message, ConnectionToClient client) throws IOException {
+		// parse message: coming soon movie details by order in the constructor
+		String[] splitMessage = message.getData().split(",");
+		LocalDate releaseDate = LocalDate.parse(splitMessage[splitMessage.length-1], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		List<String> mainActorsList = Arrays.asList(splitMessage[2].split(";"));
+
+		//add comingSoonMovie
+		ComingSoonMovie newComingSoonMovie = new ComingSoonMovie(splitMessage[0], splitMessage[1], mainActorsList, splitMessage[3], splitMessage[4], releaseDate);
+
+		String data = "request successful";
+		db.addInstance(newComingSoonMovie);
+
+		sendMessage(message, "created new ComingSoonMovie successfully", data, client);
+	}
+
+	private void handleAddHomeMovie(Message message, ConnectionToClient client) throws IOException {
+		// parse message: home movie details by order in the constructor
+		String[] splitMessage = message.getData().split(",");
+		double movieLength = Double.parseDouble(splitMessage[splitMessage.length-1]);
+		List<String> mainActorsList = Arrays.asList(splitMessage[2].split(";"));
+
+		//add homeMovie
+		HomeMovie newHomeMovie = new HomeMovie(splitMessage[0], splitMessage[1], mainActorsList, splitMessage[3], splitMessage[4], movieLength);
+
+		String data = "request successful";
+		db.addInstance(newHomeMovie);
+
+		sendMessage(message, "created new HomeMovie successfully", data, client);
+	}
+
+	private void handleRemoveComingSoonMovie(Message message, ConnectionToClient client) throws IOException {
+		// Parse the incoming movie data string
+		String[] splitMovieData = message.getData().split(",");
+
+		ComingSoonMovie movieToRemove = db.executeNativeQuery("SELECT * FROM ComingSoonMovie WHERE movieName=?", ComingSoonMovie.class, splitMovieData[1]).get(0);
+
+		//Remove movie
+		db.removeInstance(movieToRemove);
+		// Send success message back to the client
+		sendMessage(message, "removed ComingSoonMovie successfully", "success", client);
+
+	}
+
+	private void handleRemoveHomeMovie(Message message, ConnectionToClient client) throws IOException {
+		// Parse the incoming movie data string
+		String[] splitMovieData = message.getData().split(",");
+
+		HomeMovie movieToRemove = db.executeNativeQuery("SELECT * FROM HomeMovie WHERE movieName=?", HomeMovie.class, splitMovieData[1]).get(0);
+
+		//Remove movie
+		db.removeInstance(movieToRemove);
+		// Send success message back to the client
+		sendMessage(message, "removed HomeMovie successfully", "success", client);
 	}
 
 	private void handleVerifyCustomerIdRequest(Message message, ConnectionToClient client) throws IOException {
@@ -386,6 +444,22 @@ public class SimpleServer extends AbstractServer {
 
 			else if (request.equals("create Ticket Purchase")) {
 				handleCreateTicketPurchase(message, client);
+			}
+
+			else if(request.equals("add new coming soon movie")) {
+				handleAddComingSoonMovie(message, client);
+			}
+
+			else if(request.equals("remove coming soon movie")) {
+				handleRemoveComingSoonMovie(message, client);
+			}
+
+			else if(request.equals("add new home movie")) {
+				handleAddHomeMovie(message, client);
+			}
+
+			else if(request.equals("remove home movie")) {
+				handleRemoveHomeMovie(message, client);
 			}
 
 			else {
