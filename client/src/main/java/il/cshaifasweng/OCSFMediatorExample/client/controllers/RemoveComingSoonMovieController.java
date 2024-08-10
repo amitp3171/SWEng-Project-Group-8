@@ -1,6 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class RemoveComingSoonMovieController implements DialogInterface {
 
@@ -23,6 +25,8 @@ public class RemoveComingSoonMovieController implements DialogInterface {
 
     @FXML
     private Label statusLabel;
+
+    private DataParser dataParser;
 
     private Dialog<ButtonType> dialog;
 
@@ -55,15 +59,8 @@ public class RemoveComingSoonMovieController implements DialogInterface {
         // Get the movie that matches the input
         String movieToRemove = getMatchingMovieData();
 
-        if (movieToRemove != null) {
-            int messageId = CinemaClient.getNextMessageId();
-            Message newMessage = new Message(messageId, "remove coming soon movie");
-
-            // Send the entire movie object as data
-            newMessage.setData(movieToRemove);
-            CinemaClient.getClient().sendToServer(newMessage);
-            System.out.println("remove coming soon movie request sent");
-
+        if (movieToRemove != null) {;
+            CinemaClient.sendToServer("remove coming soon movie", movieToRemove);
             dialog.close();
         } else {
             statusLabel.setVisible(true);
@@ -71,21 +68,17 @@ public class RemoveComingSoonMovieController implements DialogInterface {
     }
 
     private String getMatchingMovieData() {
+        dataParser = CinemaClient.getDataParser();
+
         for (String comingSoonMovie : comingSoonMovies) {
-            // Split the comingSoonMovie string by comma to get individual fields
-            String[] movieDetails = comingSoonMovie.split(",");
-            if (movieDetails[1].equals(movieNameField.getText())) {
+            Map<String, String> movieMap = dataParser.parseMovie(comingSoonMovie);
+            if (movieMap.get("movieName").equals(movieNameField.getText())) {
                 // Return the formatted string containing movie details
                 return comingSoonMovie;
             }
         }
+
         statusLabel.setText("סרט לא קיים!");
         return null;
     }
-
-
-
-
-
-
 }

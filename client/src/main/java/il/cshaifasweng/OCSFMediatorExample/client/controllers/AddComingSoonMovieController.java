@@ -1,6 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewAddedComingSoonMovieEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.fxml.FXML;
@@ -17,6 +18,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class AddComingSoonMovieController implements DialogInterface {
 
@@ -41,12 +43,15 @@ public class AddComingSoonMovieController implements DialogInterface {
     @FXML
     private Label statusLabel;
 
+    DataParser dataParser;
+
     private Dialog<ButtonType> dialog;
 
     private ArrayList<String> comingSoonMovies;
 
     @FXML
     private void initialize() {
+        dataParser = CinemaClient.getDataParser();
         statusLabel.setVisible(false);
     }
 
@@ -59,22 +64,14 @@ public class AddComingSoonMovieController implements DialogInterface {
     }
 
 
-
     @FXML
     private void onAddComingSoonMovie() throws IOException {
 
         // Add the movie if the input is valid
         if (isInputValid()) {
-
-            int messageId = CinemaClient.getNextMessageId();
-            Message newMessage = new Message(messageId, "add new coming soon movie");
             String mainActorsString = String.join(";", getMainActors());
             String description = "[" + getDescription() + "]";
-            newMessage.setData(String.format("%s,%s,%s,%s,%s,%s", getMovieName(), getProducerName(), mainActorsString, description, getPicture(), getReleaseDate()));
-            CinemaClient.getClient().sendToServer(newMessage);
-            System.out.println("add new coming soon movie request sent");
-
-
+            CinemaClient.sendToServer("add new coming soon movie", String.join(",", getMovieName(), getProducerName(), mainActorsString, description, getPicture(), getReleaseDate()));
             dialog.close();
         } else {
             statusLabel.setVisible(true);
@@ -85,12 +82,10 @@ public class AddComingSoonMovieController implements DialogInterface {
         String errorMessage = "";
 
         for (String comingSoonMovie : comingSoonMovies) {
-            // Split the comingSoonMovie string by comma to get individual fields
-            String[] movieDetails = comingSoonMovie.split(",");
-
+            Map<String, String> movieMap = dataParser.parseMovie(comingSoonMovie);
 
             // Check if the first field (movie name) is the same as the movieNameField's text
-            if (movieDetails.length > 0 && movieDetails[1].replace(",","").equals(movieNameField.getText())) {
+            if (movieMap.get("movieName").equals(movieNameField.getText())) {
                 errorMessage = "הסרט כבר קיים!" + "\n";
                 break;  // No need to check further if we found a match
             }

@@ -1,6 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class RemoveHomeMovieController implements DialogInterface {
 
@@ -21,6 +23,8 @@ public class RemoveHomeMovieController implements DialogInterface {
 
     @FXML
     private Label statusLabel;
+
+    private DataParser dataParser;
 
     private Dialog<ButtonType> dialog;
 
@@ -54,14 +58,7 @@ public class RemoveHomeMovieController implements DialogInterface {
         String movieToRemove = getMatchingMovieData();
 
         if (movieToRemove != null) {
-            int messageId = CinemaClient.getNextMessageId();
-            Message newMessage = new Message(messageId, "remove home movie");
-
-            // Send the entire movie object as data
-            newMessage.setData(movieToRemove);
-            CinemaClient.getClient().sendToServer(newMessage);
-            System.out.println("remove home movie request sent");
-
+            CinemaClient.sendToServer("remove home movie", movieToRemove);
             dialog.close();
         } else {
             statusLabel.setVisible(true);
@@ -69,14 +66,16 @@ public class RemoveHomeMovieController implements DialogInterface {
     }
 
     private String getMatchingMovieData() {
+        dataParser = CinemaClient.getDataParser();
+
         for (String homeMovie : homeMovies) {
-            // Split the comingSoonMovie string by comma to get individual fields
-            String[] movieDetails = homeMovie.split(",");
-            if (movieDetails[1].equals(movieNameField.getText())) {
+            Map<String, String> movieMap = dataParser.parseMovie(homeMovie);
+            if (movieMap.get("moviename").equals(movieNameField.getText())) {
                 // Return the formatted string containing movie details
                 return homeMovie;
             }
         }
+
         statusLabel.setText("סרט לא קיים!");
         return null;
     }

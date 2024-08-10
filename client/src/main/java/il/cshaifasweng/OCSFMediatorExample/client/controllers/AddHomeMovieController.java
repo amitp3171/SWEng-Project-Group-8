@@ -1,6 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewAddedComingSoonMovieEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.fxml.FXML;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class AddHomeMovieController implements DialogInterface {
 
@@ -38,6 +40,8 @@ public class AddHomeMovieController implements DialogInterface {
     @FXML
     private Label statusLabel;
 
+    DataParser dataParser;
+
     private Dialog<ButtonType> dialog;
 
     private ArrayList<String> homeMovies;
@@ -55,23 +59,14 @@ public class AddHomeMovieController implements DialogInterface {
         this.homeMovies = (ArrayList<String>)items[0];
     }
 
-
-
     @FXML
     private void onAddHomeMovie() throws IOException {
 
         // Add the movie if the input is valid
         if (isInputValid()) {
-
-            int messageId = CinemaClient.getNextMessageId();
-            Message newMessage = new Message(messageId, "add new home movie");
             String mainActorsString = String.join(";", getMainActors());
             String description = "[" + getDescription() + "]";
-            newMessage.setData(String.format("%s,%s,%s,%s,%s,%s", getMovieName(), getProducerName(), mainActorsString, description, getPicture(), getMovieLength()));
-            CinemaClient.getClient().sendToServer(newMessage);
-            System.out.println("add new home movie request sent");
-
-
+            CinemaClient.sendToServer("add new home movie", String.join(",", getMovieName(), getProducerName(), mainActorsString, description, getPicture(), getMovieLength()));
             dialog.close();
         } else {
             statusLabel.setVisible(true);
@@ -81,17 +76,16 @@ public class AddHomeMovieController implements DialogInterface {
     private boolean isInputValid() {
         String errorMessage = "";
 
-        for (String homeMovie :homeMovies) {
-            // Split the comingSoonMovie string by comma to get individual fields
-            String[] movieDetails = homeMovie.split(",");
-
+        for (String homeMovie : homeMovies) {
+            Map<String, String> movieMap = dataParser.parseMovie(homeMovie);
 
             // Check if the first field (movie name) is the same as the movieNameField's text
-            if (movieDetails.length > 0 && movieDetails[1].replace(",","").equals(movieNameField.getText())) {
+            if (movieMap.get("movieName").equals(movieNameField.getText())) {
                 errorMessage = "הסרט כבר קיים!" + "\n";
                 break;  // No need to check further if we found a match
             }
         }
+
         if(errorMessage.isEmpty()) {
             if (movieNameField.getText() == null || movieNameField.getText().isEmpty()) {
                 errorMessage = "שם סרט לא תקין!" + "\n";
@@ -158,6 +152,8 @@ public class AddHomeMovieController implements DialogInterface {
     @Subscribe
     public void onAddedHomeMovieEvent(NewAddedComingSoonMovieEvent event) {
         Platform.runLater(() -> {
+            dataParser = CinemaClient.getDataParser();
+
             String status = event.getMessage().getData();
             if (status.equals("request successful"))
                 statusLabel.setText("סרט נוצר בהצלחה");
