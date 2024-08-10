@@ -53,8 +53,12 @@ public class SimpleServer extends AbstractServer {
 				"SELECT * FROM complaints WHERE creator_id = ?",
 				Complaint.class,
 				customer.get(0).getId());
+		List<String> complaintsContents = new ArrayList<>();
+		for (Complaint complaint: receivedComplaints){
+			complaintsContents.add(complaint.getComplaintContent());
 
-		sendMessage(message, "updated Complaint List successfully", receivedComplaints, client);
+		}
+		sendMessage(message, "updated Complaint List successfully", complaintsContents, client);
 	}
 	private void handleNewClient(Message message, ConnectionToClient client) throws IOException {
 		SubscribedClient connection = new SubscribedClient(client);

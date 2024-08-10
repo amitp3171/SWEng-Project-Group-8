@@ -25,6 +25,14 @@ public class Complaint {
 
     }
 
+    public String getComplaintContent() {
+        return complaintContent;
+    }
+
+    public void setComplaintContent(String complaintContent) {
+        this.complaintContent = complaintContent;
+    }
+
     public Customer getCreator() {
         return creator;
     }
