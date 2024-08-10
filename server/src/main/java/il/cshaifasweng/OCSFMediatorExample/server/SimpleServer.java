@@ -190,7 +190,6 @@ public class SimpleServer extends AbstractServer {
 	private void handleSetScreeningTimeRequest(Message message, ConnectionToClient client) throws IOException {
 		// id, day, time, theater.getTheaterID()
 		String[] splitMessage = message.getData().split(",");
-		Theater temp = db.executeNativeQuery("SELECT * FROM Theaters WHERE theaterID=?", Theater.class, splitMessage[3]).get(0);
 		ScreeningTime screening = db.executeNativeQuery("SELECT * FROM ScreeningTimes WHERE id=?", ScreeningTime.class, splitMessage[0]).get(0);
 		screening.setTime(splitMessage[2]);
 		screening.setDate(LocalDate.parse(splitMessage[1], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -203,6 +202,7 @@ public class SimpleServer extends AbstractServer {
 	private void handleCreateScreeningTimeRequest(Message message, ConnectionToClient client) throws IOException {
 		// parse message: branchLocation, date, time, theater, movie
 		String[] splitMessage = message.getData().split(",");
+
 		Branch selectedBranch = db.executeNativeQuery("SELECT * FROM Branches WHERE location=?", Branch.class, splitMessage[0]).get(0);
 		LocalDate selectedDate = LocalDate.parse(splitMessage[1], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		LocalTime selectedTime = LocalTime.parse(splitMessage[2], DateTimeFormatter.ofPattern("HH:mm"));
@@ -212,7 +212,7 @@ public class SimpleServer extends AbstractServer {
 		String data = "request failed";
 
 		// check for existing screenings in the specified theater
-		List<ScreeningTime> existingScreenings = db.executeNativeQuery("SELECT * FROM ScreeningTimes WHERE theater_theaterID=? AND time=?", ScreeningTime.class, splitMessage[3], splitMessage[2]);
+		List<ScreeningTime> existingScreenings = db.executeNativeQuery("SELECT * FROM ScreeningTimes WHERE theater_theaterID=? AND time=? AND date=?", ScreeningTime.class, splitMessage[3], splitMessage[2], splitMessage[1]);
 
 		if (existingScreenings.isEmpty()) {
 			// add screeningTime

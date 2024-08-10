@@ -39,10 +39,10 @@ public class ScreeningEditorController implements DialogInterface {
         this.selectedScreeningTime = (Map<String, String>) params[1];
         screeningDatePicker.setValue(LocalDate.parse(selectedScreeningTime.get("date"), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         theaterChoiceBox.setValue(String.valueOf(1 + (Integer.parseInt(selectedScreeningTime.get("theaterId"))-1) % 10));
-        try{
+
+        try {
             CinemaClient.sendToServer("get Theater ID list", (String)params[2]);
-        }
-        catch(IOException e){
+        } catch(IOException e){
             e.printStackTrace();
         }
     }
