@@ -21,6 +21,8 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="פעולות">
                     <items>
+                        <MenuItem fx:id="addHomeMovie" mnemonicParsing="false" onAction="#onAddHomeMovie" text="הוספת סרט" visible="false" />
+                        <MenuItem fx:id="removeHomeMovie" mnemonicParsing="false" onAction="#onRemoveHomeMovie" text="מחיקת סרט" visible="false" />
                         <MenuItem mnemonicParsing="false" onAction="#onRefreshList" text="רענן רשימה" />
                     </items>
                 </Menu>

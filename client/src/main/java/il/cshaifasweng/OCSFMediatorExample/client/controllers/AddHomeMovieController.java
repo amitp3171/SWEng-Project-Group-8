@@ -11,14 +11,11 @@ import org.greenrobot.eventbus.Subscribe;
 
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AddComingSoonMovieController implements DialogInterface {
+public class AddHomeMovieController implements DialogInterface {
 
     @FXML
     private TextField movieNameField;
@@ -36,14 +33,14 @@ public class AddComingSoonMovieController implements DialogInterface {
     private TextField pictureField;
 
     @FXML
-    private TextField releaseDateField;
+    private TextField movieLengthField;
 
     @FXML
     private Label statusLabel;
 
     private Dialog<ButtonType> dialog;
 
-    private ArrayList<String> comingSoonMovies;
+    private ArrayList<String> homeMovies;
 
     @FXML
     private void initialize() {
@@ -55,24 +52,24 @@ public class AddComingSoonMovieController implements DialogInterface {
     }
 
     public void setData(Object... items) {
-        this.comingSoonMovies = (ArrayList<String>)items[0];
+        this.homeMovies = (ArrayList<String>)items[0];
     }
 
 
 
     @FXML
-    private void onAddComingSoonMovie() throws IOException {
+    private void onAddHomeMovie() throws IOException {
 
         // Add the movie if the input is valid
         if (isInputValid()) {
 
             int messageId = CinemaClient.getNextMessageId();
-            Message newMessage = new Message(messageId, "add new coming soon movie");
+            Message newMessage = new Message(messageId, "add new home movie");
             String mainActorsString = String.join(";", getMainActors());
             String description = "[" + getDescription() + "]";
-            newMessage.setData(String.format("%s,%s,%s,%s,%s,%s", getMovieName(), getProducerName(), mainActorsString, description, getPicture(), getReleaseDate()));
+            newMessage.setData(String.format("%s,%s,%s,%s,%s,%s", getMovieName(), getProducerName(), mainActorsString, description, getPicture(), getMovieLength()));
             CinemaClient.getClient().sendToServer(newMessage);
-            System.out.println("add new coming soon movie request sent");
+            System.out.println("add new home movie request sent");
 
 
             dialog.close();
@@ -84,9 +81,9 @@ public class AddComingSoonMovieController implements DialogInterface {
     private boolean isInputValid() {
         String errorMessage = "";
 
-        for (String comingSoonMovie : comingSoonMovies) {
+        for (String homeMovie :homeMovies) {
             // Split the comingSoonMovie string by comma to get individual fields
-            String[] movieDetails = comingSoonMovie.split(",");
+            String[] movieDetails = homeMovie.split(",");
 
 
             // Check if the first field (movie name) is the same as the movieNameField's text
@@ -112,13 +109,13 @@ public class AddComingSoonMovieController implements DialogInterface {
                 errorMessage = "תמונה לא תקינה!" + "\n";
             }
             // Validate the release date format
-            else if (releaseDateField.getText() == null || releaseDateField.getText().isEmpty()) {
-                errorMessage = "תאריך עלייה לקולנוע לא תקין! חייב להיות מפורמט yyyy-mm-dd!" + "\n";
+            else if (movieLengthField.getText() == null || movieLengthField.getText().isEmpty()) {
+                errorMessage = "משך הסרט לא תקין! הכנס מספר!" + "\n";
             } else {
                 try {
-                    LocalDate.parse(releaseDateField.getText(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                } catch (DateTimeParseException e) {
-                    errorMessage = "תאריך עלייה לקולנוע לא תקין! חייב להיות מפורמט yyyy-mm-dd!" + "\n";
+                    Double.parseDouble(movieLengthField.getText());
+                } catch (NumberFormatException e) {
+                    errorMessage = "משך הסרט לא תקין! הכנס מספר!" + "\n";
                 }
             }
         }
@@ -151,7 +148,7 @@ public class AddComingSoonMovieController implements DialogInterface {
         return pictureField.getText();
     }
 
-    public String getReleaseDate() { return releaseDateField.getText(); }
+    public String getMovieLength() { return movieLengthField.getText(); }
 
     @FXML
     void onCancelAddingMovie(ActionEvent event) throws IOException {
@@ -159,7 +156,7 @@ public class AddComingSoonMovieController implements DialogInterface {
     }
 
     @Subscribe
-    public void onAddedComingSoonMovieEvent(NewAddedComingSoonMovieEvent event) {
+    public void onAddedHomeMovieEvent(NewAddedComingSoonMovieEvent event) {
         Platform.runLater(() -> {
             String status = event.getMessage().getData();
             if (status.equals("request successful"))

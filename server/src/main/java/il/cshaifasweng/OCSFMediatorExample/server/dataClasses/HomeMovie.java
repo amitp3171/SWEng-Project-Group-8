@@ -33,6 +33,6 @@ public class HomeMovie extends AbstractMovie {
 
     @Override
     public String toString() {
-        return String.format("%s,%s,%s,%s,%s,%s", this.id, super.getMovieName(), super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture());
+        return String.format("%s,%s,%s,%s,%s,%s,%s", this.id, super.getMovieName(), super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture(), getMovieLength());
     }
 }

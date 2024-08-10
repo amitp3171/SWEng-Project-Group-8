@@ -28,7 +28,10 @@ public class ComingSoonMovieListController {
     private ArrayList<String> comingSoonMovies;
 
     @FXML
-    private MenuItem addComingSoonMovieMenuItem;
+    private MenuItem addComingSoonMovie;
+
+    @FXML
+    private MenuItem removeComingSoonMovie;
 
     @FXML
     void onItemSelected(MouseEvent event) throws IOException {
@@ -39,28 +42,31 @@ public class ComingSoonMovieListController {
         int selectedIndex = comingSoonMovieListView.getSelectionModel().getSelectedIndex();
         String selectedMovie = comingSoonMovies.get(selectedIndex);
 
-        // TODO: display dialog with selected movie info
-        // load dialog fxml
-        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("comingSoonMovieInfo");
-        DialogPane screeningDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
+        ButtonType result  = CinemaClient.getDialogCreationManager().loadDialog("comingSoonMovieInfo",selectedMovie);
 
-        // get controller
-        ComingSoonMovieInfoController comingSoonMovieInfoController = dialogLoader.getController();
-        // set selected movie
-        comingSoonMovieInfoController.setComingSoonMovie(selectedMovie);
 
-        // create new dialog
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.getDialogPane().setContent(screeningDialogPane);
-        comingSoonMovieInfoController.setDialog(dialog);
-
-        // create hidden close button to support the close button (X)
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
-        closeButton.setVisible(false);
-
-        // show dialog
-        dialog.showAndWait();
+//        // TODO: display dialog with selected movie info
+//        // load dialog fxml
+//        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("comingSoonMovieInfo");
+//        DialogPane screeningDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
+//
+//        // get controller
+//        ComingSoonMovieInfoController comingSoonMovieInfoController = dialogLoader.getController();
+//        // set selected movie
+//        comingSoonMovieInfoController.setComingSoonMovie(selectedMovie);
+//
+//        // create new dialog
+//        Dialog<ButtonType> dialog = new Dialog<>();
+//        dialog.getDialogPane().setContent(screeningDialogPane);
+//        comingSoonMovieInfoController.setDialog(dialog);
+//
+//        // create hidden close button to support the close button (X)
+//        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+//        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
+//        closeButton.setVisible(false);
+//
+//        // show dialog
+//        dialog.showAndWait();
     }
 
     @FXML
@@ -85,11 +91,16 @@ public class ComingSoonMovieListController {
 
     void initializeList() {
         comingSoonMovieListView.getItems().clear();
+
         // get movie names
         String[] movieNames = new String[comingSoonMovies.size()];
         for (int i = 0; i < movieNames.length; i++) {
             movieNames[i] = comingSoonMovies.get(i).split(",")[1];
+
+            // Remove commas from the movie name for display
+            movieNames[i] = movieNames[i].replace(",", "");
         }
+
         // display movies
         comingSoonMovieListView.getItems().addAll(movieNames);
     }
@@ -118,60 +129,47 @@ public class ComingSoonMovieListController {
 
     @FXML
     void onAddComingSoonMovie(ActionEvent event) throws IOException {
-        // Load the dialog for adding a new coming soon movie
-        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("addComingSoonMovie");
-        DialogPane dialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
 
-        // Create a new dialog
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setDialogPane(dialogPane);
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("addComingSoonMovie",comingSoonMovies);
 
-        // Get the controller and set the dialog stage
-        AddComingSoonMovieController controller = dialogLoader.getController();
-        controller.setDialogStage((Stage) dialogPane.getScene().getWindow());
+        requestComingSoonMovieList(true);
 
-        dialog.showAndWait().ifPresent(result -> {
-            if (result == ButtonType.OK) {
-                // Get the movie data from the dialog
-                String movieName = controller.getMovieName();
-                String producerName = controller.getProducerName();
-                List<String> mainActors = controller.getMainActors();
-                String description = controller.getDescription();
-                String picture = controller.getPicture();
-                // Create the new movie string in the same format as the existing movies
-                String newMovie = String.format("%d,%s,%s,%s,%s,%s", comingSoonMovies.size(), movieName, description, String.join(";", mainActors), producerName, picture);
-                // Add the new movie to the list and refresh the display
-                comingSoonMovies.add(newMovie);
-                initializeList();
-                // Send the new movie list to the server
-                saveNewMovieList();
-            }
-        });
-    }
-    private void saveNewMovieList() {
-        try {
-            int messageId = CinemaClient.getNextMessageId();
-            Message newMessage = new Message(messageId, "update ComingSoonMovie list");
-            newMessage.setData(CinemaClient.getMapper().writeValueAsString(comingSoonMovies));
-            CinemaClient.getClient().sendToServer(newMessage);
-            System.out.println("Updated ComingSoonMovie list sent to server");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        if (result == ButtonType.OK) {
+//            // Get the movie data from the dialog
+//            String movieName = controller.getMovieName();
+//            String producerName = controller.getProducerName();
+//            List<String> mainActors = controller.getMainActors();
+//            String description = controller.getDescription();
+//            String picture = controller.getPicture();
+//            // Create the new movie string in the same format as the existing movies
+//            String newMovie = String.format("%d,%s,%s,%s,%s,%s", comingSoonMovies.size(), movieName, description, String.join(";", mainActors), producerName, picture);
+//            // Add the new movie to the list and refresh the display
+//            comingSoonMovies.add(newMovie);
+//            initializeList();
+//            // Send the new movie list to the server
+//            saveNewMovieList();
+//        }
     }
 
     @FXML
-    void initialize() throws IOException {
-        userDataManager = CinemaClient.getUserDataManager();
-
-        // register to EventBus
-        EventBus.getDefault().register(this);
-
-        requestComingSoonMovieList(false);
-
-        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
-            addComingSoonMovieMenuItem.setVisible(true);
-
-        }
+    void onRemoveComingSoonMovie(ActionEvent event) throws IOException {
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("removeComingSoonMovie",comingSoonMovies);
+        requestComingSoonMovieList(true);
     }
+
+@FXML
+void initialize() throws IOException {
+    userDataManager = CinemaClient.getUserDataManager();
+
+    // register to EventBus
+    EventBus.getDefault().register(this);
+
+    requestComingSoonMovieList(false);
+
+    if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
+        addComingSoonMovie.setVisible(true);
+        removeComingSoonMovie.setVisible(true);
+
+    }
+}
 }
