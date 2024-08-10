@@ -70,7 +70,7 @@ public class ScreeningListController {
     }
 
     private void requestUpdateScreening(Map<String, String> updatedScreeningTime) throws IOException {
-        CinemaClient.sendToServer("set ScreeningTime", String.join(",", updatedScreeningTime.values()));
+        CinemaClient.sendToServer("set ScreeningTime", String.join(",", updatedScreeningTime.get("id"), updatedScreeningTime.get("date"), updatedScreeningTime.get("time"), updatedScreeningTime.get("theaterId")));
     }
 
     public void setSelectedMovie(Map<String, String> selectedMovie, boolean forceRefresh) throws IOException {
@@ -200,7 +200,7 @@ public class ScreeningListController {
 
     void onItemSelectedContentManager(String selectedItem, int selectedIndex, Map<String, String> selectedScreeningTime) throws IOException {
 
-        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("screeningEditor", selectedItem, selectedScreeningTime);
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("screeningEditor", selectedItem, selectedScreeningTime, selectedBranch);
 
         // if change was performed
         if (result == ButtonType.OK) {

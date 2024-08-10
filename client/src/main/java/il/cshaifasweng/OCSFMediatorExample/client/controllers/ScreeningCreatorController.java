@@ -103,7 +103,6 @@ public class ScreeningCreatorController implements DialogInterface {
     void createScreeningHour(ActionEvent event) throws IOException {
         // get text-field input
         String selectedDate = screeningDatePicker.getValue().toString();
-        System.out.println(selectedDate);
         String selectedTime = screeningTimePromptTF.getText();
         String selectedTheaterId = theaters.get(theaterChoiceBox.getSelectionModel().getSelectedIndex());
         // send request to server

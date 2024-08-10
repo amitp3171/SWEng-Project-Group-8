@@ -190,9 +190,11 @@ public class SimpleServer extends AbstractServer {
 	private void handleSetScreeningTimeRequest(Message message, ConnectionToClient client) throws IOException {
 		// id, day, time, theater.getTheaterID()
 		String[] splitMessage = message.getData().split(",");
+		Theater temp = db.executeNativeQuery("SELECT * FROM Theaters WHERE theaterID=?", Theater.class, splitMessage[3]).get(0);
 		ScreeningTime screening = db.executeNativeQuery("SELECT * FROM ScreeningTimes WHERE id=?", ScreeningTime.class, splitMessage[0]).get(0);
 		screening.setTime(splitMessage[2]);
 		screening.setDate(LocalDate.parse(splitMessage[1], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+		screening.setTheater(db.executeNativeQuery("SELECT * FROM Theaters WHERE theaterID=?", Theater.class, splitMessage[3]).get(0));
 		db.updateEntity(screening);
 
 		sendMessage(message, "set new ScreeningTime successfully", "null", client);
