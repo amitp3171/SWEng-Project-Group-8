@@ -9,7 +9,7 @@ public class SubscriptionCard extends AbstractProduct{
 
     private int remainingTickets;
 
-    public SubscriptionCard(Customer owner, int price) {
+    public SubscriptionCard(Customer owner, double price) {
         super(owner, price);
         this.remainingTickets = 20;
 }

@@ -1,15 +1,21 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Map;
 
+import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.events.NewTheaterIdListEvent;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 public class ScreeningEditorController implements DialogInterface {
     @FXML
@@ -17,47 +23,73 @@ public class ScreeningEditorController implements DialogInterface {
     private Dialog<ButtonType> dialog;
     @FXML
     private DatePicker screeningDatePicker;
+    @FXML
+    private ChoiceBox<String> theaterChoiceBox;
 
-    private StringBuilder selectedScreeningTime;
+    private ArrayList<String> theaterIds;
+    //private Dictionary<String, String> selectedScreeningTime;
+    private Map<String, String> selectedScreeningTime;
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
     }
 
-    public void setData(Object... params) { // String screeningHour, StringBuilder selectedScreeningTime
+    public void setData(Object... params) { // String screeningHour, Dictionary<String, String> selectedScreeningTime
         screeningHourTF.setText(((String)params[0]).split(",")[0]);
-        this.selectedScreeningTime = (StringBuilder) params[1];
-        screeningDatePicker.setValue(LocalDate.parse(selectedScreeningTime.toString().split(",")[1], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        this.selectedScreeningTime = (Map<String, String>) params[1];
+        screeningDatePicker.setValue(LocalDate.parse(selectedScreeningTime.get("date"), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        theaterChoiceBox.setValue(String.valueOf(1 + (Integer.parseInt(selectedScreeningTime.get("theaterId"))-1) % 10));
+
+        try {
+            CinemaClient.sendToServer("get Theater ID list", (String)params[2]);
+        } catch(IOException e){
+            e.printStackTrace();
+        }
     }
+
+    @Subscribe
+    public void onReceivedTheaterIdList(NewTheaterIdListEvent event) {
+        Platform.runLater(() -> {
+            try {
+                theaterIds = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
 
     @FXML
     void cancelScreeningUpdate(ActionEvent event) {
+        EventBus.getDefault().unregister(this);
         dialog.setResult(ButtonType.CLOSE);
         dialog.close();
     }
 
     @FXML
     void updateScreeningHour(ActionEvent event) throws ParseException {
-        // get the new time
         String newTime = screeningHourTF.getText();
-        String[] parsedScreeningTime = selectedScreeningTime.toString().split(",");
-        int startingIndex = parsedScreeningTime[0].length() + parsedScreeningTime[1].length() + 2;
-        int endingIndex = startingIndex + parsedScreeningTime[3].length() + 3;
-        selectedScreeningTime.replace(startingIndex, endingIndex, newTime);
-        // get the new date
         String newDate = screeningDatePicker.getValue().toString();
-        int startingIndex2 = parsedScreeningTime[0].length() + 1;
-        int endingIndex2 = startingIndex2 + parsedScreeningTime[1].length();
-        selectedScreeningTime.replace(startingIndex2, endingIndex2, newDate);
-        dialog.setResult(ButtonType.OK);
+        String newTheater = theaterChoiceBox.getValue();
+
+        if (newTime.equals(selectedScreeningTime.get("time")) && newDate.equals(selectedScreeningTime.get("date")) && newTheater.equals(selectedScreeningTime.get("theaterId"))) {
+            dialog.setResult(ButtonType.CANCEL);
+        }
+        else {
+            selectedScreeningTime.replace("time", screeningHourTF.getText());
+            selectedScreeningTime.replace("date", screeningDatePicker.getValue().toString());
+            selectedScreeningTime.replace("theaterId", theaterIds.get(Integer.parseInt(theaterChoiceBox.getValue())-1));
+            dialog.setResult(ButtonType.OK);
+        }
+        EventBus.getDefault().unregister(this);
         dialog.close();
     }
 
     @FXML
-    void onDateSelected(ActionEvent event) {
-
+    void initialize() {
+        // register to EventBus
+        EventBus.getDefault().register(this);
+        theaterChoiceBox.getItems().addAll(new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"});
     }
-
-    @FXML
-    void initialize() {}
 }

@@ -27,6 +27,9 @@ public class HomeMovieInfoController {
     @FXML
     private Label producerNameLabel;
 
+    @FXML
+    private Label movieLengthLabel;
+
     private Dialog<ButtonType> dialog;
 
     public void setDialog(Dialog<ButtonType> dialog) {
@@ -41,11 +44,13 @@ public class HomeMovieInfoController {
         String description = parsedMovie[2].substring(1, parsedMovie[2].length() - 1);
         String mainActors = parsedMovie[3].substring(1, parsedMovie[3].length() - 1);
         String producerName = parsedMovie[4];
+        String movieLength = parsedMovie[6];
 
         movieLabel.setText(title);
         movieSummaryLabel.setText(String.format("תקציר: %s", description));
         primaryActorsLabel.setText(String.format("שחקנים ראשיים: %s", mainActors));
         producerNameLabel.setText(String.format("מפיק: %s", producerName));
+        movieLengthLabel.setText(String.format("משך הסרט: %s שעות", movieLength));
 
         movieLabel.setTooltip(new Tooltip(title));
         movieSummaryLabel.setTooltip(new Tooltip(description));

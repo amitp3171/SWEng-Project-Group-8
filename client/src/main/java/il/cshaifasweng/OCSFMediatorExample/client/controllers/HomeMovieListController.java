@@ -26,11 +26,16 @@ public class HomeMovieListController {
     private ArrayList<String> homeMovies;
 
     @FXML
+    private MenuItem addHomeMovie;
+
+    @FXML
+    private MenuItem removeHomeMovie;
+
+    @FXML
     void onItemSelected(MouseEvent event) throws IOException {
         // if selected item is null
         if (homeMovieListView.getSelectionModel().getSelectedItem() == null) return;
 
-        // get screeningTime object
         int selectedIndex = homeMovieListView.getSelectionModel().getSelectedIndex();
         String selectedMovie = homeMovies.get(selectedIndex);
 
@@ -71,11 +76,7 @@ public class HomeMovieListController {
 
     private void requestHomeMovieList(boolean forceRefresh) throws IOException {
         // send request to server
-        int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "get HomeMovie list");
-        newMessage.setData(String.valueOf(forceRefresh));
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("HomeMovie request sent");
+        CinemaClient.sendToServer("get HomeMovie list", String.valueOf(forceRefresh));
     }
 
     void initializeList() {
@@ -107,6 +108,20 @@ public class HomeMovieListController {
     }
 
     @FXML
+    void onAddHomeMovie(ActionEvent event) throws IOException {
+
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("addHomeMovie", homeMovies);
+        requestHomeMovieList(true);
+    }
+
+    @FXML
+    void onRemoveHomeMovie(ActionEvent event) throws IOException {
+
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("removeHomeMovie", homeMovies);
+        requestHomeMovieList(true);
+    }
+
+    @FXML
     void onRefreshList(ActionEvent event) throws IOException {
         requestHomeMovieList(true);
     }
@@ -119,5 +134,11 @@ public class HomeMovieListController {
         EventBus.getDefault().register(this);
 
         requestHomeMovieList(false);
+
+        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
+            addHomeMovie.setVisible(true);
+            removeHomeMovie.setVisible(true);
+
+        }
     }
 }

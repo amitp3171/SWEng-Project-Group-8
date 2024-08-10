@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
+import il.cshaifasweng.OCSFMediatorExample.server.creationalClasses.DatabaseBridge;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.SubscribedClient;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.lang.*;
 
@@ -166,8 +168,10 @@ public class SimpleServer extends AbstractServer {
 		List<ComingSoonMovie> receivedData = db.getAll(ComingSoonMovie.class, forceRefresh);
 		ArrayList<String> movieToString = new ArrayList<>();
 
-		for (ComingSoonMovie movie : receivedData)
+
+		for (ComingSoonMovie movie : receivedData) {
 			movieToString.add(movie.toString());
+		}
 
 		sendMessage(message, "updated ComingSoonMovie list successfully", movieToString, client);
 	}
@@ -192,6 +196,7 @@ public class SimpleServer extends AbstractServer {
 		ScreeningTime screening = db.executeNativeQuery("SELECT * FROM ScreeningTimes WHERE id=?", ScreeningTime.class, splitMessage[0]).get(0);
 		screening.setTime(splitMessage[2]);
 		screening.setDate(LocalDate.parse(splitMessage[1], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+		screening.setTheater(db.executeNativeQuery("SELECT * FROM Theaters WHERE theaterID=?", Theater.class, splitMessage[3]).get(0));
 		db.updateEntity(screening);
 
 		sendMessage(message, "set new ScreeningTime successfully", "null", client);
@@ -200,6 +205,7 @@ public class SimpleServer extends AbstractServer {
 	private void handleCreateScreeningTimeRequest(Message message, ConnectionToClient client) throws IOException {
 		// parse message: branchLocation, date, time, theater, movie
 		String[] splitMessage = message.getData().split(",");
+
 		Branch selectedBranch = db.executeNativeQuery("SELECT * FROM Branches WHERE location=?", Branch.class, splitMessage[0]).get(0);
 		LocalDate selectedDate = LocalDate.parse(splitMessage[1], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		LocalTime selectedTime = LocalTime.parse(splitMessage[2], DateTimeFormatter.ofPattern("HH:mm"));
@@ -209,7 +215,7 @@ public class SimpleServer extends AbstractServer {
 		String data = "request failed";
 
 		// check for existing screenings in the specified theater
-		List<ScreeningTime> existingScreenings = db.executeNativeQuery("SELECT * FROM ScreeningTimes WHERE theater_theaterID=? AND time=?", ScreeningTime.class, splitMessage[3], splitMessage[2]);
+		List<ScreeningTime> existingScreenings = db.executeNativeQuery("SELECT * FROM ScreeningTimes WHERE theater_theaterID=? AND time=? AND date=?", ScreeningTime.class, splitMessage[3], splitMessage[2], splitMessage[1]);
 
 		if (existingScreenings.isEmpty()) {
 			// add screeningTime
@@ -226,6 +232,61 @@ public class SimpleServer extends AbstractServer {
 		}
 
 		sendMessage(message, "created new ScreeningTime successfully", data, client);
+	}
+
+	private void handleAddComingSoonMovie(Message message, ConnectionToClient client) throws IOException {
+		// parse message: coming soon movie details by order in the constructor
+		String[] splitMessage = message.getData().split(",");
+		LocalDate releaseDate = LocalDate.parse(splitMessage[splitMessage.length-1], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		List<String> mainActorsList = Arrays.asList(splitMessage[2].split(";"));
+
+		//add comingSoonMovie
+		ComingSoonMovie newComingSoonMovie = new ComingSoonMovie(splitMessage[0], splitMessage[1], mainActorsList, splitMessage[3], splitMessage[4], releaseDate);
+
+		String data = "request successful";
+		db.addInstance(newComingSoonMovie);
+
+		sendMessage(message, "created new ComingSoonMovie successfully", data, client);
+	}
+
+	private void handleAddHomeMovie(Message message, ConnectionToClient client) throws IOException {
+		// parse message: home movie details by order in the constructor
+		String[] splitMessage = message.getData().split(",");
+		double movieLength = Double.parseDouble(splitMessage[splitMessage.length-1]);
+		List<String> mainActorsList = Arrays.asList(splitMessage[2].split(";"));
+
+		//add homeMovie
+		HomeMovie newHomeMovie = new HomeMovie(splitMessage[0], splitMessage[1], mainActorsList, splitMessage[3], splitMessage[4], movieLength);
+
+		String data = "request successful";
+		db.addInstance(newHomeMovie);
+
+		sendMessage(message, "created new HomeMovie successfully", data, client);
+	}
+
+	private void handleRemoveComingSoonMovie(Message message, ConnectionToClient client) throws IOException {
+		// Parse the incoming movie data string
+		String[] splitMovieData = message.getData().split(",");
+
+		ComingSoonMovie movieToRemove = db.executeNativeQuery("SELECT * FROM ComingSoonMovie WHERE movieName=?", ComingSoonMovie.class, splitMovieData[1]).get(0);
+
+		//Remove movie
+		db.removeInstance(movieToRemove);
+		// Send success message back to the client
+		sendMessage(message, "removed ComingSoonMovie successfully", "success", client);
+
+	}
+
+	private void handleRemoveHomeMovie(Message message, ConnectionToClient client) throws IOException {
+		// Parse the incoming movie data string
+		String[] splitMovieData = message.getData().split(",");
+
+		HomeMovie movieToRemove = db.executeNativeQuery("SELECT * FROM HomeMovie WHERE movieName=?", HomeMovie.class, splitMovieData[1]).get(0);
+
+		//Remove movie
+		db.removeInstance(movieToRemove);
+		// Send success message back to the client
+		sendMessage(message, "removed HomeMovie successfully", "success", client);
 	}
 
 	private void handleVerifyCustomerIdRequest(Message message, ConnectionToClient client) throws IOException {
@@ -249,12 +310,18 @@ public class SimpleServer extends AbstractServer {
 
 		for (AbstractEmployee employee : employees) {
 			if (employee.getUsername().equals(providedCredentials[0]) && employee.getPassword().equals(providedCredentials[1]))
-				data = String.format("%s,%s,%s", employee.getFirstName(), employee.getLastName(), employee.getClass().getName().substring(55));
+				data = String.join(",", employee.getFirstName(), employee.getLastName(), employee.getClass().getName().substring(55));
 		}
 
 		System.out.println(data);
 
 		sendMessage(message, "verified Employee credentials successfully", data, client);
+	}
+
+	private void handleProductPriceRequest(Message message, ConnectionToClient client) throws IOException {
+		Price productPrice = db.executeNativeQuery("SELECT * FROM prices WHERE productClass=?", Price.class, message.getMessage().split("\\s+")[1]).get(0);
+
+		sendMessage(message, "updated Product price successfully", String.valueOf(productPrice.getPrice()), client);
 	}
 
 	private void handleCreateCustomerCredentials(Message message, ConnectionToClient client) throws IOException {
@@ -276,6 +343,32 @@ public class SimpleServer extends AbstractServer {
 
 		sendMessage(message, "created Customer credentials successfully", data, client);
 	}
+
+	private void handleCreateTicketPurchase(Message message, ConnectionToClient client) throws IOException {
+		// govId, screeningId, seatIds, amountOfTickets, ticketPrice
+		String[] messageData = message.getData().split(",(?![^\\[]*\\])");
+
+		String customerGovId = messageData[0];
+		String screeningTimeId = messageData[1];
+		String selectedSeatIds = messageData[2].substring(1, messageData[2].length()-1);
+
+		List<Seat> selectedSeats = db.executeNativeQuery("SELECT * FROM seats WHERE id IN (?)", Seat.class, selectedSeatIds);
+
+		String productPrice = messageData[3];
+
+		Customer owner = db.executeNativeQuery("SELECT * FROM customers WHERE govId=?", Customer.class, customerGovId).get(0);
+		ScreeningTime screeningTime = db.executeNativeQuery("SELECT * FROM screeningtimes WHERE id=?", ScreeningTime.class, screeningTimeId).get(0);
+
+		for (int i = 0; i < selectedSeats.size(); i++) {
+			Ticket newTicket = new Ticket(owner, Double.parseDouble(productPrice), screeningTime.getInTheaterMovie().getMovieName(), screeningTime, selectedSeats.get(i));
+			Purchase newPurchase = new Purchase(newTicket, "Credit Card", LocalTime.now());
+			db.addInstance(newTicket);
+			db.addInstance(newPurchase);
+		}
+
+		sendMessage(message, "created Ticket Purchase successfully", "payment successful", client);
+	}
+
 
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -343,6 +436,30 @@ public class SimpleServer extends AbstractServer {
 
 			else if (request.equals("create Customer credentials")) {
 				handleCreateCustomerCredentials(message, client);
+			}
+
+			else if (request.equals("get Ticket price")) {
+				handleProductPriceRequest(message, client);
+			}
+
+			else if (request.equals("create Ticket Purchase")) {
+				handleCreateTicketPurchase(message, client);
+			}
+
+			else if(request.equals("add new coming soon movie")) {
+				handleAddComingSoonMovie(message, client);
+			}
+
+			else if(request.equals("remove coming soon movie")) {
+				handleRemoveComingSoonMovie(message, client);
+			}
+
+			else if(request.equals("add new home movie")) {
+				handleAddHomeMovie(message, client);
+			}
+
+			else if(request.equals("remove home movie")) {
+				handleRemoveHomeMovie(message, client);
 			}
 
 			else {

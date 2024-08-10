@@ -15,9 +15,9 @@ public abstract class AbstractProduct {
     @ManyToOne(cascade = CascadeType.ALL)
     private Customer owner;
 
-    private int price;
+    private double price;
 
-    public AbstractProduct(Customer owner, int price) {
+    public AbstractProduct(Customer owner, double price) {
         this.owner = owner;
         this.price = price;
     }
@@ -36,11 +36,11 @@ public abstract class AbstractProduct {
         this.owner = owner;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 }

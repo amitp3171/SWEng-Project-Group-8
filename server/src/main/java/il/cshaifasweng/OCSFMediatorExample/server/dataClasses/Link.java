@@ -17,7 +17,7 @@ public class Link extends AbstractProduct{
     private LocalTime availableHour;
     private LocalTime expiresAt;
 
-    public Link(Customer owner, int price, HomeMovie homeMovie,LocalDate availableDay, LocalTime availableHour, LocalTime expiresAt) {
+    public Link(Customer owner, double price, HomeMovie homeMovie,LocalDate availableDay, LocalTime availableHour, LocalTime expiresAt) {
         super(owner, price);
         this.homeMovie = homeMovie;
         this.availableDay = availableDay;

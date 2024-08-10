@@ -2,24 +2,21 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewScreeningTimeListEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -41,21 +38,21 @@ public class ScreeningListController {
     private ImageView movieImageView;
 
     @FXML
-    private ComboBox<String> selectDayListBox;
+    private DatePicker screeningDatePicker;
 
     @FXML
     private ListView<String> screeningListView;
 
+    DataParser dataParser;
+
     private String selectedBranch;
+    private Map<String, String> selectedMovie;
 
-    private List<String> screeningTimes;
+    private ArrayList<LocalDate> availableDates = new ArrayList<>();
+    private LocalDate selectedDate;
 
-    private String selectedMovie;
-    // yyyy-mm-dd
-    private ArrayList<String> availableDates = new ArrayList<>();
-    private String selectedDate;
-
-    UserDataManager userDataManager;
+    private ArrayList<Map<String, String>> screeningTimes = new ArrayList<>();
+    private ArrayList<Map<String, String>> visibleScreeningTimes = new ArrayList<>();
 
     private boolean forceRefresh;
 
@@ -63,45 +60,28 @@ public class ScreeningListController {
         this.selectedBranch = branch;
     }
 
-    private String concatTimeTheater(String screeningTime) {
-        // id, date, time, theater.getTheaterID()
-        String[] parsedScreeningTime = screeningTime.split(",");
+    private String concatTimeTheater(Map<String, String> screeningTime) {
         // concat screening time with screening theater
-        return String.format("%s, אולם %s", parsedScreeningTime[2], (1 + (Integer.parseInt(parsedScreeningTime[3])-1) % 10));
+        return String.format("%s, אולם %s", screeningTime.get("time"), (1 + (Integer.parseInt(screeningTime.get("theaterId"))-1) % 10));
     }
 
     private void requestServerData() throws IOException {
-        // send request to server
-        int messageId = CinemaClient.getNextMessageId();
-        // message_text,branch_location,movie_id
-        Message newMessage = new Message(messageId, "get ScreeningTime list");
-        newMessage.setData(String.join(",", selectedBranch, selectedMovie.split(",")[0], String.valueOf(forceRefresh)));
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("ScreeningTime request sent");
+        CinemaClient.sendToServer("get ScreeningTime list", String.join(",", selectedBranch, selectedMovie.get("id"), String.valueOf(forceRefresh)));
     }
 
-    private void requestUpdateScreeningHour(String updatedScreeningTime) throws IOException {
-        // send request to server
-        int messageId = CinemaClient.getNextMessageId();
-        // message_text,branch_location,movie_id
-        Message newMessage = new Message(messageId, "set ScreeningTime");
-        newMessage.setData(updatedScreeningTime);
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("ScreeningTime update sent");
+    private void requestUpdateScreening(Map<String, String> updatedScreeningTime) throws IOException {
+        CinemaClient.sendToServer("set ScreeningTime", String.join(",", updatedScreeningTime.get("id"), updatedScreeningTime.get("date"), updatedScreeningTime.get("time"), updatedScreeningTime.get("theaterId")));
     }
 
-    public void setSelectedMovie(String selectedMovie, boolean forceRefresh) throws IOException {
+    public void setSelectedMovie(Map<String, String> selectedMovie, boolean forceRefresh) throws IOException {
         this.forceRefresh = forceRefresh;
 
         this.selectedMovie = selectedMovie;
 
-        // id, movieName, super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture()
-        String[] parsedMovie = selectedMovie.split(",(?![^\\[]*\\])");
-
-        String title = parsedMovie[1];
-        String description = parsedMovie[2].substring(1, parsedMovie[2].length() - 1);
-        String mainActors = parsedMovie[3].substring(1, parsedMovie[3].length() - 1);
-        String producerName = parsedMovie[4];
+        String title = selectedMovie.get("movieName");
+        String description = selectedMovie.get("description").substring(1, selectedMovie.get("description").length() - 1);
+        String mainActors = selectedMovie.get("mainActors").substring(1, selectedMovie.get("mainActors").length() - 1);
+        String producerName = selectedMovie.get("producerName");
 
         movieLabel.setText(title);
         movieSummaryLabel.setText(String.format("תקציר: %s", description));
@@ -117,9 +97,9 @@ public class ScreeningListController {
     }
 
     @FXML
-    void chooseDay(ActionEvent event) {
+    void onDateSelected(ActionEvent event) {
         // get selected day
-        String newSelectedDate = selectDayListBox.getSelectionModel().getSelectedItem();
+        LocalDate newSelectedDate = screeningDatePicker.getValue();
         // if no changes should be made
         if (selectedDate.equals(newSelectedDate)) return;
         // update selected day
@@ -128,31 +108,53 @@ public class ScreeningListController {
         initializeList();
     }
 
-    public void initializeDayPicker() {
-        for (String screeningTime : screeningTimes) {
-            // id, day, time, theater.getTheaterID()
-            String dateAsString = screeningTime.split(",")[1];
-            if (!this.availableDates.contains(dateAsString))
-                this.availableDates.add(dateAsString);
+    public void setAvailableDates() {
+        for (Map<String, String> screeningTime : screeningTimes){
+            LocalDate screeningDate = LocalDate.parse(screeningTime.get("date"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            if (!this.availableDates.contains(screeningDate))
+                this.availableDates.add(screeningDate);
         }
         Collections.sort(this.availableDates);
-        selectDayListBox.getItems().addAll(this.availableDates);
         this.selectedDate = this.availableDates.get(0);
-        selectDayListBox.getSelectionModel().selectFirst();
+    }
+
+    public void initializeDatePicker() {
+        screeningDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
+            @Override
+            public DateCell call(DatePicker param) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (!empty && item != null) {
+                            if (availableDates.contains(item))
+                                this.setStyle("-fx-background-color: lightgreen");
+                            else
+                                this.setDisable(true);
+                        }
+                    }
+                };
+            }
+        });
+        screeningDatePicker.setValue(this.selectedDate);
     }
 
     public void initializeList() {
         // reset listView
         screeningListView.getItems().clear();
+        visibleScreeningTimes.clear();
+
         ArrayList<String> items = new ArrayList<>();
         // filters screenings to only include the selected day
-        for (String screeningTime : screeningTimes) {
-            // id, day, time, theater.getTheaterID()
-            String[] parsedScreening = screeningTime.split(",");
-            if (parsedScreening[1].equals(selectedDate))
+        for (Map<String, String> screeningTime : screeningTimes) {
+            if (screeningTime.get("date").equals(this.selectedDate.toString())) {
                 items.add(concatTimeTheater(screeningTime));
+                visibleScreeningTimes.add(screeningTime);
+            }
         }
         // display in list
+        Collections.sort(items);
         screeningListView.getItems().addAll(items);
     }
 
@@ -178,17 +180,16 @@ public class ScreeningListController {
 
         // get screeningTime object
         int selectedIndex = screeningListView.getSelectionModel().getSelectedIndex();
-        String screeningTime = screeningTimes.get(selectedIndex);
+        Map<String, String> screeningTime = visibleScreeningTimes.get(selectedIndex);
 
-        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager"))
+        if (CinemaClient.getUserDataManager().isEmployee() && CinemaClient.getUserDataManager().getEmployeeType().equals("ContentManager"))
             onItemSelectedContentManager(selectedItem, selectedIndex, screeningTime);
         // TODO: might need to add a dialog for price changes
         else
-            onItemSelectedCustomer(selectedItem, selectedIndex, screeningTime);
+            onItemSelectedCustomer(screeningTime);
     }
 
-    void onItemSelectedCustomer(String selectedItem, int selectedIndex, String screeningTime) throws IOException {
-        // TODO: redirect to purchase screen
+    void onItemSelectedCustomer(Map<String, String> screeningTime) throws IOException {
         InTheaterMoviePurchaseScreenController inTheaterMoviePurchaseScreenController = CinemaClient.setContent("inTheaterMoviePurchaseScreen").getController();
         inTheaterMoviePurchaseScreenController.setSelectedMovie(this.selectedMovie);
         inTheaterMoviePurchaseScreenController.setSelectedBranch(this.selectedBranch);
@@ -197,25 +198,38 @@ public class ScreeningListController {
         EventBus.getDefault().unregister(this);
     }
 
-    void onItemSelectedContentManager(String selectedItem, int selectedIndex, String screeningTime) throws IOException {
-        StringBuilder mutableScreeningTime = new StringBuilder(screeningTime);
+    void onItemSelectedContentManager(String selectedItem, int selectedIndex, Map<String, String> selectedScreeningTime) throws IOException {
 
-        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("screeningEditor", selectedItem, mutableScreeningTime);
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("screeningEditor", selectedItem, selectedScreeningTime, selectedBranch);
 
         // if change was performed
         if (result == ButtonType.OK) {
-            String newScreeningTime = mutableScreeningTime.toString();
-            // update ScreeningTime
-            //if(!screeningTimes.get(selectedIndex).equals(newScreeningTime)){
-                screeningTimes.set(selectedIndex, newScreeningTime);
-                screeningListView.getItems().set(selectedIndex, concatTimeTheater(newScreeningTime));
+            LocalDate oldDate = screeningDatePicker.getValue();
+            LocalDate newDate = LocalDate.parse(selectedScreeningTime.get("date"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-                requestUpdateScreeningHour(newScreeningTime);
-           // }
-//            String[] parsedSelectedScreeningTime =  screeningTimes.get(selectedIndex).split(",");
-//            parsedSelectedScreeningTime[2] = newTime;
-//            String reconstructedScreeningTime = String.join(",", parsedSelectedScreeningTime);
-        };
+            // if edited screening was the only one for the date, and the date was changed.
+            if(!newDate.equals(oldDate)) {
+                // if the new date is not present in the list
+                if (!this.availableDates.contains(newDate))
+                    this.availableDates.add(newDate);
+
+                if (screeningListView.getItems().size() == 1) {
+                    this.availableDates.remove(oldDate);
+                    this.selectedDate = newDate;
+                    initializeList();
+                }
+                else
+                    this.screeningListView.getItems().remove(selectedItem);
+
+                initializeDatePicker();
+            }
+            else {
+                screeningListView.getItems().set(selectedIndex, concatTimeTheater(selectedScreeningTime));
+                Collections.sort(screeningListView.getItems());
+            }
+
+            requestUpdateScreening(selectedScreeningTime);
+        }
 
         screeningListView.getSelectionModel().clearSelection();
     }
@@ -225,8 +239,12 @@ public class ScreeningListController {
         // on event received
         Platform.runLater(() -> {
             try {
-                screeningTimes = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
-                initializeDayPicker();
+                ArrayList<String> receivedData = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+                for (String screeningTime : receivedData)
+                    screeningTimes.add(dataParser.parseScreeningTime(screeningTime));
+
+                setAvailableDates();
+                initializeDatePicker();
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -239,9 +257,9 @@ public class ScreeningListController {
 
     @FXML
     void initialize() {
+        dataParser = CinemaClient.getDataParser();
         // register to EventBus
         EventBus.getDefault().register(this);
-        userDataManager = CinemaClient.getUserDataManager();
         forceRefresh = false;
     }
 

@@ -2,11 +2,14 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewBranchListEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewVerifiedCustomerIdEvent;
@@ -31,6 +34,8 @@ public class CustomerLoginController implements DialogInterface {
 
     @FXML
     private Label invalidUserLabel;
+
+    private DataParser dataParser;
 
     private Dialog<ButtonType> dialog;
 
@@ -76,11 +81,7 @@ public class CustomerLoginController implements DialogInterface {
         // get id
         customerGovId = customerIdNumField.getText();
         // verify credentials
-        int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "verify Customer id");
-        newMessage.setData(customerGovId);
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("verify Customer id request sent");
+        CinemaClient.sendToServer("verify Customer id", customerGovId);
         // disable buttons
         loginButton.setDisable(true);
         cancelButton.setDisable(true);
@@ -99,12 +100,10 @@ public class CustomerLoginController implements DialogInterface {
                 cancelButton.setDisable(false);
             }
             else {
-                String[] splitData = messageData.split(",");
-                customerFirstName = splitData[0];
-                customerLastName = splitData[1];
+                Map<String, String> customerDictionary = dataParser.parseCustomer(messageData);
                 try {
                     // set content
-                    CinemaClient.setUserDataManager(customerFirstName, customerLastName, customerGovId);
+                    CinemaClient.setUserDataManager(customerDictionary.get("firstName"), customerDictionary.get("lastName"), customerGovId);
                     CinemaClient.setContent("movieTypeSelection");
                     // close dialog
                     EventBus.getDefault().unregister(this);
@@ -119,6 +118,7 @@ public class CustomerLoginController implements DialogInterface {
 
     @FXML
     void initialize() {
+        dataParser = CinemaClient.getDataParser();
         // register to EventBus
         EventBus.getDefault().register(this);
     }

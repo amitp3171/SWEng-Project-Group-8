@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.*;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewInTheaterMovieListEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
@@ -29,9 +30,11 @@ public class InTheaterMovieListController {
 
     UserDataManager userDataManager;
 
-    private ArrayList<String> allInTheaterMovies;
+    DataParser dataParser;
 
-    private ArrayList<String> inTheaterMovies;
+    private ArrayList<Map<String, String>> allInTheaterMovies = new ArrayList<>();
+
+    private ArrayList<Map<String, String>> inTheaterMovies = new ArrayList<>();
 
     private String selectedBranch;
 
@@ -50,7 +53,7 @@ public class InTheaterMovieListController {
 
         // get screeningTime object
         int selectedIndex = movieListView.getSelectionModel().getSelectedIndex();
-        String selectedMovie = inTheaterMovies.get(selectedIndex);
+        Map<String, String> selectedMovie = inTheaterMovies.get(selectedIndex);
 
         // set selected movie
         ScreeningListController screeningController = CinemaClient.setContent("screeningList").getController();
@@ -77,12 +80,7 @@ public class InTheaterMovieListController {
     }
 
     private void requestInTheaterMovieList(boolean forceRefresh) throws IOException {
-        // send request to server
-        int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "get InTheaterMovie list");
-        newMessage.setData(String.format("%s,%s", selectedBranch, forceRefresh));
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("InTheaterMovie request sent");
+        CinemaClient.sendToServer("get InTheaterMovie list", String.join(",", selectedBranch, String.valueOf(forceRefresh)));
     }
 
     void initializeList() {
@@ -90,7 +88,7 @@ public class InTheaterMovieListController {
         // get movie names
         String[] movieNames = new String[inTheaterMovies.size()];
         for (int i = 0; i < movieNames.length; i++) {
-            movieNames[i] = inTheaterMovies.get(i).split(",")[1];
+            movieNames[i] = inTheaterMovies.get(i).get("movieName");
         }
         // display movies
         movieListView.getItems().addAll(movieNames);
@@ -101,16 +99,17 @@ public class InTheaterMovieListController {
         // on event received
         Platform.runLater(() -> {
             try {
-                inTheaterMovies = new ArrayList<>();
-                allInTheaterMovies = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+                ArrayList<String> messageData = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
 
-                for (String movie : allInTheaterMovies) {
-                    boolean isInBranch = Boolean.parseBoolean(movie.split(",(?![^\\[]*\\])")[6]);
+                for (String movie : messageData) {
+                    Map<String, String> movieDictionary = dataParser.parseMovie(movie);
+                    allInTheaterMovies.add(movieDictionary);
+
+                    boolean isInBranch = Boolean.parseBoolean(movieDictionary.get("additionalFields"));
                     if (isInBranch)
-                        inTheaterMovies.add(movie);
+                        inTheaterMovies.add(movieDictionary);
                 }
 
-                // update list
                 if (!inTheaterMovies.isEmpty())
                     initializeList();
             }
@@ -129,9 +128,10 @@ public class InTheaterMovieListController {
 
     @FXML
     void initialize() throws IOException {
-        forceRefresh = false;
-
         userDataManager = CinemaClient.getUserDataManager();
+        dataParser = CinemaClient.getDataParser();
+
+        forceRefresh = false;
 
         if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager"))
             addScreeningMenuitem.setVisible(true);

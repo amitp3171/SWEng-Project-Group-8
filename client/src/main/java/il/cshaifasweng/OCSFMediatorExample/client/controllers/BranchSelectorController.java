@@ -86,10 +86,7 @@ public class BranchSelectorController implements DialogInterface {
         // register to EventBus
         EventBus.getDefault().register(this);
         // send request to server
-        int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "get Branch list");
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("Branch request sent");
+        CinemaClient.sendToServer("get Branch list");
     }
 
 }

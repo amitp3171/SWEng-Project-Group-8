@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Random;
+import il.cshaifasweng.OCSFMediatorExample.server.dataClasses.CompanyManager;
 
 public class CheckInstances {
 
@@ -47,12 +48,13 @@ public class CheckInstances {
         configuration.addAnnotatedClass(CompanyManager.class);
         configuration.addAnnotatedClass(BranchManager.class);
         configuration.addAnnotatedClass(ContentManager.class);
+        configuration.addAnnotatedClass(Price.class);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/sys?serverTimezone=Asia/Jerusalem");
+        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "babun13");
+        configuration.setProperty("hibernate.connection.password", "20danny05");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
@@ -136,17 +138,18 @@ public class CheckInstances {
         return st;
     }
 
-    private static void generateComingSoonMovie() throws Exception {
+    private static ComingSoonMovie generateComingSoonMovie() throws Exception {
         List<String> mainActors = new ArrayList<>();
         mainActors.add("Ryan");
         mainActors.add("Yu");
         LocalDate localDate = LocalDate.of(2024, 7, 27);
 
         // Convert LocalDate to java.util.Date
-        Date specificDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        ComingSoonMovie comingSoonMovie = new ComingSoonMovie("Deadpool דדפול", "Shon", mainActors, "[Funny Movie]", "pic", specificDate);
+        LocalDate ld = LocalDate.now();
+        ComingSoonMovie comingSoonMovie = new ComingSoonMovie("Deadpool דדפול", "Shon", mainActors, "[Funny Movie]", "pic", ld);
         session.save(comingSoonMovie);
         session.flush();
+        return  comingSoonMovie;
     }
 
     private static HomeMovie generateHomeMovie() throws Exception {
@@ -225,6 +228,13 @@ public class CheckInstances {
     private static void generateContentManagers(ContentManager[] contentManagers) throws Exception {
         for (ContentManager contentManager : contentManagers) {
             session.save(contentManager);
+            session.flush();
+        }
+    }
+
+    private static void generatePrices(Price[] prices) throws Exception {
+        for (Price price : prices) {
+            session.save(price);
             session.flush();
         }
     }
@@ -340,7 +350,7 @@ public class CheckInstances {
             printAllBranches();
             printAllSeats();
 
-            generateComingSoonMovie();
+            ComingSoonMovie comingSoonMovie = generateComingSoonMovie();
             HomeMovie homeMovie = generateHomeMovie();
 
             //new classes instances: ---------19.07---------
@@ -365,7 +375,7 @@ public class CheckInstances {
 
             SubscriptionCard[] sc = new SubscriptionCard[5];
             for(int i=0;i<sc.length;i++) {
-                sc[i] = new SubscriptionCard(customers[i],200);
+                sc[i] = new SubscriptionCard(customers[i], 700);
                 purchases[i+5] = new Purchase(sc[i], "Credit Card", LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i+5]);
 
@@ -373,7 +383,7 @@ public class CheckInstances {
 
             Ticket[] tickets = new Ticket[5];
             for(int i=0;i<tickets.length;i++) {
-                tickets[i] = new Ticket(customers[i],30,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(i), screeningTimes.get(i).getTheater().getSeat(i));
+                tickets[i] = new Ticket(customers[i], 40,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(i), screeningTimes.get(i).getTheater().getSeat(i));
                 purchases[i+10] = new Purchase(tickets[i], "Credit Card", LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i+10]);
 
@@ -408,8 +418,9 @@ public class CheckInstances {
             branchManagers[3] = new BranchManager("Diana", "Garcia", "dianagarcia", "password4", branches[3]);
             branchManagers[4] = new BranchManager("Evan", "Martinez", "evanmartinez", "password5", branches[4]);
 
-            ContentManager[] contentManagers = new ContentManager[1];
+            ContentManager[] contentManagers = new ContentManager[2];
             contentManagers[0] = new ContentManager("Ron", "Weasley", "ronweasly", "itsmagicinnit");
+            contentManagers[1] = new ContentManager("Zohar", "Sahar", "z", "z");
 
             for(int i=0;i<customers.length;i++) {
                 customers[i].addComplaintToList(complaints[i]);
@@ -418,6 +429,11 @@ public class CheckInstances {
                 customers[i].addTicketToList(tickets[i]);
             }
 
+            Price ticketPrice = new Price("Ticket", 40);
+            Price linkPrice = new Price("Link", 20);
+            Price subscriptionCardPrice = new Price("SubscriptionCard", 700);
+
+            generatePrices(new Price[]{ticketPrice, linkPrice, subscriptionCardPrice});
 
             generatePurchases(purchases);
             generateComplaints(complaints);
@@ -429,6 +445,9 @@ public class CheckInstances {
             generateTickets(tickets);
             generateLinks(links);
             generateSubscriptionCards(sc);
+
+
+
             //___________________________________________________
             session.getTransaction().commit(); // Save everything.
 
@@ -446,5 +465,6 @@ public class CheckInstances {
                 sessionFactory.close();
             }
         }
+
     }
 }

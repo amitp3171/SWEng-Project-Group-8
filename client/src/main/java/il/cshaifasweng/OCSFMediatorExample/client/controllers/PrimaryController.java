@@ -46,6 +46,7 @@ public class PrimaryController {
 
 	@FXML
 	void initialize() {
+		CinemaClient.getUserDataManager().resetData();
 		EventBus.getDefault().register(this);
 	}
 }

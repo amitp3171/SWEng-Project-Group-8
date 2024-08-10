@@ -54,6 +54,22 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new NewCreatedScreeningTimeEvent(message));
 		}
 
+		else if(message.getMessage().equals("created new ComingSoonMovie successfully")){
+			EventBus.getDefault().post(new NewAddedComingSoonMovieEvent(message));
+		}
+
+		else if(message.getMessage().equals("removed ComingSoonMovie successfully")) {
+			EventBus.getDefault().post(new NewRemovedComingSoonMovieEvent(message));
+		}
+
+		else if(message.getMessage().equals("created HomeMovie successfully")) {
+			EventBus.getDefault().post(new NewAddedHomeMovieEvent(message));
+		}
+
+		else if(message.getMessage().equals("remove HomeMovie successfully")) {
+			EventBus.getDefault().post(new NewRemovedHomeMovieEvent(message));
+		}
+
 		else if(message.getMessage().equals("verified Customer id successfully")){
 			EventBus.getDefault().post(new NewVerifiedCustomerIdEvent(message));
 		}
@@ -64,6 +80,14 @@ public class SimpleClient extends AbstractClient {
 
 		else if(message.getMessage().equals("created Customer credentials successfully")){
 			EventBus.getDefault().post(new NewCreateCustomerCredentialsEvent(message));
+		}
+
+		else if (message.getMessage().equals("updated Product price successfully")){
+			EventBus.getDefault().post(new NewProductPriceEvent(message));
+		}
+
+		else if (message.getMessage().equals("created Ticket Purchase successfully")){
+			EventBus.getDefault().post(new NewPurchaseStatusEvent(message));
 		}
 
 		else if(message.getMessage().equals("client added successfully")){

@@ -4,17 +4,25 @@ import java.io.IOException;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import org.greenrobot.eventbus.EventBus;
+import java.util.List;
 
 public class MovieTypeSelectionController {
 
     @FXML
     private Label welcomeUserLabel;
+
+    @FXML
+    private MenuItem addInTheaterMovieMenuItem;
+
+    @FXML
+    private MenuItem addOrRemoveMovies;
 
     UserDataManager userDataManager;
 
@@ -47,6 +55,13 @@ public class MovieTypeSelectionController {
         CinemaClient.getDialogCreationManager().loadDialog("branchSelector");
     }
 
+    //TODO: add inTheaterMovie here?
+    // Add movie
+    @FXML
+    void onAddInTheaterMovie(ActionEvent event) throws IOException {
+
+    }
+
     @FXML
     void initialize() {
         userDataManager = CinemaClient.getUserDataManager();
@@ -54,6 +69,11 @@ public class MovieTypeSelectionController {
             welcomeUserLabel.setText("ברוך הבא אורח!");
         else
             welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", userDataManager.getFirstName(), userDataManager.getLastName()));
+
+        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
+            addOrRemoveMovies.setVisible(true);
+            addInTheaterMovieMenuItem.setVisible(true);
+        }
     }
 
 }

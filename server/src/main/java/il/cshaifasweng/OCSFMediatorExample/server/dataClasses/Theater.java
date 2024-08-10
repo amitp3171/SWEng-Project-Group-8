@@ -20,7 +20,6 @@ public class Theater
     @OneToMany(cascade = CascadeType.ALL)
     private List<Seat> seats = new ArrayList<>(MAX_CAPACITY);
 
-
     public Theater() {
         // add MAX_CAPACITY new seats
         for (int i = 0; i < MAX_CAPACITY; i++) {
