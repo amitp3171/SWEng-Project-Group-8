@@ -21,7 +21,7 @@
                 <Menu mnemonicParsing="false" text="משתמש">
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#showPersonalArea" text="אזור אישי" />
-                  <MenuItem fx:id="onLogOut" mnemonicParsing="false" text="התנתק" />
+                  <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
                     </items>
                 </Menu>
             </menus>
@@ -30,7 +30,7 @@
     <center>
         <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="TOP_CENTER">
             <children>
-                <Label alignment="TOP_RIGHT" prefHeight="82.0" prefWidth="190.0" text="  קניות">
+                <Label alignment="TOP_CENTER" prefHeight="82.0" prefWidth="190.0" text="רכישות">
                     <font>
                         <Font size="45.0" />
                     </font>

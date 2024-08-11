@@ -16,6 +16,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -27,9 +28,6 @@ public class CustomerComplaintListController {
 
     @FXML
     private ListView<String> complaintListView;
-
-    @FXML
-    private Label welcomeUserLabel;
 
     UserDataManager userDataManager;
 
@@ -85,7 +83,7 @@ public class CustomerComplaintListController {
         String[] complaintTitles = new String[complaints.size()];
         for (int i = 0; i < complaintTitles.length; i++) {
             complaintTitles[i] = complaints.get(i).get("title");
-            complaintTitles[i] = complaintTitles[i].substring(1, complaintTitles[i].length() - 1);
+            complaintTitles[i] = String.format("תלונה #%s : %s", complaints.get(i).get("id"), "\"" + complaintTitles[i].substring(1, complaintTitles[i].length() - 1) + "\"");
         }
         // display movies
         complaintListView.getItems().addAll(complaintTitles);

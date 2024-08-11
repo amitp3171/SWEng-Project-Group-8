@@ -54,7 +54,7 @@ public class CheckInstances {
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
         configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/sys?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "amit1717");
+        configuration.setProperty("hibernate.connection.password", "20danny05");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
@@ -383,7 +383,7 @@ public class CheckInstances {
 
             Ticket[] tickets = new Ticket[5];
             for(int i=0;i<tickets.length;i++) {
-                tickets[i] = new Ticket(customers[i], 40,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(i), screeningTimes.get(i).getTheater().getSeat(i));
+                tickets[i] = new Ticket(customers[i], 40,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(i), screeningTimes.get(i).getSeat(i));
                 purchases[i+10] = new Purchase(tickets[i], "Credit Card", LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i+10]);
 
