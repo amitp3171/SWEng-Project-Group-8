@@ -19,23 +19,23 @@
                         <MenuItem mnemonicParsing="false" onAction="#onCloseProgram" text="סגור" />
                     </items>
                 </Menu>
-            <Menu mnemonicParsing="false" text="משתמש">
-              <items>
-                <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
-              </items>
-            </Menu>
+                <Menu mnemonicParsing="false" text="משתמש">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
+                    </items>
+                </Menu>
                 <Menu mnemonicParsing="false" text="פעולות">
                     <items>
-                  <Menu mnemonicParsing="false" text="הוספת סרט">
-                    <items>
-                              <MenuItem fx:id="addComingSoonMovie" mnemonicParsing="false" onAction="#onAddComingSoonMovie" text="בקרוב בקולנוע" visible="false" />
-                    </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="מחיקת סרט">
-                    <items>
-                              <MenuItem fx:id="removeComingSoonMovie" mnemonicParsing="false" onAction="#onRemoveComingSoonMovie" text="בקרוב בקולנוע" visible="false" />
-                    </items>
-                  </Menu>
+                        <Menu fx:id="addMovieMenu" mnemonicParsing="false" text="הוספת סרט" visible="false">
+                            <items>
+                                <MenuItem fx:id="addComingSoonMovie" mnemonicParsing="false" onAction="#onAddComingSoonMovie" text="בקרוב בקולנוע" visible="false" />
+                            </items>
+                        </Menu>
+                        <Menu fx:id="removeMovieMenu" mnemonicParsing="false" text="מחיקת סרט" visible="false">
+                            <items>
+                                <MenuItem fx:id="removeComingSoonMovie" mnemonicParsing="false" onAction="#onRemoveComingSoonMovie" text="בקרוב בקולנוע" visible="false" />
+                            </items>
+                        </Menu>
                         <MenuItem mnemonicParsing="false" onAction="#onRefreshList" text="רענן רשימה" />
                     </items>
                 </Menu>
@@ -43,15 +43,15 @@
         </MenuBar>
     </top>
     <center>
-      <VBox alignment="CENTER" BorderPane.alignment="CENTER">
-         <children>
-            <Label fx:id="comingSoonLabel" text="בקרוב">
-               <font>
-                  <Font size="36.0" />
-               </font>
-            </Label>
-              <ListView fx:id="comingSoonMovieListView" nodeOrientation="RIGHT_TO_LEFT" onMouseClicked="#onItemSelected" prefHeight="263.0" prefWidth="600.0" />
-         </children>
-      </VBox>
+        <VBox alignment="CENTER" BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="comingSoonLabel" text="בקרוב">
+                    <font>
+                        <Font size="36.0" />
+                    </font>
+                </Label>
+                <ListView fx:id="comingSoonMovieListView" nodeOrientation="RIGHT_TO_LEFT" onMouseClicked="#onItemSelected" prefHeight="263.0" prefWidth="600.0" />
+            </children>
+        </VBox>
     </center>
 </BorderPane>

@@ -391,12 +391,11 @@ public class CheckInstances {
 
 
             Complaint[] complaints = new Complaint[5];
-            complaints[0] = new Complaint(customers[0], LocalTime.now());
-            complaints[1] = new Complaint(customers[1], LocalTime.now());
-            complaints[2] = new Complaint(customers[2], LocalTime.now());
-            complaints[3] = new Complaint(customers[3], LocalTime.now());
-            complaints[4] = new Complaint(customers[4], LocalTime.now());
-
+            complaints[0] = new Complaint(customers[0], LocalTime.now(), "[too expensive]", "[the tickets too expensive]");
+            complaints[1] = new Complaint(customers[1], LocalTime.now(),"[too long]", "[the movie too long]");
+            complaints[2] = new Complaint(customers[2], LocalTime.now(), "[too short]", "[the movie too short]");
+            complaints[3] = new Complaint(customers[3], LocalTime.now(), "[bad service]", "[the tickets seller was rude]");
+            complaints[4] = new Complaint(customers[4], LocalTime.now(),"[too cheap]", "[the tickets are too cheap]");
             ServiceEmployee[] serviceEmployees = new ServiceEmployee[5];
             serviceEmployees[0] = new ServiceEmployee("John", "Doe", "johndoe", "password1");
             serviceEmployees[1] = new ServiceEmployee("Jane", "Smith", "janesmith", "password2");

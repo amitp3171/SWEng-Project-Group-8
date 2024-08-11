@@ -10,11 +10,17 @@ public class Complaint {
     private int id;
     @ManyToOne(cascade = CascadeType.ALL)
     private Customer creator;
-    private LocalTime recievedAt;
+    private LocalTime receivedAt;
+    private String title;
+    private String complaintContent;
+    private String response;
 
-    public Complaint(Customer creator, LocalTime recievedAt) {
+    public Complaint(Customer creator, LocalTime recievedAt, String title, String complaintContent) {
         this.creator = creator;
-        this.recievedAt = recievedAt;
+        this.receivedAt = recievedAt;
+        this.title = title;
+        this.complaintContent = complaintContent;
+        this.response = "[טרם התקבלה תגובה מהצוות]";
     }
 
     public Complaint() {
@@ -30,10 +36,40 @@ public class Complaint {
     }
 
     public LocalTime getRecievedAt() {
-        return recievedAt;
+        return receivedAt;
     }
 
     public void setRecievedAt(LocalTime recievedAt) {
-        this.recievedAt = recievedAt;
+        this.receivedAt = recievedAt;
     }
+
+    public String getComplaintContent() {
+        return complaintContent;
+    }
+
+    public void setComplaintContent(String complaintContent) {
+        this.complaintContent = complaintContent;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
+    }
+
+    @Override
+    public String toString(){
+        return String.join(",",String.valueOf(this.id) , this.title, this.complaintContent, this.response);
+    }
+
 }

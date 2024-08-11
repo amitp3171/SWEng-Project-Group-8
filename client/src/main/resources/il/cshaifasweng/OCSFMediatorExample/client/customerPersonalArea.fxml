@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.MovieTypeSelectionController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.CustomerPersonalAreaController">
     <top>
         <MenuBar nodeOrientation="RIGHT_TO_LEFT" BorderPane.alignment="CENTER">
             <menus>
@@ -22,7 +22,6 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="משתמש">
                     <items>
-                        <MenuItem fx:id="personalAreaMenuItem" mnemonicParsing="false" onAction="#showPersonalArea" text="אזור אישי" visible="false" />
                         <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
                     </items>
                 </Menu>
@@ -32,27 +31,18 @@
     <center>
         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
             <children>
-                <Label fx:id="welcomeUserLabel" text="Label">
-                    <font>
-                        <Font size="20.0" />
-                    </font></Label>
-                <Label text="בחרו בסוג הסרט">
+                <Label fx:id="welcomeUserLabel" text="ברוך הבא">
                     <font>
                         <Font size="45.0" />
                     </font>
                 </Label>
-                <Button minHeight="50.0" minWidth="100.0" mnemonicParsing="false" onAction="#showInTheaterMovieList" text="עכשיו בקולנוע" />
-                <Button minHeight="50.0" minWidth="100.0" mnemonicParsing="false" onAction="#showHomeMovieList" text="צפייה ביתית">
+                <Button minHeight="30.0" minWidth="215.0" mnemonicParsing="false" onAction="#onShowPurchases" prefHeight="28.0" prefWidth="219.0" text="צפייה ברכישות" />
+                <Button minHeight="30.0" minWidth="215.0" mnemonicParsing="false" onAction="#onShowMessages" prefHeight="30.0" prefWidth="215.0" text="הודעות">
                     <VBox.margin>
                         <Insets top="5.0" />
                     </VBox.margin>
                 </Button>
-                <Button minHeight="50.0" minWidth="100.0" mnemonicParsing="false" onAction="#showComingSoonMovieList" text="בקרוב">
-                    <VBox.margin>
-                        <Insets top="5.0" />
-                    </VBox.margin>
-                </Button>
-                <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onBuySubscriptionCard" prefHeight="30.0" text="רכישת כרטיסייה">
+                <Button minHeight="30.0" minWidth="215.0" mnemonicParsing="false" onAction="#onShowComplaints" prefHeight="31.0" prefWidth="213.0" text="תלונות">
                     <VBox.margin>
                         <Insets top="5.0" />
                     </VBox.margin>

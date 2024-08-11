@@ -409,6 +409,24 @@ public class SimpleServer extends AbstractServer {
 		sendMessage(message, "created SubscriptionCard Purchase successfully", "payment successful", client);
 	}
 
+	private void handleComplaintListRequest(Message message, ConnectionToClient client) throws IOException{
+		String govId = message.getData();
+		// get data
+		List<Customer> customer = db.executeNativeQuery(
+				"SELECT * FROM customers WHERE govId = ?",
+				Customer.class,
+				govId);
+		List<Complaint> receivedComplaints = db.executeNativeQuery(
+				"SELECT * FROM complaints WHERE creator_id = ?",
+				Complaint.class,
+				customer.get(0).getId());
+		List<String> complaintsContents = new ArrayList<>();
+		for (Complaint complaint: receivedComplaints){
+			complaintsContents.add(complaint.toString());
+		}
+		sendMessage(message, "updated Complaint list successfully", complaintsContents, client);
+	}
+
 
 
 	@Override
@@ -505,6 +523,10 @@ public class SimpleServer extends AbstractServer {
 
 			else if(request.equals("remove home movie")) {
 				handleRemoveHomeMovie(message, client);
+			}
+
+			else if (request.equals("get complaint list")){
+				handleComplaintListRequest(message, client);
 			}
 
 			else {

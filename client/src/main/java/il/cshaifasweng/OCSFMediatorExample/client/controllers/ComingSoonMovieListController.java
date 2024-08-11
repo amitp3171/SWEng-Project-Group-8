@@ -28,6 +28,12 @@ public class ComingSoonMovieListController {
     private ArrayList<String> comingSoonMovies;
 
     @FXML
+    private Menu addMovieMenu;
+
+    @FXML
+    private Menu removeMovieMenu;
+
+    @FXML
     private MenuItem addComingSoonMovie;
 
     @FXML
@@ -42,31 +48,7 @@ public class ComingSoonMovieListController {
         int selectedIndex = comingSoonMovieListView.getSelectionModel().getSelectedIndex();
         String selectedMovie = comingSoonMovies.get(selectedIndex);
 
-        ButtonType result  = CinemaClient.getDialogCreationManager().loadDialog("comingSoonMovieInfo",selectedMovie);
-
-
-//        // TODO: display dialog with selected movie info
-//        // load dialog fxml
-//        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("comingSoonMovieInfo");
-//        DialogPane screeningDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
-//
-//        // get controller
-//        ComingSoonMovieInfoController comingSoonMovieInfoController = dialogLoader.getController();
-//        // set selected movie
-//        comingSoonMovieInfoController.setComingSoonMovie(selectedMovie);
-//
-//        // create new dialog
-//        Dialog<ButtonType> dialog = new Dialog<>();
-//        dialog.getDialogPane().setContent(screeningDialogPane);
-//        comingSoonMovieInfoController.setDialog(dialog);
-//
-//        // create hidden close button to support the close button (X)
-//        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-//        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
-//        closeButton.setVisible(false);
-//
-//        // show dialog
-//        dialog.showAndWait();
+        CinemaClient.getDialogCreationManager().loadDialog("comingSoonMovieInfo",selectedMovie);
     }
 
     @FXML
@@ -159,19 +141,20 @@ public class ComingSoonMovieListController {
         requestComingSoonMovieList(true);
     }
 
-@FXML
-void initialize() throws IOException {
-    userDataManager = CinemaClient.getUserDataManager();
+    @FXML
+    void initialize() throws IOException {
+        userDataManager = CinemaClient.getUserDataManager();
 
-    // register to EventBus
-    EventBus.getDefault().register(this);
+        // register to EventBus
+        EventBus.getDefault().register(this);
 
-    requestComingSoonMovieList(false);
+        requestComingSoonMovieList(false);
 
-    if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
-        addComingSoonMovie.setVisible(true);
-        removeComingSoonMovie.setVisible(true);
-
+        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
+            addMovieMenu.setVisible(true);
+            removeMovieMenu.setVisible(true);
+            addComingSoonMovie.setVisible(true);
+            removeComingSoonMovie.setVisible(true);
+        }
     }
-}
 }

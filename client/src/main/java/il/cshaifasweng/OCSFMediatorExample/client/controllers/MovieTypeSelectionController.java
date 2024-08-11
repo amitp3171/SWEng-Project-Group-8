@@ -7,11 +7,7 @@ import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import org.greenrobot.eventbus.EventBus;
-import java.util.List;
 
 public class MovieTypeSelectionController {
 
@@ -19,10 +15,7 @@ public class MovieTypeSelectionController {
     private Label welcomeUserLabel;
 
     @FXML
-    private MenuItem addInTheaterMovieMenuItem;
-
-    @FXML
-    private MenuItem addOrRemoveMovies;
+    private MenuItem personalAreaMenuItem;
 
     UserDataManager userDataManager;
 
@@ -34,6 +27,11 @@ public class MovieTypeSelectionController {
     @FXML
     void onGoBack(ActionEvent event) throws IOException {
         CinemaClient.setContent("primary");
+    }
+
+    @FXML
+    void showPersonalArea(ActionEvent event) throws IOException {
+        CinemaClient.setContent("customerPersonalArea");
     }
 
     @FXML
@@ -77,12 +75,9 @@ public class MovieTypeSelectionController {
         userDataManager = CinemaClient.getUserDataManager();
         if (userDataManager.isGuest())
             welcomeUserLabel.setText("ברוך הבא אורח!");
-        else
+        else {
             welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", userDataManager.getFirstName(), userDataManager.getLastName()));
-
-        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
-            addOrRemoveMovies.setVisible(true);
-            addInTheaterMovieMenuItem.setVisible(true);
+            personalAreaMenuItem.setVisible(true);
         }
     }
 
