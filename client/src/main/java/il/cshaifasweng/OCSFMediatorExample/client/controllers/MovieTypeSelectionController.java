@@ -35,6 +35,10 @@ public class MovieTypeSelectionController {
     void onGoBack(ActionEvent event) throws IOException {
         CinemaClient.setContent("primary");
     }
+    @FXML
+    void onGoBack2(ActionEvent event) throws IOException {
+        CinemaClient.setContent("account");
+    }
 
     @FXML
     void onLogOut(ActionEvent event) throws IOException {

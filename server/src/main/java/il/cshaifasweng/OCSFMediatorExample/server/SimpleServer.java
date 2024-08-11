@@ -43,7 +43,24 @@ public class SimpleServer extends AbstractServer {
 		client.sendToClient(message);
 		System.out.println(newMessage);
 	}
-
+	private void handleComplaintListRequest(Message message, ConnectionToClient client) throws IOException{
+		String govId = message.getData();
+		System.out.println(govId);
+		// get data
+		List<Customer> customer = db.executeNativeQuery(
+				"SELECT * FROM customers WHERE govId = ?",
+				Customer.class,
+				govId);
+		List<Complaint> receivedComplaints = db.executeNativeQuery(
+				"SELECT * FROM complaints WHERE creator_id = ?",
+				Complaint.class,
+				customer.get(0).getId());
+		List<String> complaintsContents = new ArrayList<>();
+		for (Complaint complaint: receivedComplaints){
+			complaintsContents.add(complaint.toString());
+		}
+		sendMessage(message, "updated Complaint list successfully", complaintsContents, client);
+	}
 	private void handleNewClient(Message message, ConnectionToClient client) throws IOException {
 		SubscribedClient connection = new SubscribedClient(client);
 		SubscribersList.add(connection);
@@ -411,6 +428,7 @@ public class SimpleServer extends AbstractServer {
 
 
 
+
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
@@ -422,7 +440,9 @@ public class SimpleServer extends AbstractServer {
 				message.setMessage("Error! we got an empty message");
 				client.sendToClient(message);
 			}
-
+			else if (request.equals("get active complaints")){
+				handleComplaintListRequest(message, client);
+			}
 			else if (request.equals("add client")){
 				handleNewClient(message, client);
 			}
