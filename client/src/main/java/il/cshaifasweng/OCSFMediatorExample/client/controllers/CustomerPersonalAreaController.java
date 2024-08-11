@@ -6,12 +6,9 @@ import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import org.greenrobot.eventbus.EventBus;
 
-public class AccountController {
+public class CustomerPersonalAreaController {
 
     @FXML
     private Label welcomeUserLabel;
@@ -25,26 +22,27 @@ public class AccountController {
 
     @FXML
     void onGoBack(ActionEvent event) throws IOException {
-        CinemaClient.setContent("primary");
-    }
-    @FXML
-    void goToAccount(ActionEvent event) throws IOException {
-        CinemaClient.setContent("account");
+        CinemaClient.setContent("movieTypeSelection");
     }
 
     @FXML
-    void purchases(ActionEvent event) throws IOException {
+    void onLogOut(ActionEvent event) throws IOException {
+        CinemaClient.setContent("primary");
+    }
+
+    @FXML
+    void onShowPurchases(ActionEvent event) throws IOException {
         CinemaClient.setContent("purchasesList");
     }
 
     @FXML
-    void messages(ActionEvent event) throws IOException {
+    void onShowMessages(ActionEvent event) throws IOException {
         CinemaClient.setContent("messagesList");
     }
 
     @FXML
-    void complaints(ActionEvent event) throws IOException {
-        CinemaClient.setContent("complaintsList");
+    void onShowComplaints(ActionEvent event) throws IOException {
+        CinemaClient.setContent("customerComplaintList");
     }
 
     @FXML

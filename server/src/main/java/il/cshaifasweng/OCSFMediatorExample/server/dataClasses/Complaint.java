@@ -21,7 +21,7 @@ public class Complaint {
         this.receivedAt = receivedAt;
         this.title = title;
         this.complaintContent = complaintContent;
-        this.response = "NULL";
+        this.response = "[טרם התקבלה תגובה]";
     }
 
     public Complaint() {

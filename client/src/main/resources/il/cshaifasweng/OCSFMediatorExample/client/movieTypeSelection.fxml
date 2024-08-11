@@ -22,7 +22,7 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="משתמש">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#onGoBack2" text="אזור אישי" />
+                        <MenuItem mnemonicParsing="false" onAction="#showPersonalArea" text="אזור אישי" />
                     </items>
                 </Menu>
             </menus>
