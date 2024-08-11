@@ -53,5 +53,4 @@ public class CustomerPersonalAreaController {
         else
             welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", userDataManager.getFirstName(), userDataManager.getLastName()));
     }
-
 }

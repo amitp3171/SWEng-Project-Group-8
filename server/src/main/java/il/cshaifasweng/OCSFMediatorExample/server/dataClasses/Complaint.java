@@ -21,7 +21,7 @@ public class Complaint {
         this.receivedAt = receivedAt;
         this.title = title;
         this.complaintContent = complaintContent;
-        this.response = "[טרם התקבלה תגובה]";
+        this.response = "[טרם התקבלה תגובה מהצוות]";
     }
 
     public Complaint() {

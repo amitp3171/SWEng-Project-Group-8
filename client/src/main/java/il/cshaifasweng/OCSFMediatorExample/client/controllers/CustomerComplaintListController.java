@@ -99,6 +99,7 @@ public class CustomerComplaintListController {
 
     @FXML
     void initialize() throws IOException {
+        // initialize list
         EventBus.getDefault().register(this);
         dataParser = CinemaClient.getDataParser();
         userDataManager = CinemaClient.getUserDataManager();
