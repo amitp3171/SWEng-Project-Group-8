@@ -43,37 +43,18 @@ public class CardPaymentPromptController implements DialogInterface {
 
     Dialog<ButtonType> dialog;
 
-    boolean resultOK;
-
-    Map<String, String> selectedScreeningTime;
-    ArrayList<String> selectedSeatIds;
-    double ticketPrice;
+    double productPrice;
+    int amountOfProducts;
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
         dialog.setResult(ButtonType.CANCEL);
     }
 
-    public void setData(Object... items) { // Map<String,String> selectedScreeningTime, ArrayList<String> selectedSeatIds
-        this.selectedScreeningTime = (Map<String, String>) items[0];
-        this.selectedSeatIds = (ArrayList<String>) items[1];
-        try {
-            CinemaClient.sendToServer("get Ticket price");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    void cancelPayment(ActionEvent event) {
-        EventBus.getDefault().unregister(this);
-
-        if (resultOK)
-            dialog.setResult(ButtonType.OK);
-        else
-            dialog.setResult(ButtonType.CANCEL);
-
-        dialog.close();
+    public void setData(Object... items) { // double productPrice, int amountOfProducts
+        this.productPrice = (Double) items[0];
+        this.amountOfProducts = (int) items[1];
+        paymentSumLabel.setText(String.format("סכום לתשלום: %.2f", this.productPrice * this.amountOfProducts));
     }
 
     @FXML
@@ -82,50 +63,20 @@ public class CardPaymentPromptController implements DialogInterface {
             statusLabel.setVisible(true);
             return;
         }
-        statusLabel.setVisible(false);
-
-        // TODO: if this were a real payment, we'd pass the card details here.
-        CinemaClient.sendToServer("create Ticket Purchase", String.join(",", CinemaClient.getUserDataManager().getGovId(), selectedScreeningTime.get("id"), selectedSeatIds.toString(), String.valueOf(this.ticketPrice)));
+        dialog.setResult(ButtonType.OK);
+        dialog.close();
     }
 
-    @Subscribe
-    public void onUpdateProductPrice(NewProductPriceEvent event) {
-        // on event received
-        Platform.runLater(() -> {
-            this.ticketPrice = Double.parseDouble(event.getMessage().getData());
-            paymentSumLabel.setText(String.format("סכום לתשלום: %.2f", this.ticketPrice*this.selectedSeatIds.size()));
-            System.out.println("update Seats list request received");
-        });
-    }
-
-    @Subscribe
-    public void onUpdateProductPrice(NewPurchaseStatusEvent event) {
-        // on event received
-        Platform.runLater(() -> {
-            String status = event.getMessage().getData();
-
-            if (status.equals("payment successful")) {
-                statusLabel.setText("תשלום בוצע בהצלחה, ניתן לראות את הרכישה באיזור האישי");
-                statusLabel.setTextFill(Color.GREEN);
-                statusLabel.setVisible(true);
-
-                resultOK = true;
-
-                // disable all fields except exit
-                creditCardNumberField.setDisable(true);
-                creditCardCVCField.setDisable(true);
-                creditCardDateField.setDisable(true);
-                payButton.setDisable(true);
-                cancelButton.setDisable(true);
-                closeDialogButton.setVisible(true);
-            }
-        });
+    @FXML
+    void cancelPayment(ActionEvent event) {
+        EventBus.getDefault().unregister(this);
+        dialog.setResult(ButtonType.CANCEL);
+        dialog.close();
     }
 
     @FXML
     void initialize() {
-        resultOK = false;
-        EventBus.getDefault().register(this);
+
     }
 
 }

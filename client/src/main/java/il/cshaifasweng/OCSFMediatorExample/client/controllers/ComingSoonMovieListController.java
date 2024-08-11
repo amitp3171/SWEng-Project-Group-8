@@ -76,6 +76,12 @@ public class ComingSoonMovieListController {
     }
 
     @FXML
+    void onLogOut(ActionEvent event) throws IOException {
+        CinemaClient.setContent("primary");
+        EventBus.getDefault().unregister(this);
+    }
+
+    @FXML
     void onCloseProgram(ActionEvent event) {
         System.exit(0);
     }

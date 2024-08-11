@@ -331,7 +331,7 @@ public class SimpleServer extends AbstractServer {
 	}
 
 	private void handleProductPriceRequest(Message message, ConnectionToClient client) throws IOException {
-		Price productPrice = db.executeNativeQuery("SELECT * FROM prices WHERE productClass=?", Price.class, message.getMessage().split("\\s+")[1]).get(0);
+		Price productPrice = db.executeNativeQuery("SELECT * FROM prices WHERE productClass=?", Price.class, message.getData()).get(0);
 
 		sendMessage(message, "updated Product price successfully", String.valueOf(productPrice.getPrice()), client);
 	}
@@ -364,12 +364,7 @@ public class SimpleServer extends AbstractServer {
 		String screeningTimeId = messageData[1];
 		String[] selectedSeatIds = messageData[2].substring(1, messageData[2].length()-1).split(",");
 
-		System.out.println(messageData[2]);
-		System.out.println(selectedSeatIds);
-
 		List<Seat> selectedSeats = db.executeNativeQuery("SELECT * FROM seats WHERE id IN (" + String.join(",", Collections.nCopies(selectedSeatIds.length, "?")) + ")", Seat.class, selectedSeatIds);
-
-		System.out.println(selectedSeats);
 
 		String productPrice = messageData[3];
 
@@ -381,13 +376,39 @@ public class SimpleServer extends AbstractServer {
 			Purchase newPurchase = new Purchase(newTicket, "Credit Card", LocalTime.now());
 			Seat selectedSeat = selectedSeats.get(i);
 			selectedSeat.setTaken(true);
+			owner.addTicketToList(newTicket);
+			owner.addPurchaseToList(newPurchase);
 			db.addInstance(newTicket);
 			db.addInstance(newPurchase);
 			db.updateEntity(selectedSeat);
+			db.updateEntity(owner);
 		}
 
 		sendMessage(message, "created Ticket Purchase successfully", "payment successful", client);
 	}
+
+	private void handleCreateSubscriptionCardPurchase(Message message, ConnectionToClient client) throws IOException {
+		// govId, amount, price
+		String[] messageData = message.getData().split(",");
+
+		String customerGovId = messageData[0];
+		double price = Double.parseDouble(messageData[2]);
+
+		Customer owner = db.executeNativeQuery("SELECT * FROM customers WHERE govId=?", Customer.class, customerGovId).get(0);
+
+		for (int i = 0; i < Integer.parseInt(messageData[1]); i++) {
+			SubscriptionCard newSubscriptionCard = new SubscriptionCard(owner, price);
+			Purchase newPurchase = new Purchase(newSubscriptionCard, "Credit Card", LocalTime.now());
+			owner.addSubscriptionCardToList(newSubscriptionCard);
+			owner.addPurchaseToList(newPurchase);
+			db.addInstance(newSubscriptionCard);
+			db.addInstance(newPurchase);
+			db.updateEntity(owner);
+		}
+
+		sendMessage(message, "created SubscriptionCard Purchase successfully", "payment successful", client);
+	}
+
 
 
 	@Override
@@ -458,12 +479,16 @@ public class SimpleServer extends AbstractServer {
 				handleCreateCustomerCredentials(message, client);
 			}
 
-			else if (request.equals("get Ticket price")) {
+			else if (request.equals("get Product price")) {
 				handleProductPriceRequest(message, client);
 			}
 
 			else if (request.equals("create Ticket Purchase")) {
 				handleCreateTicketPurchase(message, client);
+			}
+
+			else if (request.equals("create SubscriptionCard Purchase")) {
+				handleCreateSubscriptionCardPurchase(message, client);
 			}
 
 			else if(request.equals("add new coming soon movie")) {

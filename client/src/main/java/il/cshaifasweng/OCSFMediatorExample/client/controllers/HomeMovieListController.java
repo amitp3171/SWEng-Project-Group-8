@@ -70,6 +70,12 @@ public class HomeMovieListController {
     }
 
     @FXML
+    void onLogOut(ActionEvent event) throws IOException {
+        CinemaClient.setContent("primary");
+        EventBus.getDefault().unregister(this);
+    }
+
+    @FXML
     void onCloseProgram(ActionEvent event) {
         System.exit(0);
     }
@@ -138,7 +144,6 @@ public class HomeMovieListController {
         if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
             addHomeMovie.setVisible(true);
             removeHomeMovie.setVisible(true);
-
         }
     }
 }

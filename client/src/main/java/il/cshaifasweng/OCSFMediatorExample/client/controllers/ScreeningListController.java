@@ -172,6 +172,12 @@ public class ScreeningListController {
     }
 
     @FXML
+    void onLogOut(ActionEvent event) throws IOException {
+        CinemaClient.setContent("primary");
+        EventBus.getDefault().unregister(this);
+    }
+
+    @FXML
     void onItemSelected(MouseEvent event) throws IOException {
         // get screening time
         String selectedItem = screeningListView.getSelectionModel().getSelectedItem();

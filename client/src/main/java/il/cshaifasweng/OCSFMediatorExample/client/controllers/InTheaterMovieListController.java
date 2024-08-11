@@ -70,6 +70,12 @@ public class InTheaterMovieListController {
     }
 
     @FXML
+    void onLogOut(ActionEvent event) throws IOException {
+        CinemaClient.setContent("primary");
+        EventBus.getDefault().unregister(this);
+    }
+
+    @FXML
     void onCloseProgram(ActionEvent event) {
         System.exit(0);
     }
@@ -99,6 +105,9 @@ public class InTheaterMovieListController {
         // on event received
         Platform.runLater(() -> {
             try {
+                this.allInTheaterMovies.clear();
+                this.inTheaterMovies.clear();
+
                 ArrayList<String> messageData = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
 
                 for (String movie : messageData) {

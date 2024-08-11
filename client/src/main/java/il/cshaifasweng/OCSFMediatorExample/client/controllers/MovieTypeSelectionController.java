@@ -37,6 +37,11 @@ public class MovieTypeSelectionController {
     }
 
     @FXML
+    void onLogOut(ActionEvent event) throws IOException {
+        this.onGoBack(event);
+    }
+
+    @FXML
     void showComingSoonMovieList(ActionEvent event) throws IOException {
         CinemaClient.setContent("comingSoonMovieList");
     }
@@ -51,11 +56,20 @@ public class MovieTypeSelectionController {
         CinemaClient.getDialogCreationManager().loadDialog("branchSelector");
     }
 
-    //TODO: add inTheaterMovie here?
-    // Add movie
     @FXML
-    void onAddInTheaterMovie(ActionEvent event) throws IOException {
+    void onBuySubscriptionCard(ActionEvent event) throws IOException {
+        if (userDataManager.isGuest()) {
+            CinemaClient.getDialogCreationManager().loadDialog("createCustomerCredentialsPrompt");
 
+            if (userDataManager.isGuest())
+                welcomeUserLabel.setText("ברוך הבא אורח!");
+            else
+                welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", userDataManager.getFirstName(), userDataManager.getLastName()));
+
+            return;
+        }
+
+        CinemaClient.getDialogCreationManager().loadDialog("subscriptionCardPurchase");
     }
 
     @FXML

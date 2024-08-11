@@ -19,10 +19,23 @@
                         <MenuItem mnemonicParsing="false" onAction="#onCloseProgram" text="סגור" />
                     </items>
                 </Menu>
+            <Menu mnemonicParsing="false" text="משתמש">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
+              </items>
+            </Menu>
                 <Menu mnemonicParsing="false" text="פעולות">
                     <items>
-                        <MenuItem fx:id="addComingSoonMovie" mnemonicParsing="false" onAction="#onAddComingSoonMovie" text="הוספת סרט" visible="false" />
-                        <MenuItem fx:id="removeComingSoonMovie" mnemonicParsing="false" onAction="#onRemoveComingSoonMovie" text="מחיקת סרט" visible="false" />
+                  <Menu mnemonicParsing="false" text="הוספת סרט">
+                    <items>
+                              <MenuItem fx:id="addComingSoonMovie" mnemonicParsing="false" onAction="#onAddComingSoonMovie" text="בקרוב בקולנוע" visible="false" />
+                    </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="מחיקת סרט">
+                    <items>
+                              <MenuItem fx:id="removeComingSoonMovie" mnemonicParsing="false" onAction="#onRemoveComingSoonMovie" text="בקרוב בקולנוע" visible="false" />
+                    </items>
+                  </Menu>
                         <MenuItem mnemonicParsing="false" onAction="#onRefreshList" text="רענן רשימה" />
                     </items>
                 </Menu>

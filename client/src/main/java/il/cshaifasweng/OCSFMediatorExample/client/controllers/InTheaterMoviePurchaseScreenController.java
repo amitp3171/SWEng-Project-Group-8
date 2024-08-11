@@ -6,6 +6,8 @@ import java.util.Map;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
+import il.cshaifasweng.OCSFMediatorExample.client.events.NewProductPriceEvent;
+import il.cshaifasweng.OCSFMediatorExample.client.events.NewPurchaseStatusEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewSeatListEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -55,7 +57,12 @@ public class InTheaterMoviePurchaseScreenController {
     @FXML
     private Button subscriptionCardPurchaseButton;
 
+    @FXML
+    private Label statusLabel;
+
     private DataParser dataParser;
+
+    private double productPrice;
 
     private String selectedBranch;
     private Map<String, String> selectedMovie;
@@ -186,27 +193,48 @@ public class InTheaterMoviePurchaseScreenController {
         }
 
         // TODO: move to next screen (payment selection - credit)
-        ButtonType status = CinemaClient.getDialogCreationManager().loadDialog("cardPaymentPrompt", selectedScreening, selectedSeatIds);
+        ButtonType status = CinemaClient.getDialogCreationManager().loadDialog("cardPaymentPrompt", this.productPrice, selectedSeats.size());
 
         if (status == ButtonType.OK) {
-            for (Map<String, String> seat : this.selectedSeats) {
-                seat.replace("isTaken", String.valueOf(true));
-            }
-
-            populateSeats();
-
-            this.selectedSeats.clear();
-            this.selectedSeatIds.clear();
+            // TODO: if this were a real payment, we'd pass the card details here.
+            CinemaClient.sendToServer("create Ticket Purchase", String.join(",", CinemaClient.getUserDataManager().getGovId(), this.selectedScreening.get("id"), selectedSeatIds.toString(), String.valueOf(this.productPrice)));
         }
+        else {
+            statusLabel.setText("תשלום בוטל");
+            statusLabel.setTextFill(Color.RED);
+            statusLabel.setVisible(true);
+        }
+    }
+
+    @Subscribe
+    public void onPurchaseStatusUpdate(NewPurchaseStatusEvent event) {
+        // on event received
+        Platform.runLater(() -> {
+            String status = event.getMessage().getData();
+
+            if (status.equals("payment successful")) {
+                for (Map<String, String> seat : this.selectedSeats) {
+                    seat.replace("isTaken", String.valueOf(true));
+                }
+
+                populateSeats();
+
+                this.selectedSeats.clear();
+                this.selectedSeatIds.clear();
+
+                statusLabel.setText("תשלום בוצע בהצלחה, ניתן לראות את הרכישה באיזור האישי");
+                statusLabel.setTextFill(Color.GREEN);
+                statusLabel.setVisible(true);
+            }
+        });
     }
 
     @FXML
     void onSubscriptionCardPurchase(ActionEvent event) throws IOException {
         if (CinemaClient.getUserDataManager().isGuest()) {
             CinemaClient.getDialogCreationManager().loadDialog("createCustomerCredentialsPrompt");
+            return;
         }
-
-
     }
 
     @FXML
@@ -223,8 +251,24 @@ public class InTheaterMoviePurchaseScreenController {
     }
 
     @FXML
-    void initialize() {
+    void onLogOut(ActionEvent event) throws IOException {
+        CinemaClient.setContent("primary");
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void onUpdateProductPrice(NewProductPriceEvent event) {
+        // on event received
+        Platform.runLater(() -> {
+            this.productPrice = Double.parseDouble(event.getMessage().getData());
+            System.out.println("update Price request received");
+        });
+    }
+
+    @FXML
+    void initialize() throws IOException {
         dataParser = CinemaClient.getDataParser();
         EventBus.getDefault().register(this);
+        CinemaClient.sendToServer("get Product price", "Ticket");
     }
 }

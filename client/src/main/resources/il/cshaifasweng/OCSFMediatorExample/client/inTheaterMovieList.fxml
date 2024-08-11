@@ -19,6 +19,11 @@
                         <MenuItem mnemonicParsing="false" onAction="#onCloseProgram" text="סגור" />
                     </items>
                 </Menu>
+            <Menu mnemonicParsing="false" text="משתמש">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
+              </items>
+            </Menu>
                 <Menu mnemonicParsing="false" text="פעולות">
                     <items>
                   <MenuItem fx:id="addScreeningMenuitem" mnemonicParsing="false" onAction="#onAddScreening" text="הוסף הקרנה" visible="false" />

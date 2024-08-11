@@ -20,11 +20,11 @@
               <MenuItem mnemonicParsing="false" onAction="#onCloseProgram" text="סגור" />
             </items>
           </Menu>
-          <Menu fx:id="addOrRemoveMovies" mnemonicParsing="false" text="פעולות" visible="false">
-              <items>
-                  <MenuItem fx:id="addInTheaterMovieMenuItem" mnemonicParsing="false" onAction="#onAddInTheaterMovie" text="הוספת סרט לצפייה בקולנוע" visible="false" />
-              </items>
-          </Menu>
+            <Menu mnemonicParsing="false" text="משתמש">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
+               </items>
+            </Menu>
         </menus>
       </MenuBar>
    </top>
@@ -47,6 +47,11 @@
                </VBox.margin>
             </Button>
             <Button minHeight="50.0" minWidth="100.0" mnemonicParsing="false" onAction="#showComingSoonMovieList" text="בקרוב">
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin>
+            </Button>
+            <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onBuySubscriptionCard" prefHeight="30.0" text="רכישת כרטיסייה">
                <VBox.margin>
                   <Insets top="5.0" />
                </VBox.margin>

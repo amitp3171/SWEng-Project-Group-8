@@ -12,7 +12,7 @@ public class SubscriptionCard extends AbstractProduct{
     public SubscriptionCard(Customer owner, double price) {
         super(owner, price);
         this.remainingTickets = 20;
-}
+    }
 
     public SubscriptionCard() {}
 

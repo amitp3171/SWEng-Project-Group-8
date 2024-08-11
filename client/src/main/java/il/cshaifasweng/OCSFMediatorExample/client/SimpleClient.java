@@ -6,8 +6,14 @@ import org.greenrobot.eventbus.EventBus;
 
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.AbstractClient;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class SimpleClient extends AbstractClient {
 	private static SimpleClient client = null;
+
+	List<String> successfulPurchaseStatus = Arrays.asList(new String[]{"created SubscriptionCard Purchase successfully", "created Ticket Purchase successfully"});
 
 	private SimpleClient(String host, int port) {
 		super(host, port);
@@ -86,7 +92,7 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new NewProductPriceEvent(message));
 		}
 
-		else if (message.getMessage().equals("created Ticket Purchase successfully")){
+		else if (successfulPurchaseStatus.contains(message.getMessage())){
 			EventBus.getDefault().post(new NewPurchaseStatusEvent(message));
 		}
 

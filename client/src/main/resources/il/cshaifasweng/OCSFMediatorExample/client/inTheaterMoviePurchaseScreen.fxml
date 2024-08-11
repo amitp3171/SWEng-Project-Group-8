@@ -26,7 +26,10 @@
                   <MenuItem mnemonicParsing="false" onAction="#onCloseProgram" text="סגור" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="משתמש" />
+            <Menu mnemonicParsing="false" text="משתמש">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
+               </items></Menu>
             <Menu mnemonicParsing="false" text="עדכן" />
         </menus>
       </MenuBar>
@@ -119,6 +122,11 @@
                   <Insets top="5.0" />
                </VBox.margin>
             </Button>
+            <Label fx:id="statusLabel" text="סטטוס" visible="false">
+               <VBox.margin>
+                  <Insets top="3.0" />
+               </VBox.margin>
+            </Label>
          </children>
       </VBox>
    </center>
