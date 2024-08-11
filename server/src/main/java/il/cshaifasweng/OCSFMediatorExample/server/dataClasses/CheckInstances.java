@@ -54,7 +54,7 @@ public class CheckInstances {
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
         configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/sys?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "20danny05");
+        configuration.setProperty("hibernate.connection.password", "amit1717");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
@@ -383,20 +383,19 @@ public class CheckInstances {
 
             Ticket[] tickets = new Ticket[5];
             for(int i=0;i<tickets.length;i++) {
-                tickets[i] = new Ticket(customers[i], 40,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(i), screeningTimes.get(i).getSeat(i));
+                tickets[i] = new Ticket(customers[i], 40,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(i), screeningTimes.get(i).getTheater().getSeat(i));
                 purchases[i+10] = new Purchase(tickets[i], "Credit Card", LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i+10]);
 
             }
 
-
             Complaint[] complaints = new Complaint[6];
-            complaints[0] = new Complaint(customers[0], LocalTime.now(), "too expensive "," the tickets too expensive " );
-            complaints[1] = new Complaint(customers[1], LocalTime.now(),"too long "," the movie too long");
-            complaints[2] = new Complaint(customers[2], LocalTime.now(), "too short"," the movie too short");
-            complaints[3] = new Complaint(customers[3], LocalTime.now(), "bad service "," the tickets seller was rude");
-            complaints[4] = new Complaint(customers[4], LocalTime.now()," "," ");
-            complaints[5] = new Complaint(customers[0], LocalTime.now(), "too expensive 2 "," the tickets too expensive 2" );
+            complaints[0] = new Complaint(customers[0], LocalTime.now(), "[too expensive]", "[the tickets too expensive]");
+            complaints[1] = new Complaint(customers[1], LocalTime.now(),"too long ", "the movie too long");
+            complaints[2] = new Complaint(customers[2], LocalTime.now(), "too short", " the movie too short");
+            complaints[3] = new Complaint(customers[3], LocalTime.now(), "bad service ", " the tickets seller was rude");
+            complaints[4] = new Complaint(customers[4], LocalTime.now()," ", " ");
+            complaints[5] = new Complaint(customers[0], LocalTime.now(), "[too expensive 2]","[the tickets too expensive 22222]");
 
             ServiceEmployee[] serviceEmployees = new ServiceEmployee[5];
             serviceEmployees[0] = new ServiceEmployee("John", "Doe", "johndoe", "password1");

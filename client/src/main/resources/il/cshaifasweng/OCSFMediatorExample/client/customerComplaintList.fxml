@@ -36,7 +36,7 @@
                         <Font size="45.0" />
                     </font>
                 </Label>
-            <ListView fx:id="complaintListView" prefHeight="302.0" prefWidth="600.0" />
+            <ListView fx:id="complaintListView" nodeOrientation="RIGHT_TO_LEFT" onMouseClicked="#onItemSelected" prefHeight="302.0" prefWidth="600.0" />
             </children>
         </VBox>
     </center>
