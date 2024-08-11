@@ -11,26 +11,21 @@ public class Complaint {
     @ManyToOne(cascade = CascadeType.ALL)
     private Customer creator;
     private LocalTime receivedAt;
+    private String title;
     private String complaintContent;
+    private String response;
 
 
-
-    public Complaint(Customer creator, LocalTime receivedAt,String complaintContent1) {
+    public Complaint(Customer creator, LocalTime receivedAt, String title, String complaintContent) {
         this.creator = creator;
         this.receivedAt = receivedAt;
-        this.complaintContent = complaintContent1;
+        this.title = title;
+        this.complaintContent = complaintContent;
+        this.response = "NULL";
     }
 
     public Complaint() {
 
-    }
-
-    public String getComplaintContent() {
-        return complaintContent;
-    }
-
-    public void setComplaintContent(String complaintContent) {
-        this.complaintContent = complaintContent;
     }
 
     public Customer getCreator() {
@@ -41,11 +36,40 @@ public class Complaint {
         this.creator = creator;
     }
 
-    public LocalTime getreceivedAt() {
+    public LocalTime getReceivedAt() {
         return receivedAt;
     }
 
-    public void setreceivedAt(LocalTime receivedAt) {
+    public void setReceivedAt(LocalTime receivedAt) {
         this.receivedAt = receivedAt;
+    }
+
+    public String getComplaintContent() {
+        return complaintContent;
+    }
+
+    public void setComplaintContent(String complaintContent) {
+        this.complaintContent = complaintContent;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
+    }
+
+    @Override
+    public String toString(){
+        return String.join(",",String.valueOf(this.id) , this.title, this.complaintContent, this.response);
     }
 }

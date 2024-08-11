@@ -42,8 +42,9 @@ public class SimpleServer extends AbstractServer {
 		client.sendToClient(message);
 		System.out.println(newMessage);
 	}
-	private void  handleComplaintListRequest(Message message, ConnectionToClient client) throws IOException{
+	private void handleComplaintListRequest(Message message, ConnectionToClient client) throws IOException{
 		String govId = message.getData();
+		System.out.println(govId);
 		// get data
 		List<Customer> customer = db.executeNativeQuery(
 				"SELECT * FROM customers WHERE govId = ?",
@@ -55,10 +56,9 @@ public class SimpleServer extends AbstractServer {
 				customer.get(0).getId());
 		List<String> complaintsContents = new ArrayList<>();
 		for (Complaint complaint: receivedComplaints){
-			complaintsContents.add(complaint.getComplaintContent());
-
+			complaintsContents.add(complaint.toString());
 		}
-		sendMessage(message, "updated Complaint List successfully", complaintsContents, client);
+		sendMessage(message, "updated Complaint list successfully", complaintsContents, client);
 	}
 	private void handleNewClient(Message message, ConnectionToClient client) throws IOException {
 		SubscribedClient connection = new SubscribedClient(client);

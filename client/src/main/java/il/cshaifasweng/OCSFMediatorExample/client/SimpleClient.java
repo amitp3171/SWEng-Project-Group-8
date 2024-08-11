@@ -25,7 +25,7 @@ public class SimpleClient extends AbstractClient {
 		else if(message.getMessage().equals("updated branch list successfully")){
 			EventBus.getDefault().post(new NewBranchListEvent(message));
 		}
-		else if (message.getMessage().equals("updated Complaint List successfully")){
+		else if (message.getMessage().equals("updated Complaint list successfully")){
 			EventBus.getDefault().post(new NewComplaintListEvent(message));
 		}
 		else if(message.getMessage().equals("updated InTheaterMovie list successfully")){
