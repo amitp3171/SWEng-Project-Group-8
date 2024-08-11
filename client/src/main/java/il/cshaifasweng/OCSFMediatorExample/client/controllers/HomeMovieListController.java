@@ -26,6 +26,12 @@ public class HomeMovieListController {
     private ArrayList<String> homeMovies;
 
     @FXML
+    private Menu addMovieMenu;
+
+    @FXML
+    private Menu removeMovieMenu;
+
+    @FXML
     private MenuItem addHomeMovie;
 
     @FXML
@@ -142,6 +148,8 @@ public class HomeMovieListController {
         requestHomeMovieList(false);
 
         if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
+            addMovieMenu.setVisible(true);
+            removeMovieMenu.setVisible(true);
             addHomeMovie.setVisible(true);
             removeHomeMovie.setVisible(true);
         }

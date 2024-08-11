@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.AccountController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.CustomerPersonalAreaController">
     <top>
         <MenuBar nodeOrientation="RIGHT_TO_LEFT" BorderPane.alignment="CENTER">
             <menus>
@@ -22,7 +22,7 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="משתמש">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#goToAccount" text="אזור אישי" />
+                        <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
                     </items>
                 </Menu>
             </menus>
@@ -31,18 +31,18 @@
     <center>
         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
             <children>
-                <Label fx:id="welcomeUserLabel" text="Label">
+                <Label fx:id="welcomeUserLabel" text="ברוך הבא">
                     <font>
                         <Font size="45.0" />
                     </font>
                 </Label>
-                <Button minHeight="30.0" minWidth="215.0" mnemonicParsing="false" onAction="#purchases" prefHeight="28.0" prefWidth="219.0" text="צפייה ברכישות" />
-                <Button minHeight="30.0" minWidth="215.0" mnemonicParsing="false" onAction="#messages" prefHeight="30.0" prefWidth="215.0" text="הודעות">
+                <Button minHeight="30.0" minWidth="215.0" mnemonicParsing="false" onAction="#onShowPurchases" prefHeight="28.0" prefWidth="219.0" text="צפייה ברכישות" />
+                <Button minHeight="30.0" minWidth="215.0" mnemonicParsing="false" onAction="#onShowMessages" prefHeight="30.0" prefWidth="215.0" text="הודעות">
                     <VBox.margin>
                         <Insets top="5.0" />
                     </VBox.margin>
                 </Button>
-                <Button minHeight="30.0" minWidth="215.0" mnemonicParsing="false" onAction="#complaints" prefHeight="31.0" prefWidth="213.0" text="תלונות">
+                <Button minHeight="30.0" minWidth="215.0" mnemonicParsing="false" onAction="#onShowComplaints" prefHeight="31.0" prefWidth="213.0" text="תלונות">
                     <VBox.margin>
                         <Insets top="5.0" />
                     </VBox.margin>

@@ -26,12 +26,12 @@
             </Menu>
                 <Menu mnemonicParsing="false" text="פעולות">
                     <items>
-                  <Menu mnemonicParsing="false" text="הוספת סרט">
+                  <Menu fx:id="addMovieMenu" mnemonicParsing="false" text="הוספת סרט" visible="false">
                     <items>
                               <MenuItem fx:id="addComingSoonMovie" mnemonicParsing="false" onAction="#onAddComingSoonMovie" text="בקרוב בקולנוע" visible="false" />
                     </items>
                   </Menu>
-                  <Menu mnemonicParsing="false" text="מחיקת סרט">
+                  <Menu fx:id="removeMovieMenu" mnemonicParsing="false" text="מחיקת סרט" visible="false">
                     <items>
                               <MenuItem fx:id="removeComingSoonMovie" mnemonicParsing="false" onAction="#onRemoveComingSoonMovie" text="בקרוב בקולנוע" visible="false" />
                     </items>

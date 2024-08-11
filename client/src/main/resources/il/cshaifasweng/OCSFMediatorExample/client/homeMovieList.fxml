@@ -26,12 +26,12 @@
             </Menu>
                 <Menu mnemonicParsing="false" text="פעולות">
                     <items>
-                  <Menu mnemonicParsing="false" text="הוספת סרט">
+                  <Menu fx:id="addMovieMenu" mnemonicParsing="false" text="הוספת סרט" visible="false">
                     <items>
                               <MenuItem fx:id="addHomeMovie" mnemonicParsing="false" onAction="#onAddHomeMovie" text="צפייה ביתית" visible="false" />
                     </items>
                   </Menu>
-                  <Menu mnemonicParsing="false" text="מחיקת סרט">
+                  <Menu fx:id="removeMovieMenu" mnemonicParsing="false" text="מחיקת סרט" visible="false">
                     <items>
                               <MenuItem fx:id="removeHomeMovie" mnemonicParsing="false" onAction="#onRemoveHomeMovie" text="צפייה ביתית" visible="false" />
                     </items>
