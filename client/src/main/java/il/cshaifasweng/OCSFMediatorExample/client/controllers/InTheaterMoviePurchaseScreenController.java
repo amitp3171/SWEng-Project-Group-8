@@ -144,6 +144,7 @@ public class InTheaterMoviePurchaseScreenController {
         }
     }
 
+
     /* handlers are created for previously non-taken seats */
     private void handleSeatClick(Circle seat, int row, int col) {
         int newSelectedSeatIdx = row*6 + col;
@@ -248,6 +249,10 @@ public class InTheaterMoviePurchaseScreenController {
         ScreeningListController screeningListController = CinemaClient.setContent("screeningList").getController();
         screeningListController.setSelectedBranch(this.selectedBranch);
         screeningListController.setSelectedMovie(this.selectedMovie, false);
+    }
+    @FXML
+    void showPersonalArea(ActionEvent event) throws IOException {
+        CinemaClient.setContent("customerPersonalArea");
     }
 
     @FXML

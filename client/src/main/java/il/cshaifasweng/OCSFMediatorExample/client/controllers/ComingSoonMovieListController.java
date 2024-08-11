@@ -62,6 +62,10 @@ public class ComingSoonMovieListController {
         CinemaClient.setContent("primary");
         EventBus.getDefault().unregister(this);
     }
+    @FXML
+    void showPersonalArea(ActionEvent event) throws IOException {
+        CinemaClient.setContent("customerPersonalArea");
+    }
 
     @FXML
     void onCloseProgram(ActionEvent event) {

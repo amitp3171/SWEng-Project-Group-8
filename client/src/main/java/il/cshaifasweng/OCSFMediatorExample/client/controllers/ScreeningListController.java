@@ -176,6 +176,10 @@ public class ScreeningListController {
         CinemaClient.setContent("primary");
         EventBus.getDefault().unregister(this);
     }
+    @FXML
+    void showPersonalArea(ActionEvent event) throws IOException {
+        CinemaClient.setContent("customerPersonalArea");
+    }
 
     @FXML
     void onItemSelected(MouseEvent event) throws IOException {

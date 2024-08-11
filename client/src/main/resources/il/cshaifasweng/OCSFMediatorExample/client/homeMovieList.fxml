@@ -22,6 +22,7 @@
                 <Menu mnemonicParsing="false" text="משתמש">
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
+                        <MenuItem fx:id="personalAreaMenuItem" mnemonicParsing="false" onAction="#showPersonalArea" text="אזור אישי" visible="true" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="פעולות">
