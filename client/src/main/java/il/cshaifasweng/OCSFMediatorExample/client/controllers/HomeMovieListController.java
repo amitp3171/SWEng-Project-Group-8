@@ -13,6 +13,8 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import java.util.*;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ public class HomeMovieListController {
 
     UserDataManager userDataManager;
 
-    private ArrayList<String> homeMovies;
+    private ArrayList<Map<String, String>> homeMovies = new ArrayList<>();
 
     @FXML
     private Menu addMovieMenu;
@@ -37,36 +39,17 @@ public class HomeMovieListController {
     @FXML
     private MenuItem removeHomeMovie;
 
+    private DataParser dataParser;
+
     @FXML
     void onItemSelected(MouseEvent event) throws IOException {
         // if selected item is null
         if (homeMovieListView.getSelectionModel().getSelectedItem() == null) return;
 
         int selectedIndex = homeMovieListView.getSelectionModel().getSelectedIndex();
-        String selectedMovie = homeMovies.get(selectedIndex);
+        Map<String, String> selectedMovie = homeMovies.get(selectedIndex);
 
-        // TODO: display dialog with selected movie info
-        // load dialog fxml
-        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("homeMovieInfo");
-        DialogPane screeningDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
-
-        // get controller
-        HomeMovieInfoController homeMovieInfoController = dialogLoader.getController();
-        // set selected movie
-        homeMovieInfoController.setHomeMovie(selectedMovie);
-
-        // create new dialog
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.getDialogPane().setContent(screeningDialogPane);
-        homeMovieInfoController.setDialog(dialog);
-
-        // create hidden close button to support the close button (X)
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
-        closeButton.setVisible(false);
-
-        // show dialog
-        dialog.showAndWait();
+        CinemaClient.getDialogCreationManager().loadDialog("homeMovieInfo", selectedMovie);
     }
 
     @FXML
@@ -96,7 +79,7 @@ public class HomeMovieListController {
         // get movie names
         String[] movieNames = new String[homeMovies.size()];
         for (int i = 0; i < movieNames.length; i++) {
-            movieNames[i] = homeMovies.get(i).split(",")[1];
+            movieNames[i] = homeMovies.get(i).get("movieName");
         }
         // display movies
         homeMovieListView.getItems().addAll(movieNames);
@@ -107,7 +90,12 @@ public class HomeMovieListController {
         // on event received
         Platform.runLater(() -> {
             try {
-                homeMovies = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+                homeMovies.clear();
+                ArrayList<String> receivedData = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+
+                for (String movie : receivedData) {
+                    homeMovies.add(dataParser.parseMovie(movie));
+                }
 
                 if (!homeMovies.isEmpty())
                     initializeList();
@@ -121,15 +109,13 @@ public class HomeMovieListController {
 
     @FXML
     void onAddHomeMovie(ActionEvent event) throws IOException {
-
-        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("addHomeMovie", homeMovies);
+        CinemaClient.getDialogCreationManager().loadDialog("addHomeMovie", homeMovies);
         requestHomeMovieList(true);
     }
 
     @FXML
     void onRemoveHomeMovie(ActionEvent event) throws IOException {
-
-        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("removeHomeMovie", homeMovies);
+        CinemaClient.getDialogCreationManager().loadDialog("removeHomeMovie", homeMovies);
         requestHomeMovieList(true);
     }
 
@@ -141,6 +127,7 @@ public class HomeMovieListController {
     @FXML
     void initialize() throws IOException {
         userDataManager = CinemaClient.getUserDataManager();
+        dataParser = CinemaClient.getDataParser();
 
         // register to EventBus
         EventBus.getDefault().register(this);

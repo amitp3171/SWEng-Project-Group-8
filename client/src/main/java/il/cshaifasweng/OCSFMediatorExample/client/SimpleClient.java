@@ -12,7 +12,7 @@ import java.util.List;
 public class SimpleClient extends AbstractClient {
 	private static SimpleClient client = null;
 
-	List<String> successfulPurchaseStatus = Arrays.asList(new String[]{"created SubscriptionCard Purchase successfully", "created Ticket Purchase successfully"});
+	List<String> successfulPurchaseStatus = Arrays.asList(new String[]{"created SubscriptionCard Purchase successfully", "created Ticket Purchase successfully", "created Link Purchase successfully"});
 
 	private SimpleClient(String host, int port) {
 		super(host, port);

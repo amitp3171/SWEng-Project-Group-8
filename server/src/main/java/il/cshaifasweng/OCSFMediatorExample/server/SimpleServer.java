@@ -387,6 +387,26 @@ public class SimpleServer extends AbstractServer {
 		sendMessage(message, "created Ticket Purchase successfully", "payment successful", client);
 	}
 
+	private void handleCreateLinkPurchase(Message message, ConnectionToClient client) throws IOException {
+		String[] messageData = message.getData().split(",");
+		String customerGovId = messageData[0];
+		String movieId = messageData[1];
+		String productPrice = messageData[2];
+
+		Customer owner = db.executeNativeQuery("SELECT * FROM customers WHERE govId=?", Customer.class, customerGovId).get(0);
+		HomeMovie homeMovie = db.executeNativeQuery("SELECT * FROM homemovie WHERE id=?", HomeMovie.class, movieId).get(0);
+
+		Link newLink = new Link(owner, Double.parseDouble(productPrice), homeMovie, LocalDate.now(), LocalTime.now().plusHours(1), LocalTime.now().plusHours(3), "https://www.youtube.com/watch?v=Xithigfg7dA");
+		Purchase newPurchase = new Purchase(newLink, owner, "Credit Card", LocalDate.now(), LocalTime.now());
+
+		owner.addLinkToList(newLink);
+		owner.addPurchaseToList(newPurchase);
+		db.addInstance(newLink);
+		db.addInstance(newPurchase);
+		db.updateEntity(owner);
+		sendMessage(message, "created Link Purchase successfully", "payment successful", client);
+	}
+
 	private void handleCreateSubscriptionCardPurchase(Message message, ConnectionToClient client) throws IOException {
 		// govId, amount, price
 		String[] messageData = message.getData().split(",");
@@ -577,6 +597,10 @@ public class SimpleServer extends AbstractServer {
 
 			else if (request.equals("create Ticket Purchase")) {
 				handleCreateTicketPurchase(message, client);
+			}
+
+			else if (request.equals("create Link Purchase")) {
+				handleCreateLinkPurchase(message, client);
 			}
 
 			else if (request.equals("create SubscriptionCard Purchase")) {
