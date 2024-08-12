@@ -96,8 +96,16 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new NewPurchaseStatusEvent(message));
 		}
 
-		else if (message.getMessage().equals("updated Complaint list successfully")){
+		else if (message.getMessage().equals("updated Customer Complaint list successfully")){
 			EventBus.getDefault().post(new NewComplaintListEvent(message));
+		}
+
+		else if (message.getMessage().equals("updated Customer Purchase list successfully")){
+			EventBus.getDefault().post(new NewComplaintListEvent(message));
+		}
+
+		else if (message.getMessage().equals("updated Product details successfully")){
+			EventBus.getDefault().post(new NewProductDetailsEvent(message));
 		}
 
 		else if(message.getMessage().equals("client added successfully")){

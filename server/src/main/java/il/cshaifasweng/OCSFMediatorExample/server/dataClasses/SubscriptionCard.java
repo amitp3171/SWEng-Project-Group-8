@@ -23,4 +23,9 @@ public class SubscriptionCard extends AbstractProduct{
     public void setRemainingTickets(int remainingTickets) {
         this.remainingTickets = remainingTickets;
     }
+
+    @Override
+    public String toString() {
+        return String.join(",", String.valueOf(super.getId()), String.valueOf(this.remainingTickets));
+    }
 }

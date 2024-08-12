@@ -51,7 +51,7 @@ public class ScreeningTime {
     private void instantiateSeats() {
         // add MAX_CAPACITY new seats
         for (int i = 0; i < MAX_CAPACITY; i++) {
-            Seat seat = new Seat();
+            Seat seat = new Seat(i+1);
             seat.setTheater(this.theater); // Set the theater reference in the seat
             seat.setScreening(this);
             seats.add(seat); // Use add instead of set

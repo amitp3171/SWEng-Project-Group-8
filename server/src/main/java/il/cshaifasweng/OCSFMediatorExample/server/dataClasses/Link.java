@@ -16,13 +16,15 @@ public class Link extends AbstractProduct{
     private LocalDate availableDay;
     private LocalTime availableHour;
     private LocalTime expiresAt;
+    String link;
 
-    public Link(Customer owner, double price, HomeMovie homeMovie,LocalDate availableDay, LocalTime availableHour, LocalTime expiresAt) {
+    public Link(Customer owner, double price, HomeMovie homeMovie,LocalDate availableDay, LocalTime availableHour, LocalTime expiresAt, String link) {
         super(owner, price);
         this.homeMovie = homeMovie;
         this.availableDay = availableDay;
         this.availableHour = availableHour;
         this.expiresAt = expiresAt;
+        this.link = link;
     }
 
     public Link() {
@@ -58,4 +60,25 @@ public class Link extends AbstractProduct{
     public void setExpiresAt(LocalTime expiresAt) {
         this.expiresAt = expiresAt;
     }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    @Override
+    public String toString() {
+        return String.join(",",
+                String.valueOf(super.getId()),
+                String.valueOf(super.getPrice()),
+                this.homeMovie.getMovieName(),
+                this.availableDay.toString(),
+                this.availableHour.toString(),
+                this.expiresAt.toString(),
+                this.link);
+    }
 }
+

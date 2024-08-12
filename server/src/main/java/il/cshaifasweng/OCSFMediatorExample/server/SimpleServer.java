@@ -373,7 +373,7 @@ public class SimpleServer extends AbstractServer {
 
 		for (int i = 0; i < selectedSeats.size(); i++) {
 			Ticket newTicket = new Ticket(owner, Double.parseDouble(productPrice), screeningTime.getInTheaterMovie().getMovieName(), screeningTime, selectedSeats.get(i));
-			Purchase newPurchase = new Purchase(newTicket, "Credit Card", LocalTime.now());
+			Purchase newPurchase = new Purchase(newTicket, owner, "Credit Card", LocalDate.now(), LocalTime.now());
 			Seat selectedSeat = selectedSeats.get(i);
 			selectedSeat.setTaken(true);
 			owner.addTicketToList(newTicket);
@@ -398,7 +398,7 @@ public class SimpleServer extends AbstractServer {
 
 		for (int i = 0; i < Integer.parseInt(messageData[1]); i++) {
 			SubscriptionCard newSubscriptionCard = new SubscriptionCard(owner, price);
-			Purchase newPurchase = new Purchase(newSubscriptionCard, "Credit Card", LocalTime.now());
+			Purchase newPurchase = new Purchase(newSubscriptionCard, owner, "Credit Card", LocalDate.now(), LocalTime.now());
 			owner.addSubscriptionCardToList(newSubscriptionCard);
 			owner.addPurchaseToList(newPurchase);
 			db.addInstance(newSubscriptionCard);
@@ -409,7 +409,7 @@ public class SimpleServer extends AbstractServer {
 		sendMessage(message, "created SubscriptionCard Purchase successfully", "payment successful", client);
 	}
 
-	private void handleComplaintListRequest(Message message, ConnectionToClient client) throws IOException{
+	private void handleCustomerComplaintListRequest(Message message, ConnectionToClient client) throws IOException{
 		String govId = message.getData();
 		// get data
 		List<Customer> customer = db.executeNativeQuery(
@@ -424,10 +424,47 @@ public class SimpleServer extends AbstractServer {
 		for (Complaint complaint: receivedComplaints){
 			complaintsContents.add(complaint.toString());
 		}
-		sendMessage(message, "updated Complaint list successfully", complaintsContents, client);
+		sendMessage(message, "updated Customer Complaint list successfully", complaintsContents, client);
 	}
 
+	private void handleCustomerPurchaseListRequest(Message message, ConnectionToClient client) throws IOException{
+		String govId = message.getData();
+		// get data
+		Customer customer = db.executeNativeQuery(
+				"SELECT * FROM customers WHERE govId = ?",
+				Customer.class,
+				govId).get(0);
 
+		List<Purchase> customerPurchases = db.executeNativeQuery(
+				"SELECT * FROM purchases WHERE customer_id = ?",
+				Purchase.class,
+				customer.getId());
+
+		List<String> purchasesToString = new ArrayList<>();
+
+		for (Purchase purchase: customerPurchases){
+			purchasesToString.add(purchase.toString());
+		}
+
+		sendMessage(message, "updated Customer Purchase list successfully", purchasesToString, client);
+	}
+
+	private void handleCustomerProductDetailsRequest(Message message, ConnectionToClient client) throws IOException{
+		int selectedId = Integer.parseInt(message.getData());
+
+		List<AbstractProduct> products = db.getAll(AbstractProduct.class, false);
+
+		String item = null;
+
+		for (AbstractProduct product : products) {
+			if (selectedId == product.getId()) {
+				item = String.join(",", product.getClass().getName().substring(55), product.toString());
+				break;
+			}
+		}
+
+		sendMessage(message, "updated Product details successfully", item, client);
+	}
 
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -525,8 +562,16 @@ public class SimpleServer extends AbstractServer {
 				handleRemoveHomeMovie(message, client);
 			}
 
-			else if (request.equals("get complaint list")){
-				handleComplaintListRequest(message, client);
+			else if (request.equals("get Customer Complaint list")) {
+				handleCustomerComplaintListRequest(message, client);
+			}
+
+			else if (request.equals("get Customer Purchase list")) {
+				handleCustomerPurchaseListRequest(message, client);
+			}
+
+			else if (request.equals("request Product details")) {
+				handleCustomerProductDetailsRequest(message, client);
 			}
 
 			else {

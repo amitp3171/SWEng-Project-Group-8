@@ -9,6 +9,8 @@ public class Seat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    private int seatNumber;
+
     private boolean isTaken;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -21,8 +23,17 @@ public class Seat {
         this.isTaken = false;
     }
 
+    public Seat(int seatNumber) {
+        this.isTaken = false;
+        this.seatNumber = seatNumber;
+    }
+
     public int getId() {
         return id;
+    }
+
+    public int getSeatNumber() {
+        return seatNumber;
     }
 
     public boolean isTaken() {

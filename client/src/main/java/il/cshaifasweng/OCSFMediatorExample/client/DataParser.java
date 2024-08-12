@@ -57,4 +57,20 @@ public class DataParser {
         return generateMap(stringRepresentation, "id", "title", "complaintContent", "response");
     }
 
+    public static Map<String, String> parsePurchase(String stringRepresentation) {
+        return generateMap(stringRepresentation, "id", "customerId", "relatedProductId", "paymentTime", "paymentDate", "paymentMethod");
+    }
+
+    public static Map<String, String> parseTicket(String stringRepresentation) {
+        return generateMap(stringRepresentation, "id", "price", "branchLocation", "movieName", "seatNumber", "theaterId", "screeningTime", "screeningDate");
+    }
+
+    public static Map<String, String> parseSubscriptionCard(String stringRepresentation) {
+        return generateMap(stringRepresentation, "id", "remainingTickets");
+    }
+
+    public static Map<String, String> parseLink(String stringRepresentation) {
+        return generateMap(stringRepresentation, "id", "price", "movieName", "availableDate", "availableTime", "expiresAt", "link");
+    }
+
 }

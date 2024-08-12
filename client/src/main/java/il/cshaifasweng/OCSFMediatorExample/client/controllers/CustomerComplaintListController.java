@@ -52,19 +52,16 @@ public class CustomerComplaintListController {
     }
 
     public void getComplaintList() throws IOException {
-        // Assuming customer ID is valid and other user data is set
-        CinemaClient.sendToServer("get complaint list", userDataManager.getGovId());
+        CinemaClient.sendToServer("get Customer Complaint list", userDataManager.getGovId());
     }
 
-
     @Subscribe
-    public void onGetComplaintListEvent(NewComplaintListEvent event) {
+    public void onGetCustomerComplaintListEvent(NewComplaintListEvent event) {
         // on event received
         Platform.runLater(() -> {
             try {
                 ArrayList<String> receivedData = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
                 for (String complaintContent : receivedData) {
-                    System.out.println(complaintContent);
                     complaints.add(dataParser.parseComplaint(complaintContent));
                 }
             }

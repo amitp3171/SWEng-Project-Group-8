@@ -367,8 +367,8 @@ public class CheckInstances {
 
             Link[] links =new Link[5];
             for(int i=0;i<links.length;i++){
-                links[i] = new Link(customers[i],20, homeMovie, LocalDate.now(), LocalTime.now(), LocalTime.now().plusHours((long)(homeMovie.getMovieLength())+1 ));
-                purchases[i] = new Purchase(links[i], "Credit Card", LocalTime.now());
+                links[i] = new Link(customers[i],20, homeMovie, LocalDate.now(), LocalTime.now(), LocalTime.now().plusHours((long)(homeMovie.getMovieLength())+1), "thisisanexampleforalink");
+                purchases[i] = new Purchase(links[i], customers[i], "Credit Card", LocalDate.now(), LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i]);
             }
 
@@ -376,7 +376,7 @@ public class CheckInstances {
             SubscriptionCard[] sc = new SubscriptionCard[5];
             for(int i=0;i<sc.length;i++) {
                 sc[i] = new SubscriptionCard(customers[i], 700);
-                purchases[i+5] = new Purchase(sc[i], "Credit Card", LocalTime.now());
+                purchases[i+5] = new Purchase(sc[i], customers[i], "Credit Card", LocalDate.now(), LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i+5]);
 
             }
@@ -384,7 +384,7 @@ public class CheckInstances {
             Ticket[] tickets = new Ticket[5];
             for(int i=0;i<tickets.length;i++) {
                 tickets[i] = new Ticket(customers[i], 40,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(i), screeningTimes.get(i).getSeat(i));
-                purchases[i+10] = new Purchase(tickets[i], "Credit Card", LocalTime.now());
+                purchases[i+10] = new Purchase(tickets[i], customers[i], "Credit Card", LocalDate.now(), LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i+10]);
 
             }

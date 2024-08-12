@@ -45,4 +45,17 @@ public class Ticket extends AbstractProduct {
     public void setSeat(Seat seat) {
         this.seat = seat;
     }
+
+    @Override
+    public String toString() {
+        return String.join(",",
+                String.valueOf(super.getId()),
+                String.valueOf(super.getPrice()),
+                this.screeningTime.getBranch().getLocation(),
+                this.movieName,
+                String.valueOf(this.seat.getSeatNumber()),
+                String.valueOf(this.screeningTime.getTheater().getTheaterID()),
+                this.screeningTime.getTime().toString(),
+                this.screeningTime.getDate().toString());
+    }
 }
