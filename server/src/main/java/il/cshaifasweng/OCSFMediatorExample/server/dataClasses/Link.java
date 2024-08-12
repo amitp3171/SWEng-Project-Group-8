@@ -18,7 +18,7 @@ public class Link extends AbstractProduct{
     private LocalDate availableDay;
     private LocalTime availableHour;
     private LocalTime expiresAt;
-    String link;
+    private String link;
 
     public Link(Customer owner, double price, HomeMovie homeMovie,LocalDate availableDay, LocalTime availableHour, LocalTime expiresAt, String link) {
         super(owner, price);
