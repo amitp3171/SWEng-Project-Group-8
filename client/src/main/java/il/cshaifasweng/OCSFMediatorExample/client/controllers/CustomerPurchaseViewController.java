@@ -16,10 +16,7 @@ import il.cshaifasweng.OCSFMediatorExample.client.events.NewProductDetailsEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -42,6 +39,8 @@ public class CustomerPurchaseViewController implements DialogInterface {
     DataParser dataParser;
 
     Map<String, String> selectedPurchase;
+
+    String productClass;
 
     Map<String, String> relatedProduct;
 
@@ -66,37 +65,41 @@ public class CustomerPurchaseViewController implements DialogInterface {
     public void onGetProductDetailsEvent(NewProductDetailsEvent event) {
         // on event received
         Platform.runLater(() -> {
-            String productClass = event.getMessage().getData().split(",")[0];
-            String productToString = event.getMessage().getData().substring(productClass.length() + 1);
-            Map<String, String> productMap;
-            switch (productClass) {
+            this.productClass = event.getMessage().getData().split(",")[0];
+            String productToString = event.getMessage().getData().substring(this.productClass.length() + 1);
+            switch (this.productClass) {
                 case "Ticket":
-                    productMap = dataParser.parseTicket(productToString);
+                    this.relatedProduct = dataParser.parseTicket(productToString);
                     productDescLabel.setText(
                             String.format("כרטיס: %s, אולם %s, מושב %s, %s, %n %s, סניף %s",
-                                    productMap.get("movieName"),
-                                    (1 + (Integer.parseInt(productMap.get("theaterId"))-1 % 10)),
-                                    productMap.get("seatNumber"),
-                                    productMap.get("screeningTime"),
-                                    productMap.get("screeningDate"),
-                                    productMap.get("branchLocation")));
-                    System.out.println(productDescLabel.getText());
+                                    this.relatedProduct.get("movieName"),
+                                    (1 + (Integer.parseInt(this.relatedProduct.get("theaterId"))-1 % 10)),
+                                    this.relatedProduct.get("seatNumber"),
+                                    this.relatedProduct.get("screeningTime"),
+                                    this.relatedProduct.get("screeningDate"),
+                                    this.relatedProduct.get("branchLocation")));
                     break;
                 case "SubscriptionCard":
-                    productMap = dataParser.parseSubscriptionCard(productToString);
+                    this.relatedProduct = dataParser.parseSubscriptionCard(productToString);
                     productDescLabel.setText(
                             String.format("כרטיסייה: נותרו %s כרטיסים",
-                            productMap.get("remainingTickets")));
+                            this.relatedProduct.get("remainingTickets")));
+                    refundButton.setDisable(true);
+                    refundButton.setText("אין אפשרות לקבל החזר כספי על כרטיסיות");
                     break;
                 case "Link":
                     // TODO: adjust based on expiry time
-                    productMap = dataParser.parseLink(productToString);
-                    LocalDate availableDate = LocalDate.parse(productMap.get("availableDate"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                    LocalTime availableTime = LocalTime.parse(productMap.get("availableTime"), DateTimeFormatter.ofPattern("HH:mm:ss"));
-                    LocalTime expiresAt = LocalTime.parse(productMap.get("expiresAt"), DateTimeFormatter.ofPattern("HH:mm:ss"));
+                    this.relatedProduct = dataParser.parseLink(productToString);
+                    LocalDate availableDate = LocalDate.parse(this.relatedProduct.get("availableDate"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    LocalTime availableTime = LocalTime.parse(this.relatedProduct.get("availableTime"), DateTimeFormatter.ofPattern("HH:mm:ss"));
+                    LocalTime expiresAt = LocalTime.parse(this.relatedProduct.get("expiresAt"), DateTimeFormatter.ofPattern("HH:mm:ss"));
+                    if (LocalTime.now().plusHours(1).isAfter(availableTime)) {
+                        refundButton.setText("ניתן לבטל עד שעה לפני מועד הפעלת הקישור");
+                        refundButton.setDisable(true);
+                    }
                     if (availableDate.isEqual(LocalDate.now()) && LocalTime.now().isBefore(expiresAt) && LocalTime.now().isAfter(availableTime)) {
                         productDescLabel.setText(
-                                String.format("קישור: %s, זמינות עד השעה %s", productMap.get("link"), productMap.get("expiresAt"))
+                                String.format("חבילת צפייה: %s, זמינות עד השעה %s", this.relatedProduct.get("link"), this.relatedProduct.get("expiresAt"))
                         );
                     }
                     else {
@@ -121,8 +124,8 @@ public class CustomerPurchaseViewController implements DialogInterface {
     }
 
     @FXML
-    void onRefundRequested(ActionEvent event) {
-
+    void onRefundRequested(ActionEvent event) throws IOException {
+        CinemaClient.getDialogCreationManager().loadDialog("customerRefundRequestView", this.productClass, this.relatedProduct);
     }
 
     @FXML
