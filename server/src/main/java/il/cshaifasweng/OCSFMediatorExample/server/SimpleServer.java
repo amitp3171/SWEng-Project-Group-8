@@ -24,8 +24,6 @@ public class SimpleServer extends AbstractServer {
 	private static ObjectMapper mapper = new ObjectMapper();
 	DatabaseBridge db = DatabaseBridge.getInstance();
 
-	DateTimeFormatter localTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
 	public SimpleServer(int port) {
 		super(port);
 		mapper.registerModule(new JavaTimeModule());
@@ -503,6 +501,66 @@ public class SimpleServer extends AbstractServer {
 		sendMessage(message, "used SubscriptionCard successfully", "payment successful", client);
 	}
 
+	private void handleCustomerTicketRefundRequest(Message message, ConnectionToClient client) throws IOException{
+		String productId = message.getData();
+
+		Ticket selectedTicket = db.executeNativeQuery("SELECT * FROM tickets WHERE id = ?", Ticket.class, productId).get(0);
+
+		Purchase relatedPurchase = db.executeNativeQuery("SELECT * FROM purchases WHERE relatedProduct_id = ?", Purchase.class, productId).get(0);
+
+		Customer owner = selectedTicket.getOwner();
+
+		// detach Customer
+		relatedPurchase.setCustomer(null);
+		selectedTicket.setOwner(null);
+
+		// detach Ticket
+		relatedPurchase.setRelatedProduct(null);
+
+		// detach Ticket and Purchase
+		owner.removeTicketFromList(selectedTicket);
+		owner.removePurchaseFromList(relatedPurchase);
+
+		db.updateEntity(relatedPurchase);
+		db.updateEntity(selectedTicket);
+
+		db.updateEntity(owner);
+		db.removeInstance(selectedTicket);
+		db.removeInstance(relatedPurchase);
+
+		sendMessage(message, "refunded Ticket successfully", "refund successful", client);
+	}
+
+	private void handleCustomerLinkRefundRequest(Message message, ConnectionToClient client) throws IOException{
+		String productId = message.getData();
+
+		Link selectedLink = db.executeNativeQuery("SELECT * FROM links WHERE id = ?", Link.class, productId).get(0);
+
+		Purchase relatedPurchase = db.executeNativeQuery("SELECT * FROM purchases WHERE relatedProduct_id = ?", Purchase.class, productId).get(0);
+
+		Customer owner = selectedLink.getOwner();
+
+		// detach Customer
+		relatedPurchase.setCustomer(null);
+		selectedLink.setOwner(null);
+
+		// detach Ticket
+		relatedPurchase.setRelatedProduct(null);
+
+		// detach Ticket and Purchase
+		owner.removeLinkFromList(selectedLink);
+		owner.removePurchaseFromList(relatedPurchase);
+
+		db.updateEntity(relatedPurchase);
+		db.updateEntity(selectedLink);
+
+		db.updateEntity(owner);
+		db.removeInstance(selectedLink);
+		db.removeInstance(relatedPurchase);
+
+		sendMessage(message, "refunded Link successfully", "refund successful", client);
+	}
+
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
@@ -617,6 +675,14 @@ public class SimpleServer extends AbstractServer {
 
 			else if (request.equals("use SubscriptionCard")) {
 				handleCustomerUseSubscriptionCardRequest(message, client);
+			}
+
+			else if (request.equals("Customer Ticket Refund")) {
+				handleCustomerTicketRefundRequest(message, client);
+			}
+
+			else if (request.equals("Customer Link Refund")) {
+				handleCustomerLinkRefundRequest(message, client);
 			}
 
 			else {

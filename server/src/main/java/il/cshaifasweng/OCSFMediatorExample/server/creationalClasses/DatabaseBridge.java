@@ -161,6 +161,7 @@ public class DatabaseBridge {
             session.remove(entity);
             session.flush();
             session.getTransaction().commit();
+//            session.clear();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

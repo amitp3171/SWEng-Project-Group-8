@@ -7,10 +7,10 @@ public class Ticket extends AbstractProduct {
 
     private String movieName;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne/*(cascade = CascadeType.ALL)*/
     private ScreeningTime screeningTime;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne/*(cascade = CascadeType.ALL)*/
     private Seat seat;
 
     public Ticket(Customer owner, double price, String movieName, ScreeningTime screeningTime, Seat seat) {

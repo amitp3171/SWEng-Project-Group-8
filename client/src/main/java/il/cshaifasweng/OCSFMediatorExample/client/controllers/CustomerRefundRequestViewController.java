@@ -71,7 +71,16 @@ public class CustomerRefundRequestViewController implements DialogInterface {
     }
 
     @FXML
-    void confirmRefundRequest(ActionEvent event) {
+    void confirmRefundRequest(ActionEvent event) throws IOException {
+        switch (this.productClass) {
+            case "Ticket":
+                CinemaClient.sendToServer("Customer Ticket Refund", this.relatedProduct.get("id"));
+                break;
+            case "Link":
+                CinemaClient.sendToServer("Customer Link Refund");
+                break;
+        }
+
         // TODO: send refund request to server
     }
 

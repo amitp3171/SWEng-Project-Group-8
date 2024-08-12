@@ -434,13 +434,13 @@ public class CheckInstances {
 
             generatePrices(new Price[]{ticketPrice, linkPrice, subscriptionCardPrice});
 
+            generateCustomers(customers);
             generatePurchases(purchases);
             generateComplaints(complaints);
             generateServiceEmployees(serviceEmployees);
             generateCompanyManagers(companyManagers);
             generateBranchManagers(branchManagers);
             generateContentManagers(contentManagers);
-            generateCustomers(customers);
             generateTickets(tickets);
             generateLinks(links);
             generateSubscriptionCards(sc);

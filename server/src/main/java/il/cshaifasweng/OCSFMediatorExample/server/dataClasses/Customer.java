@@ -38,17 +38,29 @@ public class Customer extends AbstractUser {
     public void addTicketToList (Ticket ticket){
         this.ownedTickets.add(ticket);
     }
+    public void removeTicketFromList (Ticket ticket){
+        this.ownedTickets.remove(ticket);
+    }
     public void addSubscriptionCardToList (SubscriptionCard subscriptionCard){
         this.ownedSubscriptions.add(subscriptionCard);
     }
+    public void removeSubscriptionCardFromList (SubscriptionCard subscriptionCard){
+        this.ownedSubscriptions.remove(subscriptionCard);
+    }
     public void addLinkToList (Link link){
         this.ownedLinks.add(link);
+    }
+    public void removeLinkFromList (Link link){
+        this.ownedLinks.remove(link);
     }
     public void addComplaintToList (Complaint complaint){
         this.activeComplaints.add(complaint);
     }
     public void addPurchaseToList (Purchase purchase){
         this.purchaseHistory.add(purchase);
+    }
+    public void removePurchaseFromList (Purchase purchase){
+        this.purchaseHistory.remove(purchase);
     }
 
     public void cancelPurchase(Purchase purchase) {}
