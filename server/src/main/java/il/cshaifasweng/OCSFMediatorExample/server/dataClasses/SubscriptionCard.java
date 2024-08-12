@@ -17,11 +17,15 @@ public class SubscriptionCard extends AbstractProduct{
     public SubscriptionCard() {}
 
     public int getRemainingTickets() {
-        return remainingTickets;
+        return this.remainingTickets;
     }
 
     public void setRemainingTickets(int remainingTickets) {
         this.remainingTickets = remainingTickets;
+    }
+
+    public void useTickets(int amount) {
+        this.remainingTickets -= amount;
     }
 
     @Override

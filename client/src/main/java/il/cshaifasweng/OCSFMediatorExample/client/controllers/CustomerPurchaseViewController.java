@@ -78,6 +78,10 @@ public class CustomerPurchaseViewController implements DialogInterface {
                                     this.relatedProduct.get("screeningTime"),
                                     this.relatedProduct.get("screeningDate"),
                                     this.relatedProduct.get("branchLocation")));
+                    if (this.selectedPurchase.get("paymentMethod").equals("Subscription Card")) {
+                        refundButton.setDisable(true);
+                        refundButton.setText("אין אפשרות לקבל החזר כספי על מימוש כרטיסיות");
+                    }
                     break;
                 case "SubscriptionCard":
                     this.relatedProduct = dataParser.parseSubscriptionCard(productToString);
@@ -91,8 +95,8 @@ public class CustomerPurchaseViewController implements DialogInterface {
                     // TODO: adjust based on expiry time
                     this.relatedProduct = dataParser.parseLink(productToString);
                     LocalDate availableDate = LocalDate.parse(this.relatedProduct.get("availableDate"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                    LocalTime availableTime = LocalTime.parse(this.relatedProduct.get("availableTime"), DateTimeFormatter.ofPattern("HH:mm:ss"));
-                    LocalTime expiresAt = LocalTime.parse(this.relatedProduct.get("expiresAt"), DateTimeFormatter.ofPattern("HH:mm:ss"));
+                    LocalTime availableTime = LocalTime.parse(this.relatedProduct.get("availableTime"), DateTimeFormatter.ofPattern("HH:mm"));
+                    LocalTime expiresAt = LocalTime.parse(this.relatedProduct.get("expiresAt"), DateTimeFormatter.ofPattern("HH:mm"));
                     if (LocalTime.now().plusHours(1).isAfter(availableTime)) {
                         refundButton.setText("ניתן לבטל עד שעה לפני מועד הפעלת הקישור");
                         refundButton.setDisable(true);

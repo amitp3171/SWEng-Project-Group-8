@@ -6,7 +6,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.AbstractClient;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -106,6 +105,14 @@ public class SimpleClient extends AbstractClient {
 
 		else if (message.getMessage().equals("updated Product details successfully")){
 			EventBus.getDefault().post(new NewProductDetailsEvent(message));
+		}
+
+		else if (message.getMessage().equals("updated Customer SubscriptionCard list successfully")){
+			EventBus.getDefault().post(new NewSubscriptionCardListEvent(message));
+		}
+
+		else if (message.getMessage().equals("used SubscriptionCard successfully")){
+			EventBus.getDefault().post(new NewSubscriptionCardUsedEvent(message));
 		}
 
 		else if(message.getMessage().equals("client added successfully")){

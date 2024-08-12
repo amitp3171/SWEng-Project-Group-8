@@ -24,6 +24,8 @@ public class SimpleServer extends AbstractServer {
 	private static ObjectMapper mapper = new ObjectMapper();
 	DatabaseBridge db = DatabaseBridge.getInstance();
 
+	DateTimeFormatter localTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
 	public SimpleServer(int port) {
 		super(port);
 		mapper.registerModule(new JavaTimeModule());
@@ -116,8 +118,6 @@ public class SimpleServer extends AbstractServer {
 				Seat.class,
 				screeningId
 		);
-
-		System.out.println(receivedSeats);
 
 		List<String> items = new ArrayList<>();
 
@@ -373,7 +373,7 @@ public class SimpleServer extends AbstractServer {
 
 		for (int i = 0; i < selectedSeats.size(); i++) {
 			Ticket newTicket = new Ticket(owner, Double.parseDouble(productPrice), screeningTime.getInTheaterMovie().getMovieName(), screeningTime, selectedSeats.get(i));
-			Purchase newPurchase = new Purchase(newTicket, owner, "Credit Card", LocalDate.now(), LocalTime.now());
+			Purchase newPurchase = new Purchase(newTicket, owner, messageData[4], LocalDate.now(), LocalTime.now());
 			Seat selectedSeat = selectedSeats.get(i);
 			selectedSeat.setTaken(true);
 			owner.addTicketToList(newTicket);
@@ -464,6 +464,43 @@ public class SimpleServer extends AbstractServer {
 		}
 
 		sendMessage(message, "updated Product details successfully", item, client);
+	}
+
+	private void handleCustomerSubscriptionCardListRequest(Message message, ConnectionToClient client) throws IOException{
+		String govId = message.getData();
+		// get data
+		Customer customer = db.executeNativeQuery(
+				"SELECT * FROM customers WHERE govId = ?",
+				Customer.class,
+				govId).get(0);
+
+		List<SubscriptionCard> customerSubscriptionCards = db.executeNativeQuery(
+				"SELECT * FROM subscriptioncards WHERE owner_id = ?",
+				SubscriptionCard.class,
+				customer.getId());
+
+		List<String> purchasesToString = new ArrayList<>();
+
+		for (SubscriptionCard subscriptionCard: customerSubscriptionCards){
+			purchasesToString.add(subscriptionCard.toString());
+		}
+
+		sendMessage(message, "updated Customer SubscriptionCard list successfully", purchasesToString, client);
+	}
+
+	private void handleCustomerUseSubscriptionCardRequest(Message message, ConnectionToClient client) throws IOException{
+		String[] splitMessage = message.getData().split(",");
+
+		int subscriptionCardId = Integer.parseInt(splitMessage[0]);
+		int amountOfTickets = Integer.parseInt(splitMessage[1]);
+
+		SubscriptionCard selectedSubscriptionCard = db.executeNativeQuery("SELECT * FROM subscriptioncards WHERE id = ?", SubscriptionCard.class, subscriptionCardId).get(0);
+
+		selectedSubscriptionCard.useTickets(amountOfTickets);
+
+		db.updateEntity(selectedSubscriptionCard);
+
+		sendMessage(message, "used SubscriptionCard successfully", "payment successful", client);
 	}
 
 	@Override
@@ -572,6 +609,14 @@ public class SimpleServer extends AbstractServer {
 
 			else if (request.equals("request Product details")) {
 				handleCustomerProductDetailsRequest(message, client);
+			}
+
+			else if (request.equals("get Customer SubscriptionCard list")) {
+				handleCustomerSubscriptionCardListRequest(message, client);
+			}
+
+			else if (request.equals("use SubscriptionCard")) {
+				handleCustomerUseSubscriptionCardRequest(message, client);
 			}
 
 			else {

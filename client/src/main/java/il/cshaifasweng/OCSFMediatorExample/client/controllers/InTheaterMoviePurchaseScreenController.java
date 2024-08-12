@@ -164,6 +164,7 @@ public class InTheaterMoviePurchaseScreenController {
         }
 
         cardPurchaseButton.setDisable(selectedSeatIds.isEmpty());
+        subscriptionCardPurchaseButton.setDisable(selectedSeatIds.isEmpty());
     }
 
     @Subscribe
@@ -184,6 +185,38 @@ public class InTheaterMoviePurchaseScreenController {
         });
     }
 
+    void handleDialogStatus(ButtonType status, boolean isCardPurchase) throws IOException {
+        if (status == ButtonType.OK) {
+            CinemaClient.sendToServer("create Ticket Purchase",
+                    String.join(",",
+                            CinemaClient.getUserDataManager().getGovId(),
+                            this.selectedScreening.get("id"),
+                            selectedSeatIds.toString(),
+                            String.valueOf(this.productPrice),
+                            isCardPurchase ? "Credit Card" : "Subscription Card"));
+        }
+        else {
+            statusLabel.setText("תשלום בוטל");
+            statusLabel.setTextFill(Color.RED);
+            statusLabel.setVisible(true);
+        }
+    }
+
+    void onSuccessfulPayment() {
+        for (Map<String, String> seat : this.selectedSeats) {
+            seat.replace("isTaken", String.valueOf(true));
+        }
+
+        populateSeats();
+
+        this.selectedSeats.clear();
+        this.selectedSeatIds.clear();
+
+        statusLabel.setText("תשלום בוצע בהצלחה, ניתן לראות את הרכישה באיזור האישי");
+        statusLabel.setTextFill(Color.GREEN);
+        statusLabel.setVisible(true);
+    }
+
     // TODO: if successfull, set seat to red and remove listener
     @FXML
     void onCardPurchase(ActionEvent event) throws IOException {
@@ -195,15 +228,7 @@ public class InTheaterMoviePurchaseScreenController {
         // TODO: move to next screen (payment selection - credit)
         ButtonType status = CinemaClient.getDialogCreationManager().loadDialog("cardPaymentPrompt", this.productPrice, selectedSeats.size());
 
-        if (status == ButtonType.OK) {
-            // TODO: if this were a real payment, we'd pass the card details here.
-            CinemaClient.sendToServer("create Ticket Purchase", String.join(",", CinemaClient.getUserDataManager().getGovId(), this.selectedScreening.get("id"), selectedSeatIds.toString(), String.valueOf(this.productPrice)));
-        }
-        else {
-            statusLabel.setText("תשלום בוטל");
-            statusLabel.setTextFill(Color.RED);
-            statusLabel.setVisible(true);
-        }
+        handleDialogStatus(status, true);
     }
 
     @Subscribe
@@ -213,18 +238,7 @@ public class InTheaterMoviePurchaseScreenController {
             String status = event.getMessage().getData();
 
             if (status.equals("payment successful")) {
-                for (Map<String, String> seat : this.selectedSeats) {
-                    seat.replace("isTaken", String.valueOf(true));
-                }
-
-                populateSeats();
-
-                this.selectedSeats.clear();
-                this.selectedSeatIds.clear();
-
-                statusLabel.setText("תשלום בוצע בהצלחה, ניתן לראות את הרכישה באיזור האישי");
-                statusLabel.setTextFill(Color.GREEN);
-                statusLabel.setVisible(true);
+                onSuccessfulPayment();
             }
         });
     }
@@ -235,6 +249,10 @@ public class InTheaterMoviePurchaseScreenController {
             CinemaClient.getDialogCreationManager().loadDialog("createCustomerCredentialsPrompt");
             return;
         }
+
+        ButtonType status = CinemaClient.getDialogCreationManager().loadDialog("subscriptionCardPaymentPrompt", selectedSeats.size());
+
+        handleDialogStatus(status, false);
     }
 
     @FXML

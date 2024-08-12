@@ -61,8 +61,10 @@ public class MovieTypeSelectionController {
 
             if (userDataManager.isGuest())
                 welcomeUserLabel.setText("ברוך הבא אורח!");
-            else
+            else {
                 welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", userDataManager.getFirstName(), userDataManager.getLastName()));
+                personalAreaMenuItem.setVisible(true);
+            }
 
             return;
         }
@@ -73,8 +75,9 @@ public class MovieTypeSelectionController {
     @FXML
     void initialize() {
         userDataManager = CinemaClient.getUserDataManager();
-        if (userDataManager.isGuest())
+        if (userDataManager.isGuest()) {
             welcomeUserLabel.setText("ברוך הבא אורח!");
+        }
         else {
             welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", userDataManager.getFirstName(), userDataManager.getLastName()));
             personalAreaMenuItem.setVisible(true);

@@ -3,6 +3,8 @@ package il.cshaifasweng.OCSFMediatorExample.server.dataClasses;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "purchases")
@@ -24,7 +26,7 @@ public class Purchase {
         this.customer = customer;
         this.paymentMethod = paymentMethod;
         this.paymentDate = paymentDate;
-        this.paymentTime = paymentTime;
+        this.paymentTime = paymentTime.truncatedTo(ChronoUnit.MINUTES);;
     }
 
     public Purchase() {
@@ -68,7 +70,7 @@ public class Purchase {
     }
 
     public void setPaymentTime(LocalTime paymentTime) {
-        this.paymentTime = paymentTime;
+        this.paymentTime = paymentTime.truncatedTo(ChronoUnit.MINUTES);
     }
 
     @Override

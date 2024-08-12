@@ -5,6 +5,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalTime;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 
 @Entity
@@ -22,8 +24,8 @@ public class Link extends AbstractProduct{
         super(owner, price);
         this.homeMovie = homeMovie;
         this.availableDay = availableDay;
-        this.availableHour = availableHour;
-        this.expiresAt = expiresAt;
+        this.availableHour = availableHour.truncatedTo(ChronoUnit.MINUTES);
+        this.expiresAt = expiresAt.truncatedTo(ChronoUnit.MINUTES);
         this.link = link;
     }
 
@@ -44,7 +46,7 @@ public class Link extends AbstractProduct{
     }
 
     public void setAvailableHour(LocalTime availableHour) {
-        this.availableHour = availableHour;
+        this.availableHour = availableHour.truncatedTo(ChronoUnit.MINUTES);
     }
 
     public LocalDate getAvailableDay() {
@@ -58,7 +60,7 @@ public class Link extends AbstractProduct{
     }
 
     public void setExpiresAt(LocalTime expiresAt) {
-        this.expiresAt = expiresAt;
+        this.expiresAt = expiresAt.truncatedTo(ChronoUnit.MINUTES);
     }
 
     public void setLink(String link) {

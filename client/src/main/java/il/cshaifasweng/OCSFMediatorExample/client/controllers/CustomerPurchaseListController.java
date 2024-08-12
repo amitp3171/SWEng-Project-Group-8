@@ -35,11 +35,13 @@ public class CustomerPurchaseListController {
 
     @FXML
     void onGoBack(ActionEvent event) throws IOException {
+        EventBus.getDefault().unregister(this);
         CinemaClient.setContent("customerPersonalArea");
     }
 
     @FXML
     void onLogOut(ActionEvent event) throws IOException {
+        EventBus.getDefault().unregister(this);
         CinemaClient.setContent("primary");
     }
 

@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.time.LocalTime;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class ScreeningTime {
     public ScreeningTime(Branch branch, LocalDate date, LocalTime time, Theater theater, InTheaterMovie inTheaterMovie) {
         this.branch = branch;
         this.date = date;
-        this.time = time;
+        this.time = time.truncatedTo(ChronoUnit.MINUTES);
         this.theater = theater;
         this.inTheaterMovie = inTheaterMovie;
         instantiateSeats();
@@ -75,7 +76,7 @@ public class ScreeningTime {
     }
 
     public void setTime(LocalTime time) {
-        this.time = time;
+        this.time = time.truncatedTo(ChronoUnit.MINUTES);
     }
 
     public void setTime(String time) {

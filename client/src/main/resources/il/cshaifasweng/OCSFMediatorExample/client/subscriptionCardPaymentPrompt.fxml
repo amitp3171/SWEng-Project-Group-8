@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.SubscriptionCardPaymentPromptController">
+   <content>
+      <StackPane prefHeight="88.0" prefWidth="359.0">
+         <children>
+            <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="0.0" prefWidth="340.0" spacing="10.0" StackPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="amountOfTicketsLabel" text="מספר כרטיסים" />
+                  <Label alignment="TOP_CENTER" text="בחר כרטיסיה למימוש:">
+                     <font>
+                        <Font size="15.0" />
+                     </font></Label>
+                  <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <ComboBox fx:id="subscriptionCardSelectionComboBox" onAction="#onSubscriptionCardSelected" prefWidth="150.0" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="340.0">
+                     <children>
+                        <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#cancelPayment" text="בטל">
+                           <HBox.margin>
+                              <Insets right="3.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="payButton" disable="true" mnemonicParsing="false" onAction="#onPayPressed" text="מימוש" />
+                     </children>
+                  </HBox>
+                  <Label fx:id="statusLabel" text="פורמט קלט שגוי" textFill="RED" visible="false">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin></Label>
+               </children>
+            </VBox>
+         </children>
+      </StackPane>
+   </content>
+</DialogPane>

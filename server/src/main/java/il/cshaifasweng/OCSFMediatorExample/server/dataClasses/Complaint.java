@@ -2,6 +2,9 @@ package il.cshaifasweng.OCSFMediatorExample.server.dataClasses;
 
 import javax.persistence.*;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+
 @Entity
 @Table(name = "complaints")
 public class Complaint {
@@ -15,9 +18,9 @@ public class Complaint {
     private String complaintContent;
     private String response;
 
-    public Complaint(Customer creator, LocalTime recievedAt, String title, String complaintContent) {
+    public Complaint(Customer creator, LocalTime receivedAt, String title, String complaintContent) {
         this.creator = creator;
-        this.receivedAt = recievedAt;
+        this.receivedAt = receivedAt.truncatedTo(ChronoUnit.MINUTES);
         this.title = title;
         this.complaintContent = complaintContent;
         this.response = "[טרם התקבלה תגובה מהצוות]";
@@ -40,7 +43,7 @@ public class Complaint {
     }
 
     public void setRecievedAt(LocalTime recievedAt) {
-        this.receivedAt = recievedAt;
+        this.receivedAt = recievedAt.truncatedTo(ChronoUnit.MINUTES);
     }
 
     public String getComplaintContent() {
@@ -69,7 +72,7 @@ public class Complaint {
 
     @Override
     public String toString(){
-        return String.join(",",String.valueOf(this.id) , this.title, this.complaintContent, this.response);
+        return String.join(",", String.valueOf(this.id) , this.title, this.complaintContent, this.response);
     }
 
 }
