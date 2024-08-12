@@ -23,6 +23,10 @@ public class DatabaseBridge {
 
     private static DatabaseBridge instance;
 
+    public Session getSession() {
+        return session;
+    }
+
     private static SessionFactory getSessionFactory() throws HibernateException {
         Configuration configuration = new Configuration();
 
@@ -54,7 +58,7 @@ public class DatabaseBridge {
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
         configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "20danny05");
+        configuration.setProperty("hibernate.connection.password", "Gamal385");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "update");
 
@@ -158,7 +162,7 @@ public class DatabaseBridge {
     public static <T> void removeInstance(T entity) {
         try {
             session.beginTransaction();
-            session.remove(entity);
+            session.delete(entity);
             session.flush();
             session.getTransaction().commit();
         } catch (Exception e) {

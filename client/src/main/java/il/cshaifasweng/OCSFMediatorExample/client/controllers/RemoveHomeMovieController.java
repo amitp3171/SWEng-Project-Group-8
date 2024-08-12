@@ -56,6 +56,7 @@ public class RemoveHomeMovieController implements DialogInterface {
     void onRemoveHomeMovie(ActionEvent event) throws IOException {
         // Get the movie that matches the input
         String movieToRemove = getMatchingMovieData();
+        System.out.println(movieToRemove); //debug
 
         if (movieToRemove != null) {
             CinemaClient.sendToServer("remove home movie", movieToRemove);
@@ -65,13 +66,14 @@ public class RemoveHomeMovieController implements DialogInterface {
         }
     }
 
-    private String getMatchingMovieData() {
+    private String getMatchingMovieData()  {
         dataParser = CinemaClient.getDataParser();
 
         for (String homeMovie : homeMovies) {
             Map<String, String> movieMap = dataParser.parseMovie(homeMovie);
-            if (movieMap.get("moviename").equals(movieNameField.getText())) {
+            if (movieMap.get("movieName").equals(movieNameField.getText())) {
                 // Return the formatted string containing movie details
+
                 return homeMovie;
             }
         }

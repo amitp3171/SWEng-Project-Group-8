@@ -14,9 +14,9 @@ public class InTheaterMovie extends AbstractMovie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "inTheaterMovie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ScreeningTime> screenings = new ArrayList<>();
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     private List<Branch> branches = new ArrayList<>();
 
     public InTheaterMovie(String movieName, String producerName, List<String> mainActors, String description, String picture) {

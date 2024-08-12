@@ -13,10 +13,14 @@ public class Branch implements Serializable {
     // location is the primary key
     @Id
     private String location;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany
     private List<Theater> theaterList = new ArrayList<>();
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany()
     private List<InTheaterMovie> inTheaterMovieList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ScreeningTime> screeningTimes = new ArrayList<>();
+
     public Branch() {}
 
     public Branch(String location) {
@@ -49,5 +53,9 @@ public class Branch implements Serializable {
 
     public void setInTheaterMovieList(List<InTheaterMovie> inTheaterMovieList) {
         this.inTheaterMovieList = inTheaterMovieList;
+    }
+
+    public  List<ScreeningTime> getScreeningTimes() {
+        return this.screeningTimes;
     }
 }

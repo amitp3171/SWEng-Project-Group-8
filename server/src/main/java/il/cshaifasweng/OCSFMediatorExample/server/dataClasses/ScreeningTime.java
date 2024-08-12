@@ -17,10 +17,11 @@ public class ScreeningTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Branch branch;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "inTheaterMovie_id", nullable = true)
     InTheaterMovie inTheaterMovie;
 
     // date of screening
@@ -28,12 +29,15 @@ public class ScreeningTime {
     // time of screening
     private LocalTime time;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Theater theater;
 
     // list of seats
     @OneToMany(cascade = CascadeType.ALL)
     private List<Seat> seats = new ArrayList<>(MAX_CAPACITY);
+
+    @OneToMany(mappedBy = "screeningTime", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> tickets = new ArrayList<>();
 
     public ScreeningTime(Branch branch, LocalDate date, LocalTime time, Theater theater, InTheaterMovie inTheaterMovie) {
         this.branch = branch;
@@ -112,6 +116,37 @@ public class ScreeningTime {
 
     public Seat getSeat(int i) {
         return this.seats.get(i);
+    }
+
+    public List<Seat> getSeats() {
+        return seats;
+    }
+
+    // return true if all the seats are available
+    public boolean isEmptyScreeningTime() {
+        for (Seat seat : seats) {
+            if (seat.isTaken())
+                return false;
+        }
+        return true;
+    }
+
+    public List<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(List<Ticket> tickets) {
+        this.tickets = tickets;
+    }
+
+    public void addTicket(Ticket ticket) {
+        tickets.add(ticket);
+        ticket.setScreeningTime(this);
+    }
+
+    public void removeTicket(Ticket ticket) {
+        tickets.remove(ticket);
+        ticket.setScreeningTime(null);
     }
 
     @Override

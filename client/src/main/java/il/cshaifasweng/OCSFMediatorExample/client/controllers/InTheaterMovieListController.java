@@ -28,6 +28,12 @@ public class InTheaterMovieListController {
     @FXML
     private MenuItem addScreeningMenuitem;
 
+    @FXML
+    private MenuItem addInTheaterMovieMenuItem;
+
+    @FXML
+    private MenuItem removeInTheaterMovieMenuItem;
+
     UserDataManager userDataManager;
 
     DataParser dataParser;
@@ -99,6 +105,8 @@ public class InTheaterMovieListController {
         // on event received
         Platform.runLater(() -> {
             try {
+                allInTheaterMovies.clear();
+                inTheaterMovies.clear();
                 ArrayList<String> messageData = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
 
                 for (String movie : messageData) {
@@ -127,14 +135,27 @@ public class InTheaterMovieListController {
     }
 
     @FXML
+    void onAddInTheaterMovie(ActionEvent event) throws IOException {
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("addInTheaterMovie", inTheaterMovies, selectedBranch);
+        requestInTheaterMovieList(true);
+    }
+
+    @FXML
+    void onRemoveInTheaterMovie(ActionEvent event) throws IOException {
+    }
+
+    @FXML
     void initialize() throws IOException {
         userDataManager = CinemaClient.getUserDataManager();
         dataParser = CinemaClient.getDataParser();
 
         forceRefresh = false;
 
-        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager"))
+        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
             addScreeningMenuitem.setVisible(true);
+            addInTheaterMovieMenuItem.setVisible(true);
+            removeInTheaterMovieMenuItem.setVisible(true);
+        }
 
         // register to EventBus
         EventBus.getDefault().register(this);

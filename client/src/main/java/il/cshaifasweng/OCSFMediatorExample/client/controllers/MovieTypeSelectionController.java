@@ -51,12 +51,7 @@ public class MovieTypeSelectionController {
         CinemaClient.getDialogCreationManager().loadDialog("branchSelector");
     }
 
-    //TODO: add inTheaterMovie here?
-    // Add movie
-    @FXML
-    void onAddInTheaterMovie(ActionEvent event) throws IOException {
 
-    }
 
     @FXML
     void initialize() {
@@ -66,10 +61,7 @@ public class MovieTypeSelectionController {
         else
             welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", userDataManager.getFirstName(), userDataManager.getLastName()));
 
-        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
-            addOrRemoveMovies.setVisible(true);
-            addInTheaterMovieMenuItem.setVisible(true);
-        }
+
     }
 
 }

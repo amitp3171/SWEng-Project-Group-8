@@ -14,6 +14,9 @@ public class Theater
     private int theaterID;
     private int theaterNumber;
 
+    @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ScreeningTime> screeningTimes = new ArrayList<>();
+
     public Theater() {}
 
     public Theater(int theaterNumber) {
@@ -30,6 +33,10 @@ public class Theater
 
     public void setTheaterNumber(int theaterNumber) {
         this.theaterNumber = theaterNumber;
+    }
+
+    public List<ScreeningTime> getScreeningTimes() {
+        return  this.screeningTimes;
     }
 
     @Override

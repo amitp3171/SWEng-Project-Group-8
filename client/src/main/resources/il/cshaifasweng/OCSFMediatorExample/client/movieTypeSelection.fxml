@@ -20,11 +20,6 @@
               <MenuItem mnemonicParsing="false" onAction="#onCloseProgram" text="סגור" />
             </items>
           </Menu>
-          <Menu fx:id="addOrRemoveMovies" mnemonicParsing="false" text="פעולות" visible="false">
-              <items>
-                  <MenuItem fx:id="addInTheaterMovieMenuItem" mnemonicParsing="false" onAction="#onAddInTheaterMovie" text="הוספת סרט לצפייה בקולנוע" visible="false" />
-              </items>
-          </Menu>
         </menus>
       </MenuBar>
    </top>

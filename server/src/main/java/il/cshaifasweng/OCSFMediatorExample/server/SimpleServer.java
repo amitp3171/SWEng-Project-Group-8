@@ -101,7 +101,8 @@ public class SimpleServer extends AbstractServer {
 		// filter movies
 		for (int i = 0; i < receivedData.size(); i++) {
 			if (receivedData.get(i).getInTheaterMovie().getId() == movieId && receivedData.get(i).getBranch().getLocation().equals(branchLocation)) {
-				screeningTimeToString.add(receivedData.get(i).toString());
+
+				screeningTimeToString.add(receivedData.get(i).toString() + "," + receivedData.get(i).isEmptyScreeningTime());
 			}
 		}
 
@@ -246,6 +247,117 @@ public class SimpleServer extends AbstractServer {
 		sendMessage(message, "created new ScreeningTime successfully", data, client);
 	}
 
+//	private void handleRemoveScreeningTime(Message message, ConnectionToClient client) throws IOException {
+//		// parse message: date, time, theater, movie
+//		String[] splitMessage = message.getData().split(",");
+//
+//		ScreeningTime screeningTime = db.executeNativeQuery("SELECT * FROM ScreeningTimes WHERE id=?", ScreeningTime.class, splitMessage[0]).get(0);
+//		screeningTime.getInTheaterMovie().getScreenings().remove(screeningTime);
+//		db.updateEntity(screeningTime);
+//		db.removeInstance(screeningTime);
+//
+//		String data = "request successful";
+//
+//		sendMessage(message, "removed screeningTime successfully", data, client);
+//
+//	}
+
+	private void handleRemoveScreeningTime(Message message, ConnectionToClient client) throws IOException {
+		String[] splitMessage = message.getData().split(",");
+		int screeningTimeId = Integer.parseInt(splitMessage[0]);
+
+		try {
+			db.getSession().beginTransaction();
+
+			// Fetch the ScreeningTime entity
+			ScreeningTime screeningTime = db.getSession().get(ScreeningTime.class, screeningTimeId);
+
+			if (screeningTime != null) {
+				System.out.println("Removing associations...");
+
+				// Handle Ticket associations
+				for (Ticket ticket : new ArrayList<>(screeningTime.getTickets())) {
+					ticket.setScreeningTime(null);
+					ticket.setSeat(null);
+					db.getSession().update(ticket);
+					screeningTime.removeTicket(ticket);
+				}
+
+				// Remove from InTheaterMovie
+				InTheaterMovie movie = screeningTime.getInTheaterMovie();
+				if (movie != null) {
+					movie.removeScreeningTime(screeningTime);
+					db.getSession().update(movie);
+				}
+
+				// Remove from Branch
+				Branch branch = screeningTime.getBranch();
+				if (branch != null) {
+					branch.getScreeningTimes().remove(screeningTime);
+					screeningTime.setBranch(null);
+					db.getSession().update(branch);
+				}
+
+				// Remove from Theater
+				Theater theater = screeningTime.getTheater();
+				if (theater != null) {
+					theater.getScreeningTimes().remove(screeningTime);
+					screeningTime.setTheater(null);
+					db.getSession().update(theater);
+				}
+
+				System.out.println("Clearing seats...");
+				for (Seat seat : new ArrayList<>(screeningTime.getSeats())) {
+					seat.setTheater(null);
+					seat.setScreening(null);
+					db.getSession().update(seat);
+				}
+				screeningTime.getSeats().clear();
+
+				// Flush the session to ensure all updates are processed
+				db.getSession().flush();
+
+				// Check if the entity still exists before deleting
+				if (db.getSession().contains(screeningTime)) {
+					System.out.println("Removing ScreeningTime...");
+					db.getSession().delete(screeningTime);
+					db.getSession().flush();
+
+					// Double-check if the entity was actually deleted
+					if (!db.getSession().contains(screeningTime)) {
+						// Commit the transaction
+						db.getSession().getTransaction().commit();
+						System.out.println("ScreeningTime removed successfully.");
+						String data = "request successful";
+						sendMessage(message, "removed screeningTime successfully", data, client);
+					} else {
+						throw new Exception("Failed to delete ScreeningTime");
+					}
+				} else {
+					System.out.println("ScreeningTime no longer exists in the session.");
+					db.getSession().getTransaction().commit();
+					sendMessage(message, "ScreeningTime already removed", "warning", client);
+				}
+			} else {
+				db.getSession().getTransaction().rollback();
+				sendMessage(message, "ScreeningTime not found", "Error", client);
+			}
+		} catch (Exception e) {
+			System.out.println("Error removing ScreeningTime: " + e.getMessage());
+			e.printStackTrace();
+			db.getSession().getTransaction().rollback();
+			sendMessage(message, "Error removing ScreeningTime", e.getMessage(), client);
+		}
+	}
+
+
+
+
+
+
+
+
+
 	private void handleAddComingSoonMovie(Message message, ConnectionToClient client) throws IOException {
 		// parse message: coming soon movie details by order in the constructor
 		String[] splitMessage = message.getData().split(",");
@@ -272,8 +384,24 @@ public class SimpleServer extends AbstractServer {
 
 		String data = "request successful";
 		db.addInstance(newHomeMovie);
-
 		sendMessage(message, "created new HomeMovie successfully", data, client);
+	}
+
+	private void handleAddInTheaterMovieRequest(Message message, ConnectionToClient client) throws IOException {
+		String[] splitMovieData = message.getData().split(",");
+		String branchLocation = splitMovieData[splitMovieData.length-1];
+		Branch branch = db.executeNativeQuery("SELECT * FROM Branches WHERE location=?", Branch.class, branchLocation).get(0);
+
+		//add inTheaterMovie
+		List<String> mainActorsList = Arrays.asList(splitMovieData[2].split(";"));
+		InTheaterMovie inTheaterMovie = new InTheaterMovie(splitMovieData[0], splitMovieData[1], mainActorsList, splitMovieData[3], splitMovieData[3]);
+		inTheaterMovie.addBranch(branch);
+		branch.addInTheaterMovieToList(inTheaterMovie);
+		System.out.println(inTheaterMovie);
+		String data = "request successful";
+		db.addInstance(inTheaterMovie);
+		sendMessage(message, "created new InTheaterMovie successfully", data, client);
+
 	}
 
 	private void handleRemoveComingSoonMovie(Message message, ConnectionToClient client) throws IOException {
@@ -300,6 +428,8 @@ public class SimpleServer extends AbstractServer {
 		// Send success message back to the client
 		sendMessage(message, "removed HomeMovie successfully", "success", client);
 	}
+
+
 
 	private void handleVerifyCustomerIdRequest(Message message, ConnectionToClient client) throws IOException {
 		List<Customer> result = db.executeNativeQuery("SELECT * FROM customers WHERE govId=?", Customer.class, message.getData());
@@ -388,6 +518,8 @@ public class SimpleServer extends AbstractServer {
 
 		sendMessage(message, "created Ticket Purchase successfully", "payment successful", client);
 	}
+
+
 
 
 	@Override
@@ -480,6 +612,14 @@ public class SimpleServer extends AbstractServer {
 
 			else if(request.equals("remove home movie")) {
 				handleRemoveHomeMovie(message, client);
+			}
+
+			else if(request.equals("add new in theaters movie")) {
+				handleAddInTheaterMovieRequest(message, client);
+			}
+
+			else if(request.equals("remove selected screening time")) {
+				handleRemoveScreeningTime(message, client);
 			}
 
 			else {

@@ -30,6 +30,9 @@ public class ScreeningEditorController implements DialogInterface {
     @FXML
     private Label screeningExistsLabel;
 
+    @FXML
+    private Label ticketsExistsLabel;
+
     private Dialog<ButtonType> dialog;
 
     private ArrayList<String> theaterIds;
@@ -100,6 +103,19 @@ public class ScreeningEditorController implements DialogInterface {
         }
         EventBus.getDefault().unregister(this);
         dialog.close();
+    }
+
+    //remove screening time if there are no tickets purchased
+    @FXML
+    void removeScreeningTime(ActionEvent event) {
+        if(this.selectedScreeningTime.get("additionalFields").equals("false"))
+            ticketsExistsLabel.setVisible(true);
+        else {
+            dialog.setResult(ButtonType.CANCEL);
+            EventBus.getDefault().unregister(this);
+            dialog.close();
+        }
+
     }
 
     @FXML

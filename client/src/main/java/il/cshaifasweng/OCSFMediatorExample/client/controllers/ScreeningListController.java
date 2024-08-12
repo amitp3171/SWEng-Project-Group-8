@@ -73,6 +73,11 @@ public class ScreeningListController {
         CinemaClient.sendToServer("set ScreeningTime", String.join(",", updatedScreeningTime.get("id"), updatedScreeningTime.get("date"), updatedScreeningTime.get("time"), updatedScreeningTime.get("theaterId")));
     }
 
+    private void requestRemoveScreening(Map<String, String> removedScreeningTime) throws IOException {
+        CinemaClient.sendToServer("remove selected screening time", String.join(",", removedScreeningTime.get("id"), removedScreeningTime.get("date"), removedScreeningTime.get("time"), removedScreeningTime.get("theaterId")));
+
+    }
+
     public void setSelectedMovie(Map<String, String> selectedMovie, boolean forceRefresh) throws IOException {
         this.forceRefresh = forceRefresh;
 
@@ -229,6 +234,10 @@ public class ScreeningListController {
             }
 
             requestUpdateScreening(selectedScreeningTime);
+        }
+
+        if (result == ButtonType.CANCEL) {
+            requestRemoveScreening(selectedScreeningTime);
         }
 
         screeningListView.getSelectionModel().clearSelection();

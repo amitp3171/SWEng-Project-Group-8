@@ -62,12 +62,16 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new NewRemovedComingSoonMovieEvent(message));
 		}
 
-		else if(message.getMessage().equals("created HomeMovie successfully")) {
+		else if(message.getMessage().equals("created new HomeMovie successfully")) {
 			EventBus.getDefault().post(new NewAddedHomeMovieEvent(message));
 		}
 
 		else if(message.getMessage().equals("remove HomeMovie successfully")) {
 			EventBus.getDefault().post(new NewRemovedHomeMovieEvent(message));
+		}
+
+		else if(message.getMessage().equals("created new InTheaterMovie successfully")) {
+			EventBus.getDefault().post(new NewAddedInTheaterMovieEvent(message));
 		}
 
 		else if(message.getMessage().equals("verified Customer id successfully")){

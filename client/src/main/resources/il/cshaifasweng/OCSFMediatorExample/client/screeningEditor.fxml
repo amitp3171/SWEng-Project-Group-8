@@ -12,11 +12,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="280.0" prefWidth="349.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningEditorController">
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="369.0" prefWidth="349.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningEditorController">
    <content>
       <StackPane prefHeight="88.0" prefWidth="359.0">
          <children>
-            <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="0.0" prefWidth="340.0" spacing="10.0" StackPane.alignment="CENTER">
+            <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="297.0" prefWidth="340.0" spacing="10.0" StackPane.alignment="CENTER">
                <children>
                   <Label alignment="TOP_CENTER" text="הכנס שעה:">
                      <font>
@@ -45,7 +45,9 @@
                         <Button mnemonicParsing="false" onAction="#updateScreeningHour" text="עדכן" />
                      </children>
                   </HBox>
+                  <Button mnemonicParsing="false" onAction="#removeScreeningTime" prefHeight="26.0" prefWidth="90.0" text="הסר הקרנה" />
                   <Label fx:id="screeningExistsLabel" text="שגיאה (הקרנה קיימת)" textFill="RED" visible="false" />
+                  <Label fx:id="ticketsExistsLabel" text="כרטיסים נרכשו! לא ניתן למחוק הקרנה" textFill="RED" visible="false" />
                </children>
             </VBox>
          </children>
