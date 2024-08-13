@@ -73,4 +73,8 @@ public class DataParser {
         return generateMap(stringRepresentation, "id", "price", "movieName", "availableDate", "availableTime", "expiresAt", "link");
     }
 
+    public static Map<String, String> parseCustomerMessage(String stringRepresentation) {
+        return generateMap(stringRepresentation, "id", "messageHeadline", "messageBody", "sendTime");
+    }
+
 }

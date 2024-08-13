@@ -99,6 +99,10 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new NewComplaintListEvent(message));
 		}
 
+		else if(message.getMessage().equals("updated Customer Message list successfully")) {
+			EventBus.getDefault().post(new NewCustomerMessageListEvent(message));
+		}
+
 		else if (message.getMessage().equals("updated Customer Purchase list successfully")){
 			EventBus.getDefault().post(new NewComplaintListEvent(message));
 		}

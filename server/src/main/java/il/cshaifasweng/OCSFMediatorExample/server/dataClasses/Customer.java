@@ -3,7 +3,6 @@ package il.cshaifasweng.OCSFMediatorExample.server.dataClasses;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "customers")
@@ -18,6 +17,8 @@ public class Customer extends AbstractUser {
     private List<Complaint> activeComplaints = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL)
     private List<Purchase> purchaseHistory = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<CustomerMessage> messages = new ArrayList<>();
 
     private String govId;
 
@@ -62,6 +63,17 @@ public class Customer extends AbstractUser {
     public void removePurchaseFromList (Purchase purchase){
         this.purchaseHistory.remove(purchase);
     }
+
+    public void addMessageToList (CustomerMessage message){
+        this.messages.add(message);
+    }
+    public void removeMessageFromList (CustomerMessage message){
+        this.messages.remove(message);
+    }
+    public List<CustomerMessage> getMessages(){
+        return this.messages;
+    }
+
 
     public void cancelPurchase(Purchase purchase) {}
     public Complaint makeAComplaint(Complaint complaint) {

@@ -11,6 +11,7 @@ import il.cshaifasweng.OCSFMediatorExample.server.dataClasses.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -363,11 +364,29 @@ public class SimpleServer extends AbstractServer {
 		String[] selectedSeatIds = messageData[2].substring(1, messageData[2].length()-1).split(",");
 
 		List<Seat> selectedSeats = db.executeNativeQuery("SELECT * FROM seats WHERE id IN (" + String.join(",", Collections.nCopies(selectedSeatIds.length, "?")) + ")", Seat.class, selectedSeatIds);
-
+		String seatNumbers = "";
+		for (Seat seat : selectedSeats) {
+			if(seatNumbers != "")
+				seatNumbers += ", " + seat.getSeatNumber();
+			else
+				seatNumbers += seat.getSeatNumber();
+		}
 		String productPrice = messageData[3];
 
 		Customer owner = db.executeNativeQuery("SELECT * FROM customers WHERE govId=?", Customer.class, customerGovId).get(0);
 		ScreeningTime screeningTime = db.executeNativeQuery("SELECT * FROM screeningtimes WHERE id=?", ScreeningTime.class, screeningTimeId).get(0);
+
+		CustomerMessage customerMessage = new CustomerMessage("רכישת כרטיסים חדשים", "", LocalDateTime.now(), owner);
+		String messageContent = "תודה שרכשת כרטיסים לסרט: " + screeningTime.getInTheaterMovie().getMovieName() + "\n";
+		messageContent += "בסניף " + screeningTime.getBranch().getLocation() + " באולם מספר: " + screeningTime.getTheater().getTheaterNumber() + "\n";
+		messageContent += "מספר המושבים: " + selectedSeats.size() + "\n";
+		messageContent +=	" כיסאות מספר: " + seatNumbers;
+		messageContent = "[" + messageContent + "]";
+		System.out.println(seatNumbers);
+		System.out.println(messageContent);
+		customerMessage.setMessageBody(messageContent);
+		owner.addMessageToList(customerMessage);
+		db.addInstance(customerMessage);
 
 		for (int i = 0; i < selectedSeats.size(); i++) {
 			Ticket newTicket = new Ticket(owner, Double.parseDouble(productPrice), screeningTime.getInTheaterMovie().getMovieName(), screeningTime, selectedSeats.get(i));
@@ -396,9 +415,12 @@ public class SimpleServer extends AbstractServer {
 
 		Link newLink = new Link(owner, Double.parseDouble(productPrice), homeMovie, LocalDate.now(), LocalTime.now().plusHours(1), LocalTime.now().plusHours(3), "https://www.youtube.com/watch?v=Xithigfg7dA");
 		Purchase newPurchase = new Purchase(newLink, owner, "Credit Card", LocalDate.now(), LocalTime.now());
+		CustomerMessage customerMessage = new CustomerMessage("לינק חדש",  "תודה שרכשת לינק לצפייה ביתית לסרט: " + homeMovie.getMovieName() + "\n" + "הקישור לסרט: " + newLink.getLink() + "\n" + "יהיה זמין בשעות: " + newLink.getAvailableHour() + "-" + newLink.getExpiresAt(), LocalDateTime.now(), owner);
 
+		owner.addMessageToList(customerMessage);
 		owner.addLinkToList(newLink);
 		owner.addPurchaseToList(newPurchase);
+		db.addInstance(customerMessage);
 		db.addInstance(newLink);
 		db.addInstance(newPurchase);
 		db.updateEntity(owner);
@@ -419,8 +441,11 @@ public class SimpleServer extends AbstractServer {
 			Purchase newPurchase = new Purchase(newSubscriptionCard, owner, "Credit Card", LocalDate.now(), LocalTime.now());
 			owner.addSubscriptionCardToList(newSubscriptionCard);
 			owner.addPurchaseToList(newPurchase);
+			CustomerMessage customerMessage = new CustomerMessage("כרטיסייה חדשה", "תודה שרכשת כרטיסיית סרטים", LocalDateTime.now(), owner);
+			owner.addMessageToList(customerMessage);
 			db.addInstance(newSubscriptionCard);
 			db.addInstance(newPurchase);
+			db.addInstance(customerMessage);
 			db.updateEntity(owner);
 		}
 
@@ -443,6 +468,24 @@ public class SimpleServer extends AbstractServer {
 			complaintsContents.add(complaint.toString());
 		}
 		sendMessage(message, "updated Customer Complaint list successfully", complaintsContents, client);
+	}
+
+	private void handleCustomerMessageListRequest(Message message, ConnectionToClient client) throws IOException{
+		String govId = message.getData();
+		// get data
+		List<Customer> customer = db.executeNativeQuery(
+				"SELECT * FROM customers WHERE govId = ?",
+				Customer.class,
+				govId);
+		List<CustomerMessage> receivedCustomerMessages = db.executeNativeQuery(
+				"SELECT * FROM customerMessages WHERE customer_id = ?",
+				CustomerMessage.class,
+				customer.get(0).getId());
+		List<String> messagesContents = new ArrayList<>();
+		for (CustomerMessage customerMessage: receivedCustomerMessages){
+			messagesContents.add(customerMessage.toString());
+		}
+		sendMessage(message, "updated Customer Message list successfully", messagesContents, client);
 	}
 
 	private void handleCustomerPurchaseListRequest(Message message, ConnectionToClient client) throws IOException{
@@ -710,6 +753,9 @@ public class SimpleServer extends AbstractServer {
 
 			else if (request.equals("Customer Link Refund")) {
 				handleCustomerLinkRefundRequest(message, client);
+			}
+			else if(request.equals("get Customer Message list")) {
+				handleCustomerMessageListRequest(message, client);
 			}
 
 			else {
