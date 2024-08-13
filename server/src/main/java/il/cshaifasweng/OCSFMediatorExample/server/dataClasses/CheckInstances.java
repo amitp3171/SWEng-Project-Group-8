@@ -9,6 +9,7 @@ import org.hibernate.service.ServiceRegistry;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ public class CheckInstances {
         configuration.addAnnotatedClass(BranchManager.class);
         configuration.addAnnotatedClass(ContentManager.class);
         configuration.addAnnotatedClass(Price.class);
+        configuration.addAnnotatedClass(CustomerMessage.class);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
@@ -253,6 +255,12 @@ public class CheckInstances {
     }
 
 
+    private static void generateCustomerMessages(CustomerMessage[] customerMessages) throws Exception {
+        for (CustomerMessage customerMessage: customerMessages) {
+            session.save(customerMessage);
+            session.flush();
+        }
+    }
 
 
 
@@ -358,8 +366,6 @@ public class CheckInstances {
 
             Theater[] theaters = generateTheaters();
 
-            generateInTheaterMovies(inTheaterMovies);
-
             ArrayList<ScreeningTime> screeningTimes = generateScreeningTimes(branches, theaters,inTheaterMovies);
 
             printAllBranches();
@@ -379,6 +385,11 @@ public class CheckInstances {
             customers[2] = new Customer("Amit", "Perry", "209134389");
             customers[3] = new Customer("Daniel", "Rubinstein", "252410942");
             customers[4] = new Customer("Kfir", "Back", "421344941");
+
+            CustomerMessage[] customerMessages = new CustomerMessage[5];
+            for (int i = 0; i < 5; i++) {
+                customerMessages[i] = new CustomerMessage("hello message", "hello " + customers[i].getFirstName(), LocalDateTime.now(), customers[i]);
+            }
 
             Link[] links =new Link[5];
             for(int i=0;i<links.length;i++){
@@ -402,6 +413,7 @@ public class CheckInstances {
                 screeningTimes.get(/*i*/0).getSeat(i).setTaken(true);
                 purchases[i+10] = new Purchase(tickets[i], customers[i], "Credit Card", LocalDate.now(), LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i+10]);
+
             }
 
 
@@ -441,6 +453,7 @@ public class CheckInstances {
                 customers[i].addLinkToList(links[i]);
                 customers[i].addSubscriptionCardToList(sc[i]);
                 customers[i].addTicketToList(tickets[i]);
+                customers[i].addMessageToList(customerMessages[i]);
             }
 
             Price ticketPrice = new Price("Ticket", 40);
@@ -449,6 +462,7 @@ public class CheckInstances {
 
             generatePrices(new Price[]{ticketPrice, linkPrice, subscriptionCardPrice});
 
+            generateCustomerMessages(customerMessages);
             generateCustomers(customers);
             generatePurchases(purchases);
             generateComplaints(complaints);
