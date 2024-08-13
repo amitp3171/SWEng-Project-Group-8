@@ -103,20 +103,20 @@ public class CreateCustomerCredentialsPromptController implements DialogInterfac
         Platform.runLater(() -> {
             String messageData = event.getMessage().getData();
 
-            if (messageData.equals("user created")) {
-                CinemaClient.setUserDataManager(this.customerFirstName, this.customerLastName, this.customerGovId);
-                // close dialog
-                EventBus.getDefault().unregister(this);
-                dialog.setResult(ButtonType.OK);
-                dialog.close();
-            }
-            else {
+            if (messageData.equals("customer exists")) {
                 invalidUserLabel.setText("משתמש קיים, נא להתחבר");
                 invalidUserLabel.setVisible(true);
                 // enable buttons
                 createCustomerButton.setDisable(false);
                 cancelButton.setDisable(false);
                 customerExistsLogin.setDisable(false);
+            }
+            else {
+                CinemaClient.setUserDataManager(messageData, this.customerFirstName, this.customerLastName, this.customerGovId);
+                // close dialog
+                EventBus.getDefault().unregister(this);
+                dialog.setResult(ButtonType.OK);
+                dialog.close();
             }
 
         });
@@ -151,6 +151,15 @@ public class CreateCustomerCredentialsPromptController implements DialogInterfac
             if (messageData.equals("user invalid")) {
                 invalidUserLabel.setText("תעודת זהות שגויה");
                 invalidUserLabel.setVisible(true);
+                customerLoginIdNumField.clear();
+                // enable buttons
+                createCustomerButton.setDisable(false);
+                cancelButton.setDisable(false);
+                customerExistsLogin.setDisable(false);
+            }
+            else if (messageData.equals("user already logged in")) {
+                invalidUserLabel.setText("אין אפשרות להתחבר למשתמש אשר מחובר במקום אחר");
+                invalidUserLabel.setVisible(true);
                 customerIdNumField.clear();
                 // enable buttons
                 createCustomerButton.setDisable(false);
@@ -160,7 +169,7 @@ public class CreateCustomerCredentialsPromptController implements DialogInterfac
             else {
                 Map<String, String> customerMap = dataParser.parseCustomer(messageData);
                 // set content
-                CinemaClient.setUserDataManager(customerMap.get("firstName"), customerMap.get("lastName"), customerGovId);
+                CinemaClient.setUserDataManager(customerMap.get("id"), customerMap.get("firstName"), customerMap.get("lastName"), customerGovId);
                 // close dialog
                 EventBus.getDefault().unregister(this);
                 dialog.setResult(ButtonType.OK);

@@ -14,7 +14,7 @@ public class InTheaterMovie extends AbstractMovie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany/*(cascade = CascadeType.ALL)*/
     private List<ScreeningTime> screenings = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Branch> branches = new ArrayList<>();

@@ -6,6 +6,8 @@ public class UserDataManager {
 
     private static UserDataManager instance;
 
+    private static String id;
+
     private static String firstName;
     private static String lastName;
 
@@ -44,6 +46,10 @@ public class UserDataManager {
         return (!isCustomer() && !isEmployee());
     }
 
+    public static String getId() {
+        return id;
+    }
+
     public static String getFirstName() {
         return firstName;
     }
@@ -62,6 +68,10 @@ public class UserDataManager {
 
     public static String getEmployeeType() {
         return employeeType;
+    }
+
+    public static void setId(String newId) {
+        id = newId;
     }
 
     public static void setFirstName(String newFirstName) {

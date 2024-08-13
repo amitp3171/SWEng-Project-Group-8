@@ -121,12 +121,18 @@ public class CheckInstances {
                 // Add the ScreeningTime object to the array
                 st.add(screeningTime);
 
+                for (Seat seat : screeningTime.getSeats()) {
+                    session.save(seat);
+                }
+
+                session.save(screeningTime);
+
 //                // Stop if the array is full
 //                if (index >= st.length) {
 //                    break;
 //                }
             }
-            session.save(movie);
+//            session.save(movie);
             session.flush();
 
             // Stop if the array is full
@@ -239,6 +245,13 @@ public class CheckInstances {
         }
     }
 
+    private static void generateInTheaterMovies(InTheaterMovie[] movies) throws Exception {
+        for (InTheaterMovie movie : movies) {
+            session.save(movie);
+            session.flush();
+        }
+    }
+
 
 
 
@@ -345,6 +358,8 @@ public class CheckInstances {
 
             Theater[] theaters = generateTheaters();
 
+            generateInTheaterMovies(inTheaterMovies);
+
             ArrayList<ScreeningTime> screeningTimes = generateScreeningTimes(branches, theaters,inTheaterMovies);
 
             printAllBranches();
@@ -383,10 +398,10 @@ public class CheckInstances {
 
             Ticket[] tickets = new Ticket[5];
             for(int i=0;i<tickets.length;i++) {
-                tickets[i] = new Ticket(customers[i], 40,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(i), screeningTimes.get(i).getSeat(i));
+                tickets[i] = new Ticket(customers[i], 40,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(/*i*/0), screeningTimes.get(/*i*/0).getSeat(i));
+                screeningTimes.get(/*i*/0).getSeat(i).setTaken(true);
                 purchases[i+10] = new Purchase(tickets[i], customers[i], "Credit Card", LocalDate.now(), LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i+10]);
-
             }
 
 

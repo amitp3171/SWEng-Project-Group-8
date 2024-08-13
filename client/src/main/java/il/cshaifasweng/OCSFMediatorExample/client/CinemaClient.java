@@ -70,13 +70,15 @@ public class CinemaClient extends Application {
         return dataParser;
     }
 
-    public static void setUserDataManager(String customerFirstName, String customerLastName, String customerGovId) {
+    public static void setUserDataManager(String id, String customerFirstName, String customerLastName, String customerGovId) {
+        userDataManager.setId(id);
         userDataManager.setFirstName(customerFirstName);
         userDataManager.setLastName(customerLastName);
         userDataManager.setGovId(customerGovId);
     }
 
-    public static void setUserDataManager(String employeeFirstName, String employeeLastName, String employeeUserName, String employeeRole) {
+    public static void setUserDataManager(String id, String employeeFirstName, String employeeLastName, String employeeUserName, String employeeRole) {
+        userDataManager.setId(id);
         userDataManager.setFirstName(employeeFirstName);
         userDataManager.setLastName(employeeLastName);
         userDataManager.setEmployeeUserName(employeeUserName);

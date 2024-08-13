@@ -93,6 +93,15 @@ public class CustomerLoginController implements DialogInterface {
             String messageData = event.getMessage().getData();
 
             if (messageData.equals("user invalid")) {
+                invalidUserLabel.setText("פרטי כניסה שגויים");
+                invalidUserLabel.setVisible(true);
+                customerIdNumField.clear();
+                // enable buttons
+                loginButton.setDisable(false);
+                cancelButton.setDisable(false);
+            }
+            else if (messageData.equals("user already logged in")) {
+                invalidUserLabel.setText("אין אפשרות להתחבר למשתמש אשר מחובר במקום אחר");
                 invalidUserLabel.setVisible(true);
                 customerIdNumField.clear();
                 // enable buttons
@@ -103,7 +112,7 @@ public class CustomerLoginController implements DialogInterface {
                 Map<String, String> customerDictionary = dataParser.parseCustomer(messageData);
                 try {
                     // set content
-                    CinemaClient.setUserDataManager(customerDictionary.get("firstName"), customerDictionary.get("lastName"), customerGovId);
+                    CinemaClient.setUserDataManager(customerDictionary.get("id"), customerDictionary.get("firstName"), customerDictionary.get("lastName"), customerGovId);
                     CinemaClient.setContent("movieTypeSelection");
                     // close dialog
                     EventBus.getDefault().unregister(this);

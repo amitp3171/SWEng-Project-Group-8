@@ -98,8 +98,9 @@ public class ScreeningListController {
 
     @FXML
     void onDateSelected(ActionEvent event) {
-        // get selected day
         LocalDate newSelectedDate = screeningDatePicker.getValue();
+
+        if (newSelectedDate == null) return;
         // if no changes should be made
         if (selectedDate.equals(newSelectedDate)) return;
         // update selected day
@@ -115,7 +116,7 @@ public class ScreeningListController {
                 this.availableDates.add(screeningDate);
         }
         Collections.sort(this.availableDates);
-        this.selectedDate = this.availableDates.get(0);
+        this.selectedDate = this.availableDates.isEmpty() ? null : this.availableDates.get(0);
     }
 
     public void initializeDatePicker() {
@@ -137,6 +138,7 @@ public class ScreeningListController {
                 };
             }
         });
+
         screeningDatePicker.setValue(this.selectedDate);
     }
 
@@ -153,8 +155,11 @@ public class ScreeningListController {
                 visibleScreeningTimes.add(screeningTime);
             }
         }
-        // display in list
-        Collections.sort(items);
+
+        if (items.isEmpty())
+            items.add("אין הקרנות");
+        else
+            Collections.sort(items);
         screeningListView.getItems().addAll(items);
     }
 
@@ -182,7 +187,7 @@ public class ScreeningListController {
         // get screening time
         String selectedItem = screeningListView.getSelectionModel().getSelectedItem();
 
-        if (selectedItem == null) return;
+        if (selectedItem == null || this.selectedDate == null) return;
 
         // get screeningTime object
         int selectedIndex = screeningListView.getSelectionModel().getSelectedIndex();
@@ -208,9 +213,10 @@ public class ScreeningListController {
 
         ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("screeningEditor", selectedItem, selectedScreeningTime, this.selectedBranch, this.screeningTimes);
 
+        LocalDate oldDate = screeningDatePicker.getValue();
+
         // if change was performed
         if (result == ButtonType.OK) {
-            LocalDate oldDate = screeningDatePicker.getValue();
             LocalDate newDate = LocalDate.parse(selectedScreeningTime.get("date"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
             // if edited screening was the only one for the date, and the date was changed.
@@ -224,8 +230,10 @@ public class ScreeningListController {
                     this.selectedDate = newDate;
                     initializeList();
                 }
-                else
+                else {
                     this.screeningListView.getItems().remove(selectedItem);
+                    visibleScreeningTimes.remove(selectedIndex);
+                }
 
                 initializeDatePicker();
             }
@@ -235,6 +243,23 @@ public class ScreeningListController {
             }
 
             requestUpdateScreening(selectedScreeningTime);
+        }
+        // if screeningtime is to be deleted
+        else if (result == ButtonType.FINISH) {
+            CinemaClient.sendToServer("remove ScreeningTime", this.visibleScreeningTimes.get(selectedIndex).get("id"));
+
+            screeningTimes.remove(selectedScreeningTime);
+
+            if (screeningListView.getItems().size() == 1) {
+                this.availableDates.remove(oldDate);
+                this.selectedDate = this.availableDates.isEmpty() ? null : this.availableDates.get(0);
+                initializeList();
+                initializeDatePicker();
+            }
+            else {
+                this.screeningListView.getItems().remove(selectedItem);
+                visibleScreeningTimes.remove(selectedIndex);
+            }
         }
 
         screeningListView.getSelectionModel().clearSelection();

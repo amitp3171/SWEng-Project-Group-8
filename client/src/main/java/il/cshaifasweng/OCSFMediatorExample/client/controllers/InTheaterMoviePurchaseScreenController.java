@@ -215,6 +215,8 @@ public class InTheaterMoviePurchaseScreenController {
         statusLabel.setText("תשלום בוצע בהצלחה, ניתן לראות את הרכישה באיזור האישי");
         statusLabel.setTextFill(Color.GREEN);
         statusLabel.setVisible(true);
+        cardPurchaseButton.setDisable(true);
+        subscriptionCardPurchaseButton.setDisable(true);
     }
 
     // TODO: if successfull, set seat to red and remove listener

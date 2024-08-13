@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="280.0" prefWidth="349.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningEditorController">
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="310.0" prefWidth="349.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningEditorController">
    <content>
       <StackPane prefHeight="88.0" prefWidth="359.0">
          <children>
@@ -45,6 +45,7 @@
                         <Button mnemonicParsing="false" onAction="#updateScreeningHour" text="עדכן" />
                      </children>
                   </HBox>
+                  <Button fx:id="removeScreeningButton" mnemonicParsing="false" onAction="#removeScreeningTime" text="מחק הקרנה" />
                   <Label fx:id="screeningExistsLabel" text="שגיאה (הקרנה קיימת)" textFill="RED" visible="false" />
                </children>
             </VBox>

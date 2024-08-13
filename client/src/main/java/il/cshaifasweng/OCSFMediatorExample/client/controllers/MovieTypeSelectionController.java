@@ -17,6 +17,12 @@ public class MovieTypeSelectionController {
     @FXML
     private MenuItem personalAreaMenuItem;
 
+    @FXML
+    private MenuItem priceUpdateMenuItem;
+
+    @FXML
+    private Menu actionsMenu;
+
     UserDataManager userDataManager;
 
     @FXML
@@ -55,6 +61,11 @@ public class MovieTypeSelectionController {
     }
 
     @FXML
+    void onChangeProductPrices(ActionEvent event) throws IOException {
+        CinemaClient.getDialogCreationManager().loadDialog("productPriceUpdateView");
+    }
+
+    @FXML
     void onBuySubscriptionCard(ActionEvent event) throws IOException {
         if (userDataManager.isGuest()) {
             CinemaClient.getDialogCreationManager().loadDialog("createCustomerCredentialsPrompt");
@@ -77,11 +88,18 @@ public class MovieTypeSelectionController {
         userDataManager = CinemaClient.getUserDataManager();
         if (userDataManager.isGuest()) {
             welcomeUserLabel.setText("ברוך הבא אורח!");
+            return;
+        }
+
+        if (userDataManager.isEmployee()) {
+            actionsMenu.setVisible(true);
+            priceUpdateMenuItem.setVisible(true);
         }
         else {
-            welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", userDataManager.getFirstName(), userDataManager.getLastName()));
             personalAreaMenuItem.setVisible(true);
         }
+
+        welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", userDataManager.getFirstName(), userDataManager.getLastName()));
     }
 
 }

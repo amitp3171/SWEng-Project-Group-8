@@ -13,10 +13,10 @@ public class Seat {
 
     private boolean isTaken;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne/*(cascade = CascadeType.ALL)*/
     private Theater theater;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne/*(cascade = CascadeType.ALL)*/
     private ScreeningTime screeningTime;
 
     public Seat() {

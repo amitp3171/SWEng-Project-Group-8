@@ -75,7 +75,7 @@ public class CustomerPurchaseViewController implements DialogInterface {
                     productDescLabel.setText(
                             String.format("כרטיס: %s, אולם %s, מושב %s, %s, %n %s, סניף %s",
                                     this.relatedProduct.get("movieName"),
-                                    (1 + (Integer.parseInt(this.relatedProduct.get("theaterId"))-1 % 10)),
+                                    (1 + ((Integer.parseInt(this.relatedProduct.get("theaterId"))-1) % 10)),
                                     this.relatedProduct.get("seatNumber"),
                                     this.relatedProduct.get("screeningTime"),
                                     this.relatedProduct.get("screeningDate"),
@@ -132,7 +132,10 @@ public class CustomerPurchaseViewController implements DialogInterface {
 
     @FXML
     void onRefundRequested(ActionEvent event) throws IOException {
-        refundStatus = CinemaClient.getDialogCreationManager().loadDialog("customerRefundRequestView", this.productClass, this.relatedProduct);
+        this.refundStatus = CinemaClient.getDialogCreationManager().loadDialog("customerRefundRequestView", this.productClass, this.relatedProduct);
+        if (this.refundStatus.equals(ButtonType.OK)) {
+            refundButton.setDisable(true);
+        }
     }
 
     @FXML

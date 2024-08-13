@@ -34,11 +34,11 @@ public class DataParser {
     }
 
     public static Map<String, String> parseCustomer(String stringRepresentation) {
-        return generateMap(stringRepresentation, "firstName", "lastName");
+        return generateMap(stringRepresentation, "id", "firstName", "lastName");
     }
 
     public static Map<String, String> parseEmployee(String stringRepresentation) {
-        return generateMap(stringRepresentation, "firstName", "lastName", "employeeType");
+        return generateMap(stringRepresentation, "id", "firstName", "lastName", "employeeType");
     }
     // TODO: verify this actually works for all subclasses of AbstractMovie
     public static Map<String, String> parseMovie(String stringRepresentation) {

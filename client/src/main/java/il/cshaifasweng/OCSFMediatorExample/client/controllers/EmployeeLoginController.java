@@ -83,6 +83,16 @@ public class EmployeeLoginController implements DialogInterface {
             String messageData = event.getMessage().getData();
 
             if (messageData.equals("user invalid")) {
+                invalidUserLabel.setText("פרטי כניסה שגויים");
+                invalidUserLabel.setVisible(true);
+                userNameField.clear();
+                passwordField.clear();
+                // enable buttons
+                employeeLoginButton.setDisable(false);
+                cancelButton.setDisable(false);
+            }
+            else if (messageData.equals("user already logged in")) {
+                invalidUserLabel.setText("אין אפשרות להתחבר למשתמש אשר מחובר במקום אחר");
                 invalidUserLabel.setVisible(true);
                 userNameField.clear();
                 passwordField.clear();
@@ -94,7 +104,7 @@ public class EmployeeLoginController implements DialogInterface {
                 Map<String, String> employeeDictionary = dataParser.parseEmployee(messageData);
                 try {
                     // set content
-                    CinemaClient.setUserDataManager(employeeDictionary.get("firstName"), employeeDictionary.get("lastName"), this.employeeUserName, employeeDictionary.get("employeeType"));
+                    CinemaClient.setUserDataManager(employeeDictionary.get("id"), employeeDictionary.get("firstName"), employeeDictionary.get("lastName"), this.employeeUserName, employeeDictionary.get("employeeType"));
                     CinemaClient.setContent("movieTypeSelection");
                     // close dialog
                     EventBus.getDefault().unregister(this);

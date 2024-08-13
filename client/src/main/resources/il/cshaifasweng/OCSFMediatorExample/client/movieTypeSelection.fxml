@@ -26,9 +26,9 @@
                         <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
                     </items>
                 </Menu>
-            <Menu mnemonicParsing="false" text="פעולות">
+            <Menu fx:id="actionsMenu" mnemonicParsing="false" text="פעולות" visible="false">
                <items>
-                  <MenuItem fx:id="personalAreaMenuItem1" mnemonicParsing="false" onAction="#showPersonalArea" text="עדכון מחירים" visible="false" />
+                  <MenuItem fx:id="priceUpdateMenuItem" mnemonicParsing="false" onAction="#onChangeProductPrices" text="עדכון מחירים" visible="false" />
                </items>
             </Menu>
             </menus>

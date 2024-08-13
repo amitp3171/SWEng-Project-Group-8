@@ -66,6 +66,22 @@ public class DatabaseBridge {
         return configuration.buildSessionFactory(serviceRegistry);
     }
 
+    public static void beginTransaction() {
+        session.beginTransaction();
+    }
+
+    public static <T> void saveInstance(T newInstance) {
+        session.save(newInstance);
+    }
+
+    public static void flushSession() {
+        session.flush();
+    }
+
+    public static void commitTransaction() {
+        session.getTransaction().commit();
+    }
+
     public static <T> List<T> getAll(Class<T> entityClass, boolean forceRefresh) {
         session.beginTransaction();
         if(forceRefresh) session.clear();

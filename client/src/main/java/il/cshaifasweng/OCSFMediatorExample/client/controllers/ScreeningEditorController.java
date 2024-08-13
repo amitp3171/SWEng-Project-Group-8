@@ -30,6 +30,9 @@ public class ScreeningEditorController implements DialogInterface {
     @FXML
     private Label screeningExistsLabel;
 
+    @FXML
+    private Button removeScreeningButton;
+
     private Dialog<ButtonType> dialog;
 
     private ArrayList<String> theaterIds;
@@ -48,6 +51,11 @@ public class ScreeningEditorController implements DialogInterface {
         this.availableScreeningTimes = (ArrayList<Map<String, String>>) params[3];
         screeningDatePicker.setValue(LocalDate.parse(selectedScreeningTime.get("date"), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         theaterChoiceBox.setValue(String.valueOf(1 + (Integer.parseInt(selectedScreeningTime.get("theaterId"))-1) % 10));
+
+        if (this.selectedScreeningTime.get("additionalFields").equals("true")) {
+            removeScreeningButton.setText("לא ניתן למחוק הקרנה זו כיוון שנקנו כרטיסים");
+            removeScreeningButton.setDisable(true);
+        }
 
         try {
             CinemaClient.sendToServer("get Theater ID list", (String)params[2]);
@@ -98,6 +106,14 @@ public class ScreeningEditorController implements DialogInterface {
             selectedScreeningTime.replace("theaterId", newTheaterId);
             dialog.setResult(ButtonType.OK);
         }
+        EventBus.getDefault().unregister(this);
+        dialog.close();
+    }
+
+    //remove screening time if there are no tickets purchased
+    @FXML
+    void removeScreeningTime(ActionEvent event) {
+        dialog.setResult(ButtonType.FINISH);
         EventBus.getDefault().unregister(this);
         dialog.close();
     }

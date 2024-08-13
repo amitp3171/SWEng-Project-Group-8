@@ -35,6 +35,10 @@ public class Branch implements Serializable {
         this.inTheaterMovieList.add(inTheaterMovie);
     }
 
+    public void removeInTheaterMovieList(InTheaterMovie inTheaterMovie) {
+        this.inTheaterMovieList.remove(inTheaterMovie);
+    }
+
     public String getLocation() {
         return location;
     }

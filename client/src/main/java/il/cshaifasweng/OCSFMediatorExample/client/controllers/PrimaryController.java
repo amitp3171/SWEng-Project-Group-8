@@ -45,7 +45,9 @@ public class PrimaryController {
 	}
 
 	@FXML
-	void initialize() {
+	void initialize() throws IOException {
+		if (!CinemaClient.getUserDataManager().isGuest())
+			CinemaClient.sendToServer("logout user", CinemaClient.getUserDataManager().getId());
 		CinemaClient.getUserDataManager().resetData();
 		EventBus.getDefault().register(this);
 	}

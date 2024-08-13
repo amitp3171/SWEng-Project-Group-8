@@ -7,12 +7,9 @@ import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewInTheaterMovieListEvent;
-import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import org.greenrobot.eventbus.EventBus;
@@ -26,7 +23,19 @@ public class InTheaterMovieListController {
     private Label branchNameLabel;
 
     @FXML
+    private Menu addMenu;
+
+    @FXML
+    private Menu removeMenu;
+
+    @FXML
     private MenuItem addScreeningMenuitem;
+
+    @FXML
+    private MenuItem addMovieMenuItem;
+
+    @FXML
+    private MenuItem removeMovieMenuItem;
 
     UserDataManager userDataManager;
 
@@ -85,6 +94,20 @@ public class InTheaterMovieListController {
         CinemaClient.getDialogCreationManager().loadDialog("screeningCreator", this.allInTheaterMovies, this.selectedBranch);
     }
 
+    @FXML
+    void onAddMovie(ActionEvent event) throws IOException {
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("addInTheaterMovie", this.inTheaterMovies, this.selectedBranch);
+        if (result.equals(ButtonType.OK))
+            requestInTheaterMovieList(true);
+    }
+
+    @FXML
+    void onRemoveMovie(ActionEvent event) throws IOException {
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("removeInTheaterMovie", this.inTheaterMovies, this.selectedBranch);
+        if (result.equals(ButtonType.OK))
+            requestInTheaterMovieList(true);
+    }
+
     private void requestInTheaterMovieList(boolean forceRefresh) throws IOException {
         CinemaClient.sendToServer("get InTheaterMovie list", String.join(",", selectedBranch, String.valueOf(forceRefresh)));
     }
@@ -114,7 +137,7 @@ public class InTheaterMovieListController {
                     Map<String, String> movieDictionary = dataParser.parseMovie(movie);
                     allInTheaterMovies.add(movieDictionary);
 
-                    boolean isInBranch = Boolean.parseBoolean(movieDictionary.get("additionalFields"));
+                    boolean isInBranch = Boolean.parseBoolean(movieDictionary.get("additionalFields").split(",")[0]);
                     if (isInBranch)
                         inTheaterMovies.add(movieDictionary);
                 }
@@ -142,8 +165,13 @@ public class InTheaterMovieListController {
 
         forceRefresh = false;
 
-        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager"))
+        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
+            addMenu.setVisible(true);
             addScreeningMenuitem.setVisible(true);
+            addMovieMenuItem.setVisible(true);
+            removeMenu.setVisible(true);
+            removeMovieMenuItem.setVisible(true);
+        }
 
         // register to EventBus
         EventBus.getDefault().register(this);
