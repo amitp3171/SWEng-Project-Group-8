@@ -2,26 +2,26 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DialogPane?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="126.0" prefWidth="534.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.RemoveComingSoonMovieController">
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="126.0" prefWidth="534.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.RemoveComingSoonMovieController">
     <content>
         <StackPane prefHeight="387.0" prefWidth="424.0">
             <children>
                 <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="87.0" prefWidth="514.0" spacing="10.0" StackPane.alignment="CENTER">
                     <children>
-                        <Label alignment="TOP_CENTER" text="שם הסרט:">
+                        <Label alignment="TOP_CENTER" text="בחר סרט:">
                             <font>
                                 <Font size="15.0" />
                             </font>
                         </Label>
-                        <TextField fx:id="movieNameField" prefWidth="225.0" />
+                  <ComboBox fx:id="chooseMovieComboBox" onAction="#onMovieChosen" prefWidth="150.0" />
 
                         <HBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="340.0">
                             <children>
@@ -30,7 +30,7 @@
                                         <Insets right="3.0" />
                                     </HBox.margin>
                                 </Button>
-                                <Button mnemonicParsing="false" onAction="#onRemoveComingSoonMovie" text="הסר" />
+                                <Button fx:id="removeMovieButton" disable="true" mnemonicParsing="false" onAction="#onRemoveComingSoonMovie" text="הסר" />
                             </children>
                         </HBox>
                         <Label fx:id="statusLabel" text="Status" visible="false" />

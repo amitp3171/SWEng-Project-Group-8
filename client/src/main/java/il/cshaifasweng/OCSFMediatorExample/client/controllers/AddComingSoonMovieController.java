@@ -43,15 +43,12 @@ public class AddComingSoonMovieController implements DialogInterface {
     @FXML
     private Label statusLabel;
 
-    DataParser dataParser;
-
     private Dialog<ButtonType> dialog;
 
-    private ArrayList<String> comingSoonMovies;
+    private ArrayList<Map<String, String>> comingSoonMovies;
 
     @FXML
     private void initialize() {
-        dataParser = CinemaClient.getDataParser();
         statusLabel.setVisible(false);
     }
 
@@ -59,14 +56,13 @@ public class AddComingSoonMovieController implements DialogInterface {
         this.dialog = dialog;
     }
 
-    public void setData(Object... items) {
-        this.comingSoonMovies = (ArrayList<String>)items[0];
+    public void setData(Object... params) {
+        this.comingSoonMovies = (ArrayList<Map<String, String>>) params[0];
     }
 
 
     @FXML
     private void onAddComingSoonMovie() throws IOException {
-
         // Add the movie if the input is valid
         if (isInputValid()) {
             String mainActorsString = String.join(";", getMainActors());
@@ -81,9 +77,7 @@ public class AddComingSoonMovieController implements DialogInterface {
     private boolean isInputValid() {
         String errorMessage = "";
 
-        for (String comingSoonMovie : comingSoonMovies) {
-            Map<String, String> movieMap = dataParser.parseMovie(comingSoonMovie);
-
+        for (Map<String, String> movieMap : comingSoonMovies) {
             // Check if the first field (movie name) is the same as the movieNameField's text
             if (movieMap.get("movieName").equals(movieNameField.getText())) {
                 errorMessage = "הסרט כבר קיים!" + "\n";

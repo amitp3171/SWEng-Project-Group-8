@@ -61,7 +61,7 @@ public class HomeMovieInfoController implements DialogInterface {
         this.selectedMovie = (Map<String, String>) params[0];
 
         String title = selectedMovie.get("title");
-        String description = selectedMovie.get("description");
+        String description = selectedMovie.get("description").substring(1, selectedMovie.get("mainActors").length() - 1);
         String mainActors = selectedMovie.get("mainActors").substring(1, selectedMovie.get("mainActors").length() - 1);
         String producerName = selectedMovie.get("producerName");
         String movieLength = selectedMovie.get("additionalFields");

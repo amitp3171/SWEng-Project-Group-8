@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="120.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.CustomerRefundRequestViewController">
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.CustomerRefundRequestViewController">
    <content>
       <StackPane prefHeight="88.0" prefWidth="359.0">
          <children>
@@ -27,10 +27,10 @@
                               <Insets right="3.0" />
                            </HBox.margin>
                         </Button>
-                        <Button mnemonicParsing="false" onAction="#confirmRefundRequest" text="אישור" />
+                        <Button fx:id="refundRequestButton" mnemonicParsing="false" onAction="#confirmRefundRequest" text="אישור" />
                      </children>
                   </HBox>
-                  <Label fx:id="paymentStatusLabel" alignment="TOP_CENTER" text="סטטוס" visible="false" wrapText="true" />
+                  <Label fx:id="refundStatusLabel" alignment="TOP_CENTER" text="סטטוס" visible="false" wrapText="true" />
                </children>
             </VBox>
          </children>

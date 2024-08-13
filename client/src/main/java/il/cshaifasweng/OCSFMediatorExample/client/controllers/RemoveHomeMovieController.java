@@ -5,10 +5,7 @@ import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,7 +16,10 @@ import java.util.Map;
 public class RemoveHomeMovieController implements DialogInterface {
 
     @FXML
-    private TextField movieNameField;
+    private ComboBox<String> chooseMovieComboBox;
+
+    @FXML
+    private Button removeMovieButton;
 
     @FXML
     private Label statusLabel;
@@ -28,7 +28,7 @@ public class RemoveHomeMovieController implements DialogInterface {
 
     private Dialog<ButtonType> dialog;
 
-    private ArrayList<String> homeMovies;
+    private ArrayList<Map<String, String>> homeMovies;
 
     @FXML
     private void initialize() {
@@ -39,12 +39,21 @@ public class RemoveHomeMovieController implements DialogInterface {
         this.dialog = dialog;
     }
 
-    public void setData(Object... items) {
-        this.homeMovies = (ArrayList<String>)items[0];
+    public void setData(Object... params) {
+        this.homeMovies = (ArrayList<Map<String, String>>) params[0];
+
+        String[] items = new String[this.homeMovies.size()];
+
+        for (int i = 0; i < this.homeMovies.size(); i++) {
+            items[i] = this.homeMovies.get(i).get("movieName");
+        }
+
+        chooseMovieComboBox.getItems().addAll(Arrays.asList(items));
     }
 
-    public String getMovieName() {
-        return movieNameField.getText();
+    @FXML
+    private void onMovieSelected(ActionEvent event) {
+        removeMovieButton.setDisable(false);
     }
 
     @FXML
@@ -54,29 +63,11 @@ public class RemoveHomeMovieController implements DialogInterface {
 
     @FXML
     void onRemoveHomeMovie(ActionEvent event) throws IOException {
-        // Get the movie that matches the input
-        String movieToRemove = getMatchingMovieData();
+        int selectedIndex = chooseMovieComboBox.getSelectionModel().getSelectedIndex();
+        Map<String, String> selectedMovie = homeMovies.get(selectedIndex);
 
-        if (movieToRemove != null) {
-            CinemaClient.sendToServer("remove home movie", movieToRemove);
-            dialog.close();
-        } else {
-            statusLabel.setVisible(true);
-        }
-    }
+        CinemaClient.sendToServer("remove home movie", selectedMovie.get("id"));
 
-    private String getMatchingMovieData() {
-        dataParser = CinemaClient.getDataParser();
-
-        for (String homeMovie : homeMovies) {
-            Map<String, String> movieMap = dataParser.parseMovie(homeMovie);
-            if (movieMap.get("moviename").equals(movieNameField.getText())) {
-                // Return the formatted string containing movie details
-                return homeMovie;
-            }
-        }
-
-        statusLabel.setText("סרט לא קיים!");
-        return null;
+        dialog.close();
     }
 }

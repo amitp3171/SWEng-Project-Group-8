@@ -94,9 +94,14 @@ public class CustomerPurchaseListController {
         int selectedIndex = customerPurchasesListView.getSelectionModel().getSelectedIndex();
         Map<String, String> selectedPurchase = customerPurchases.get(selectedIndex);
 
-        System.out.println(selectedPurchase.toString());
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("customerPurchaseView", selectedPurchase);
 
-        CinemaClient.getDialogCreationManager().loadDialog("customerPurchaseView", selectedPurchase);
+        if (result.equals(ButtonType.OK)) {
+            customerPurchasesListView.getItems().remove(selectedIndex);
+            customerPurchases.remove(selectedIndex);
+        }
+
+        customerPurchasesListView.getSelectionModel().clearSelection();
     }
 
     @FXML

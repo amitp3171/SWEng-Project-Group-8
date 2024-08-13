@@ -40,11 +40,9 @@ public class AddHomeMovieController implements DialogInterface {
     @FXML
     private Label statusLabel;
 
-    DataParser dataParser;
-
     private Dialog<ButtonType> dialog;
 
-    private ArrayList<String> homeMovies;
+    private ArrayList<Map<String, String>> homeMovies;
 
     @FXML
     private void initialize() {
@@ -56,7 +54,7 @@ public class AddHomeMovieController implements DialogInterface {
     }
 
     public void setData(Object... items) {
-        this.homeMovies = (ArrayList<String>)items[0];
+        this.homeMovies = (ArrayList<Map<String, String>>) items[0];
     }
 
     @FXML
@@ -76,9 +74,7 @@ public class AddHomeMovieController implements DialogInterface {
     private boolean isInputValid() {
         String errorMessage = "";
 
-        for (String homeMovie : homeMovies) {
-            Map<String, String> movieMap = dataParser.parseMovie(homeMovie);
-
+        for (Map<String, String> movieMap : homeMovies) {
             // Check if the first field (movie name) is the same as the movieNameField's text
             if (movieMap.get("movieName").equals(movieNameField.getText())) {
                 errorMessage = "הסרט כבר קיים!" + "\n";
@@ -152,8 +148,6 @@ public class AddHomeMovieController implements DialogInterface {
     @Subscribe
     public void onAddedHomeMovieEvent(NewAddedComingSoonMovieEvent event) {
         Platform.runLater(() -> {
-            dataParser = CinemaClient.getDataParser();
-
             String status = event.getMessage().getData();
             if (status.equals("request successful"))
                 statusLabel.setText("סרט נוצר בהצלחה");

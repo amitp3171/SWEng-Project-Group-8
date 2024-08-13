@@ -44,6 +44,8 @@ public class CustomerPurchaseViewController implements DialogInterface {
 
     Map<String, String> relatedProduct;
 
+    ButtonType refundStatus = ButtonType.CANCEL;
+
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
     }
@@ -119,6 +121,7 @@ public class CustomerPurchaseViewController implements DialogInterface {
     @FXML
     void onCancelPressed(ActionEvent event) {
         EventBus.getDefault().unregister(this);
+        dialog.setResult(refundStatus);
         dialog.close();
     }
 
@@ -129,7 +132,7 @@ public class CustomerPurchaseViewController implements DialogInterface {
 
     @FXML
     void onRefundRequested(ActionEvent event) throws IOException {
-        CinemaClient.getDialogCreationManager().loadDialog("customerRefundRequestView", this.productClass, this.relatedProduct);
+        refundStatus = CinemaClient.getDialogCreationManager().loadDialog("customerRefundRequestView", this.productClass, this.relatedProduct);
     }
 
     @FXML

@@ -1,6 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewComingSoonMovieListEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
@@ -18,6 +19,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ComingSoonMovieListController {
     @FXML
@@ -25,7 +27,9 @@ public class ComingSoonMovieListController {
 
     UserDataManager userDataManager;
 
-    private ArrayList<String> comingSoonMovies;
+    DataParser dataParser;
+
+    private ArrayList<Map<String, String>> comingSoonMovies = new ArrayList<>();
 
     @FXML
     private Menu addMovieMenu;
@@ -46,7 +50,7 @@ public class ComingSoonMovieListController {
 
         // get screeningTime object
         int selectedIndex = comingSoonMovieListView.getSelectionModel().getSelectedIndex();
-        String selectedMovie = comingSoonMovies.get(selectedIndex);
+        Map<String, String> selectedMovie = comingSoonMovies.get(selectedIndex);
 
         CinemaClient.getDialogCreationManager().loadDialog("comingSoonMovieInfo",selectedMovie);
     }
@@ -79,10 +83,7 @@ public class ComingSoonMovieListController {
         // get movie names
         String[] movieNames = new String[comingSoonMovies.size()];
         for (int i = 0; i < movieNames.length; i++) {
-            movieNames[i] = comingSoonMovies.get(i).split(",")[1];
-
-            // Remove commas from the movie name for display
-            movieNames[i] = movieNames[i].replace(",", "");
+            movieNames[i] = comingSoonMovies.get(i).get("movieName");
         }
 
         // display movies
@@ -94,7 +95,13 @@ public class ComingSoonMovieListController {
         // on event received
         Platform.runLater(() -> {
             try {
-                comingSoonMovies = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+                comingSoonMovies.clear();
+
+                ArrayList<String> receivedData =  CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+
+                for (String movie : receivedData) {
+                    comingSoonMovies.add(dataParser.parseMovie(movie));
+                }
 
                 if (!comingSoonMovies.isEmpty())
                     initializeList();
@@ -114,7 +121,7 @@ public class ComingSoonMovieListController {
     @FXML
     void onAddComingSoonMovie(ActionEvent event) throws IOException {
 
-        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("addComingSoonMovie",comingSoonMovies);
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("addComingSoonMovie", comingSoonMovies);
 
         requestComingSoonMovieList(true);
 
@@ -144,6 +151,7 @@ public class ComingSoonMovieListController {
     @FXML
     void initialize() throws IOException {
         userDataManager = CinemaClient.getUserDataManager();
+        dataParser = CinemaClient.getDataParser();
 
         // register to EventBus
         EventBus.getDefault().register(this);

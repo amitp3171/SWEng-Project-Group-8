@@ -276,9 +276,9 @@ public class SimpleServer extends AbstractServer {
 
 	private void handleRemoveComingSoonMovie(Message message, ConnectionToClient client) throws IOException {
 		// Parse the incoming movie data string
-		String[] splitMovieData = message.getData().split(",");
-
-		ComingSoonMovie movieToRemove = db.executeNativeQuery("SELECT * FROM ComingSoonMovie WHERE movieName=?", ComingSoonMovie.class, splitMovieData[1]).get(0);
+		String movieId = message.getData();
+		System.out.println(movieId);
+		ComingSoonMovie movieToRemove = db.executeNativeQuery("SELECT * FROM ComingSoonMovie WHERE id = ?", ComingSoonMovie.class, movieId).get(0);
 
 		//Remove movie
 		db.removeInstance(movieToRemove);
@@ -289,9 +289,9 @@ public class SimpleServer extends AbstractServer {
 
 	private void handleRemoveHomeMovie(Message message, ConnectionToClient client) throws IOException {
 		// Parse the incoming movie data string
-		String[] splitMovieData = message.getData().split(",");
+		String movieId = message.getData();
 
-		HomeMovie movieToRemove = db.executeNativeQuery("SELECT * FROM HomeMovie WHERE movieName=?", HomeMovie.class, splitMovieData[1]).get(0);
+		HomeMovie movieToRemove = db.executeNativeQuery("SELECT * FROM HomeMovie WHERE id = ?", HomeMovie.class, movieId).get(0);
 
 		//Remove movie
 		db.removeInstance(movieToRemove);
@@ -529,6 +529,9 @@ public class SimpleServer extends AbstractServer {
 		Purchase relatedPurchase = db.executeNativeQuery("SELECT * FROM purchases WHERE relatedProduct_id = ?", Purchase.class, productId).get(0);
 
 		Customer owner = selectedTicket.getOwner();
+
+		// free Seat
+		selectedTicket.getSeat().setTaken(false);
 
 		// detach Customer
 		relatedPurchase.setCustomer(null);

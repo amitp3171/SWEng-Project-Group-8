@@ -5,10 +5,7 @@ import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -21,16 +18,17 @@ import java.util.Map;
 public class RemoveComingSoonMovieController implements DialogInterface {
 
     @FXML
-    private TextField movieNameField;
+    private ComboBox<String> chooseMovieComboBox;
+
+    @FXML
+    private Button removeMovieButton;
 
     @FXML
     private Label statusLabel;
 
-    private DataParser dataParser;
-
     private Dialog<ButtonType> dialog;
 
-    private ArrayList<String> comingSoonMovies;
+    private ArrayList<Map<String, String>> comingSoonMovies;
 
     @FXML
     private void initialize() {
@@ -41,12 +39,16 @@ public class RemoveComingSoonMovieController implements DialogInterface {
         this.dialog = dialog;
     }
 
-    public void setData(Object... items) {
-        this.comingSoonMovies = (ArrayList<String>)items[0];
-    }
+    public void setData(Object... params) {
+        this.comingSoonMovies = (ArrayList<Map<String, String>>) params[0];
 
-    public String getMovieName() {
-        return movieNameField.getText();
+        String[] items = new String[this.comingSoonMovies.size()];
+
+        for (int i = 0; i < this.comingSoonMovies.size(); i++) {
+            items[i] = this.comingSoonMovies.get(i).get("movieName");
+        }
+
+        chooseMovieComboBox.getItems().addAll(Arrays.asList(items));
     }
 
     @FXML
@@ -55,30 +57,16 @@ public class RemoveComingSoonMovieController implements DialogInterface {
     }
 
     @FXML
-    void onRemoveComingSoonMovie(ActionEvent event) throws IOException {
-        // Get the movie that matches the input
-        String movieToRemove = getMatchingMovieData();
-
-        if (movieToRemove != null) {;
-            CinemaClient.sendToServer("remove coming soon movie", movieToRemove);
-            dialog.close();
-        } else {
-            statusLabel.setVisible(true);
-        }
+    void onMovieChosen(ActionEvent event) {
+        removeMovieButton.setDisable(false);
     }
 
-    private String getMatchingMovieData() {
-        dataParser = CinemaClient.getDataParser();
+    @FXML
+    void onRemoveComingSoonMovie(ActionEvent event) throws IOException {
+        int selectedIndex = chooseMovieComboBox.getSelectionModel().getSelectedIndex();
+        Map<String, String> selectedMovie = comingSoonMovies.get(selectedIndex);
 
-        for (String comingSoonMovie : comingSoonMovies) {
-            Map<String, String> movieMap = dataParser.parseMovie(comingSoonMovie);
-            if (movieMap.get("movieName").equals(movieNameField.getText())) {
-                // Return the formatted string containing movie details
-                return comingSoonMovie;
-            }
-        }
-
-        statusLabel.setText("סרט לא קיים!");
-        return null;
+        CinemaClient.sendToServer("remove coming soon movie", selectedMovie.get("id"));
+        dialog.close();
     }
 }

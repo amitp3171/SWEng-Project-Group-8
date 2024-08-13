@@ -14,6 +14,7 @@ import il.cshaifasweng.OCSFMediatorExample.client.events.NewComplaintListEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -23,16 +24,21 @@ import org.greenrobot.eventbus.Subscribe;
 public class CustomerRefundRequestViewController implements DialogInterface {
 
     @FXML
-    private Label paymentStatusLabel;
+    private Label refundStatusLabel;
 
     @FXML
     private Label refundAmountField;
+
+    @FXML
+    private Button refundRequestButton;
 
     private Dialog<ButtonType> dialog;
 
     private String productClass;
 
     private Map<String, String> relatedProduct;
+
+    private ButtonType refundStatus = ButtonType.CANCEL;
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
@@ -67,6 +73,8 @@ public class CustomerRefundRequestViewController implements DialogInterface {
 
     @FXML
     void cancelRefundRequest(ActionEvent event) {
+//        EventBus.getDefault().unregister(this);
+        dialog.setResult(this.refundStatus);
         dialog.close();
     }
 
@@ -81,32 +89,35 @@ public class CustomerRefundRequestViewController implements DialogInterface {
                 break;
         }
 
-        // TODO: send refund request to server
+        refundStatusLabel.setText("החזר כספי בוצע בהצלחה");
+        refundStatusLabel.setVisible(true);
+        refundRequestButton.setDisable(true);
+        this.refundStatus = ButtonType.OK;
     }
 
-    @Subscribe
-    public void onGetCustomerPurchaseListEvent(NewComplaintListEvent event) {
-        // on event received
-        Platform.runLater(() -> {
-//            try {
-//                customerPurchases.clear();
-//                ArrayList<String> receivedData = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
-//                for (String purchase : receivedData) {
-//                    customerPurchases.add(dataParser.parsePurchase(purchase));
-//                }
-//            }
-//            catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            // update list
-//            initializeList();
-//            System.out.println("Customer Purchase list request received");
-        });
-    }
+//    @Subscribe
+//    public void onGetCustomerPurchaseListEvent(NewComplaintListEvent event) {
+//        // on event received
+//        Platform.runLater(() -> {
+////            try {
+////                customerPurchases.clear();
+////                ArrayList<String> receivedData = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+////                for (String purchase : receivedData) {
+////                    customerPurchases.add(dataParser.parsePurchase(purchase));
+////                }
+////            }
+////            catch (IOException e) {
+////                e.printStackTrace();
+////            }
+////            // update list
+////            initializeList();
+////            System.out.println("Customer Purchase list request received");
+//        });
+//    }
 
     @FXML
     void initialize() {
-        EventBus.getDefault().register(this);
+//        EventBus.getDefault().register(this);
     }
 
 }

@@ -4,6 +4,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -35,26 +36,24 @@ public class ComingSoonMovieInfoController implements DialogInterface {
 
     private Dialog<ButtonType> dialog;
 
-    private String selectedMovie;
+    private Map<String, String> selectedMovie;
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
     }
 
     public void setData(Object... items) {
-        this.selectedMovie = (String)items[0];
-        setComingSoonMovie(selectedMovie);
+        this.selectedMovie = (Map<String, String>) items[0];
+        setComingSoonMovie();
     }
 
-    public void setComingSoonMovie(String movie) {
+    public void setComingSoonMovie() {
         // id, movieName, super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture()
-        String[] parsedMovie = selectedMovie.split(",(?![^\\[]*\\])");
-
-        String title = parsedMovie[1];
-        String description = parsedMovie[2].substring(1, parsedMovie[2].length() - 1);
-        String mainActors = parsedMovie[3].substring(1, parsedMovie[3].length() - 1);
-        String producerName = parsedMovie[4];
-        LocalDate releaseDate = LocalDate.parse(parsedMovie[6]);
+        String title = this.selectedMovie.get("title");
+        String description = this.selectedMovie.get("description").substring(1, this.selectedMovie.get("description").length() - 1);
+        String mainActors = this.selectedMovie.get("mainActors").substring(1, this.selectedMovie.get("mainActors").length() - 1);
+        String producerName = this.selectedMovie.get("producerName");
+        LocalDate releaseDate = LocalDate.parse(this.selectedMovie.get("additionalFields"));
 
         // Format LocalDate to String
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
