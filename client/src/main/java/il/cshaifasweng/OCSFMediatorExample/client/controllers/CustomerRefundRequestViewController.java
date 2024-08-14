@@ -85,7 +85,7 @@ public class CustomerRefundRequestViewController implements DialogInterface {
                 CinemaClient.sendToServer("Customer Ticket Refund", this.relatedProduct.get("id"));
                 break;
             case "Link":
-                CinemaClient.sendToServer("Customer Link Refund");
+                CinemaClient.sendToServer("Customer Link Refund", this.relatedProduct.get("id"));
                 break;
         }
 

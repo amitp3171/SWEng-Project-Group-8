@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -98,18 +99,23 @@ public class CustomerPurchaseViewController implements DialogInterface {
                     this.relatedProduct = dataParser.parseLink(productToString);
                     LocalDate availableDate = LocalDate.parse(this.relatedProduct.get("availableDate"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                     LocalTime availableTime = LocalTime.parse(this.relatedProduct.get("availableTime"), DateTimeFormatter.ofPattern("HH:mm"));
-                    LocalTime expiresAt = LocalTime.parse(this.relatedProduct.get("expiresAt"), DateTimeFormatter.ofPattern("HH:mm"));
-                    if (LocalTime.now().plusHours(1).isAfter(availableTime)) {
+
+                    LocalDateTime availableAt = LocalDateTime.of(availableDate, availableTime);
+                    LocalDateTime expiresAt = LocalDateTime.parse(this.relatedProduct.get("expiresAt"), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+
+                    System.out.println(relatedProduct.toString());
+
+                    if (LocalDateTime.now().plusHours(1).isAfter(availableAt.plusHours(1))) {
                         refundButton.setText("ניתן לבטל עד שעה לפני מועד הפעלת הקישור");
                         refundButton.setDisable(true);
                     }
-                    if (availableDate.isEqual(LocalDate.now()) && LocalTime.now().isBefore(expiresAt) && LocalTime.now().isAfter(availableTime)) {
+                    if (LocalDateTime.now().isAfter(availableAt) && LocalDateTime.now().isBefore(expiresAt)) {
                         productDescLabel.setText(
-                                String.format("חבילת צפייה: %s, זמינות עד השעה %s", this.relatedProduct.get("link"), this.relatedProduct.get("expiresAt"))
+                                String.format("חבילת צפייה: %s, זמינות עד %s, %s", this.relatedProduct.get("link"), expiresAt.getHour() + ":" + expiresAt.getMinute(), expiresAt.getDayOfMonth() + "/" + expiresAt.getMonthValue() + "/" + expiresAt.getYear())
                         );
                     }
                     else {
-                        productDescLabel.setText(String.format("קישור: זמין ב-%s, %s", availableDate, availableTime));
+                        productDescLabel.setText(String.format("קישור: נבחרה זמינות ב-%s, %s", availableDate, availableTime));
                     }
                     break;
             }

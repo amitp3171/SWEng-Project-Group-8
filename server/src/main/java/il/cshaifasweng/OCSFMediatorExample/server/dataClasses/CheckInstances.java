@@ -386,6 +386,8 @@ public class CheckInstances {
             customers[3] = new Customer("Daniel", "Rubinstein", "252410942");
             customers[4] = new Customer("Kfir", "Back", "421344941");
 
+            generateCustomers(customers);
+
             CustomerMessage[] customerMessages = new CustomerMessage[5];
             for (int i = 0; i < 5; i++) {
                 customerMessages[i] = new CustomerMessage("hello message", "[hello " + customers[i].getFirstName() + "]", LocalDateTime.now(), customers[i]);
@@ -393,7 +395,7 @@ public class CheckInstances {
 
             Link[] links =new Link[5];
             for(int i=0;i<links.length;i++){
-                links[i] = new Link(customers[i],20, homeMovie, LocalDate.now(), LocalTime.now(), LocalTime.now().plusHours((long)(homeMovie.getMovieLength())+1), "thisisanexampleforalink");
+                links[i] = new Link(customers[i],20, homeMovie, LocalDate.now(), LocalTime.now());
                 purchases[i] = new Purchase(links[i], customers[i], "Credit Card", LocalDate.now(), LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i]);
             }
@@ -463,7 +465,7 @@ public class CheckInstances {
             generatePrices(new Price[]{ticketPrice, linkPrice, subscriptionCardPrice});
 
             generateCustomerMessages(customerMessages);
-            generateCustomers(customers);
+//            generateCustomers(customers);
             generatePurchases(purchases);
             generateComplaints(complaints);
             generateServiceEmployees(serviceEmployees);
