@@ -31,6 +31,9 @@ public class CustomerComplaintListController {
 
     UserDataManager userDataManager;
 
+    boolean isOnTime;
+
+
     @FXML
     void onCloseProgram(ActionEvent event) {
         System.exit(0);
