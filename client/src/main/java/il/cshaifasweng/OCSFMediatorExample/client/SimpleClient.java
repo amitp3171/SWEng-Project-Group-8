@@ -126,6 +126,11 @@ public class SimpleClient extends AbstractClient {
 		else if(message.getMessage().equals("Error! we got an empty message")){
 			EventBus.getDefault().post(new ErrorEvent(message));
 		}
+
+		else if (message.getMessage().equals("updated ServiceEmployee Complaint list successfully")) {
+			EventBus.getDefault().post(new NewServiceEmployeeComplaintListEvent(message));
+		}
+
 		else {
 			EventBus.getDefault().post(new MessageEvent(message));
 		}

@@ -73,29 +73,16 @@ public class SimpleServer extends AbstractServer {
 		List<InTheaterMovie> receivedData = db.getAll(InTheaterMovie.class, forceRefresh);
 		ArrayList<String> movieToString = new ArrayList<>();
 
-		System.out.println("LOCAL TIME:" + LocalTime.now());
-
 		// attach flag
 		for (InTheaterMovie movie : receivedData) {
 			String isInBranch = ",false";
-			String hasActiveScreenings = ",false";
-
-			for (ScreeningTime screeningTime : movie.getScreenings()) {
-				if (
-						screeningTime.getBranch().getLocation().equals(selectedBranchLocation)
-						&& ((screeningTime.getTime().isAfter(LocalTime.now()) && screeningTime.getDate().isEqual(LocalDate.now())) || screeningTime.getDate().isAfter(LocalDate.now()))
-				) {
-					hasActiveScreenings = ",true";
-				}
-			}
-
 			for (Branch branch : movie.getBranches()) {
 				if (branch.getLocation().equals(selectedBranchLocation)) {
 					isInBranch = ",true";
 					break;
 				}
 			}
-			movieToString.add(movie.toString() + isInBranch + hasActiveScreenings);
+			movieToString.add(movie.toString() + isInBranch);
 		}
 
 		sendMessage(message, "updated InTheaterMovie list successfully", movieToString, client);
@@ -480,12 +467,20 @@ public class SimpleServer extends AbstractServer {
 		String customerGovId = messageData[0];
 		String movieId = messageData[1];
 		String productPrice = messageData[2];
+		String selectedDateString = messageData[3]; //format yyyy-MM-dd
+		String selectedTimeString = messageData[4]; //format hh-mm
+
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate selectedDate = LocalDate.parse(selectedDateString, formatter);
+		DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("HH:mm");
+		LocalTime selectedTime = LocalTime.parse(selectedTimeString, formatter1);
 
 		Customer owner = db.executeNativeQuery("SELECT * FROM customers WHERE govId=?", Customer.class, customerGovId).get(0);
 		HomeMovie homeMovie = db.executeNativeQuery("SELECT * FROM homemovie WHERE id=?", HomeMovie.class, movieId).get(0);
 
-		Link newLink = new Link(owner, Double.parseDouble(productPrice), homeMovie, LocalDate.now(), LocalTime.now().plusHours(1), LocalTime.now().plusHours(3), "https://www.youtube.com/watch?v=Xithigfg7dA");
-		Purchase newPurchase = new Purchase(newLink, owner, "Credit Card", LocalDate.now(), LocalTime.now());
+		Link newLink = new Link(owner, Double.parseDouble(productPrice), homeMovie, selectedDate, selectedTime, selectedTime.plusHours(3), "https://www.youtube.com/watch?v=Xithigfg7dA");
+		Purchase newPurchase = new Purchase(newLink, owner, "Credit Card", selectedDate, selectedTime);
 		CustomerMessage customerMessage = new CustomerMessage("לינק חדש",  "תודה שרכשת לינק לצפייה ביתית לסרט: " + homeMovie.getMovieName() + "\n" + "הקישור לסרט: " + newLink.getLink() + "\n" + "יהיה זמין בשעות: " + newLink.getAvailableHour() + "-" + newLink.getExpiresAt(), LocalDateTime.now(), owner);
 
 		owner.addMessageToList(customerMessage);
@@ -557,6 +552,23 @@ public class SimpleServer extends AbstractServer {
 			messagesContents.add(customerMessage.toString());
 		}
 		sendMessage(message, "updated Customer Message list successfully", messagesContents, client);
+	}
+
+	private void handleServiceEmployeeComplaintListRequest(Message message, ConnectionToClient client) throws IOException {
+		List<Complaint> receivedComplaints = db.executeNativeQuery("SELECT * FROM complaints", Complaint.class);
+
+		//debug
+		for (Complaint complaint: receivedComplaints){
+			System.out.println(complaint);
+		}
+
+		List<String> complaintsContents = new ArrayList<>();
+		for (Complaint complaint: receivedComplaints){
+			complaintsContents.add(complaint.toString());
+		}
+		sendMessage(message, "updated ServiceEmployee Complaint list successfully", complaintsContents, client);
+
+
 	}
 
 	private void handleCustomerPurchaseListRequest(Message message, ConnectionToClient client) throws IOException{
@@ -849,10 +861,6 @@ public class SimpleServer extends AbstractServer {
 				handleProductPriceRequest(message, client);
 			}
 
-			else if (request.equals("update Product price")) {
-				handleProductPriceChangeRequest(message, client);
-			}
-
 			else if (request.equals("create Ticket Purchase")) {
 				handleCreateTicketPurchase(message, client);
 			}
@@ -930,6 +938,10 @@ public class SimpleServer extends AbstractServer {
 
 			else if (request.equals("submit Customer Complaint")) {
 				handleCreateComplaintRequest(message, client);
+			}
+
+			else if(request.equals("get Complaint list for ServiceEmployee")) {
+				handleServiceEmployeeComplaintListRequest(message, client);
 			}
 
 			else {

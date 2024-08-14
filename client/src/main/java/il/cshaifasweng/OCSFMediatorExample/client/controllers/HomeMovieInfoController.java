@@ -2,6 +2,8 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
@@ -11,12 +13,10 @@ import il.cshaifasweng.OCSFMediatorExample.client.events.NewPurchaseStatusEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
+import javafx.util.Callback;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import java.util.*;
@@ -46,6 +46,14 @@ public class HomeMovieInfoController implements DialogInterface {
 
     @FXML
     private Label statusLabel;
+
+    @FXML
+    private TextField selectedTime;
+
+    @FXML
+    private DatePicker linkActivationDatePicker;
+
+    private LocalDate selectedDate;
 
     private Dialog<ButtonType> dialog;
 
@@ -86,24 +94,69 @@ public class HomeMovieInfoController implements DialogInterface {
     }
     @FXML
     void onPurchaseButton(ActionEvent event) throws IOException {
-        if (CinemaClient.getUserDataManager().isGuest()) {
-            CinemaClient.getDialogCreationManager().loadDialog("createCustomerCredentialsPrompt");
-        }
+        if(isValidTimeFormat(selectedTime.getText()) && selectedDate != null) {
+            if (CinemaClient.getUserDataManager().isGuest()) {
+                CinemaClient.getDialogCreationManager().loadDialog("createCustomerCredentialsPrompt");
+            }
 
-        if (CinemaClient.getUserDataManager().isCustomer()) {
-            ButtonType status = CinemaClient.getDialogCreationManager().loadDialog("cardPaymentPrompt", this.productPrice, 1);
-            if (status == ButtonType.OK) {
-                CinemaClient.sendToServer("create Link Purchase",
-                        String.join(",",
-                                CinemaClient.getUserDataManager().getGovId(),
-                                this.selectedMovie.get("id"),
-                                String.valueOf(this.productPrice)));
-            } else {
-                statusLabel.setText("תשלום בוטל");
-                statusLabel.setTextFill(Color.RED);
-                statusLabel.setVisible(true);
+            if (CinemaClient.getUserDataManager().isCustomer()) {
+                ButtonType status = CinemaClient.getDialogCreationManager().loadDialog("cardPaymentPrompt", this.productPrice, 1);
+                if (status == ButtonType.OK) {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        String formattedDate = selectedDate.format(formatter);
+                        CinemaClient.sendToServer("create Link Purchase",
+                                String.join(",",
+                                        CinemaClient.getUserDataManager().getGovId(),
+                                        this.selectedMovie.get("id"),
+                                        String.valueOf(this.productPrice),
+                                        formattedDate,
+                                        selectedTime.getText()));
+                    }
+
+            }
+            else {
+                    statusLabel.setText("תשלום בוטל");
+                    statusLabel.setTextFill(Color.RED);
+                    statusLabel.setVisible(true);
             }
         }
+        else {
+            statusLabel.setText("יום או שעה לא תקינים. יש לבחור תאריך ושעה בפורמט: hh:mm");
+            statusLabel.setTextFill(Color.RED);
+            statusLabel.setVisible(true);
+        }
+    }
+
+    public boolean isValidTimeFormat(String time) {
+        return time.matches("([01]\\d|2[0-3]):[0-5]\\d");
+    }
+
+    @FXML
+    void onDateSelected(ActionEvent event) {
+        // get selected day
+        selectedDate = linkActivationDatePicker.getValue();
+    }
+
+    public void initializeDatePicker() {
+        linkActivationDatePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
+            @Override
+            public DateCell call(DatePicker param) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (!empty && item != null) {
+                            if (item.isAfter(LocalDate.now()))
+                                this.setStyle("-fx-background-color: lightgreen");
+                            else
+                                this.setDisable(true);
+                        }
+                    }
+                };
+            }
+        });
+        linkActivationDatePicker.setValue(this.selectedDate);
     }
 
     @Subscribe
@@ -128,6 +181,7 @@ public class HomeMovieInfoController implements DialogInterface {
     @FXML
     void initialize() throws IOException {
         EventBus.getDefault().register(this);
+        initializeDatePicker();
         CinemaClient.sendToServer("get Product price", "Link");
     }
 }

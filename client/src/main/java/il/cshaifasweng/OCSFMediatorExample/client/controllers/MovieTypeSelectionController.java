@@ -37,7 +37,10 @@ public class MovieTypeSelectionController {
 
     @FXML
     void showPersonalArea(ActionEvent event) throws IOException {
-        CinemaClient.setContent("customerPersonalArea");
+        if (userDataManager.isCustomer())
+            CinemaClient.setContent("customerPersonalArea");
+        else
+            CinemaClient.setContent("employeePersonalArea");
     }
 
     @FXML
