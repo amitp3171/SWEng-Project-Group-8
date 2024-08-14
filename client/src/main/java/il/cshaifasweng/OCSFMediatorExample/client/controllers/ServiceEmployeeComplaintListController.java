@@ -2,7 +2,11 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -80,23 +84,47 @@ public class ServiceEmployeeComplaintListController {
         // get movie names
         String[] complaintTitles = new String[complaints.size()];
         for (int i = 0; i < complaintTitles.length; i++) {
-            System.out.println(complaints.get(i).toString());
-            complaintTitles[i] = complaints.get(i).get("title");
-            complaintTitles[i] = String.format("תלונה #%s : %s", complaints.get(i).get("id"), "\"" + complaintTitles[i] + "\"");
-            //debug
-            System.out.println(complaintTitles[i]);
-//            String remainTime = calculateRemainingTime(complaints.get(i).get("receivedAt"));
-//            complaintTitles += "זמן נותר לטיפול: " + remainTime;
+            Map<String, String> complaint = complaints.get(i);
+            String title = complaint.get("title");
+            String remainingTime = calculateRemainingTime(complaint.get("receivedAt"), complaint.get("receivedDate"));
+            if(complaint.get("response").equals("[טרם התקבלה תגובה מהצוות]")){
+                if (remainingTime.equals("0"))
+                    complaintTitles[i] = ("תלונה #" + complaint.get("id") + ": " + "\"" + title.substring(1, title.length() - 1) + "\"" + " (" + complaint.get("receivedAt") + ", " + complaint.get("receivedDate") + ")" + " חריגה בזמן הטיפול!");
+                else {
+                    complaintTitles[i] = ("תלונה #" + complaint.get("id") + ": " + "\"" + title.substring(1, title.length() - 1) + "\"" + " (" + complaint.get("receivedAt") + ", " + complaint.get("receivedDate") + ")" + " הזמן שנותר לטיפול: " + remainingTime);
+                }
+            }
+            else {
+//            complaintTitles[i] = String.format("תלונה #%s : %s (%s(", complaints.get(i).get("id"), "\"" + complaintTitles[i].substring(1, complaintTitles[i].length() - 1) + "\"", complaints.get(i).get("receivedAt"));
+                complaintTitles[i] = ("תלונה #" + complaint.get("id") + ": " + "\"" + title.substring(1, title.length() - 1) + "\"" + " (" + complaint.get("receivedAt") + ", " + complaint.get("receivedDate") + ")" + " התלונה טופלה");
+            }
         }
         // display movies
         complaintListView.getItems().addAll(complaintTitles);
     }
 
-//    private String calculateRemainingTime(String receivedAt) {
-//
-//    }
+    //calculate the remaining time to handle the complaint
+    private String calculateRemainingTime(String receivedAt, String receiveDate) {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalTime time = LocalTime.parse(receivedAt, timeFormatter);
+        LocalDate date = LocalDate.parse(receiveDate, dateFormatter);
 
-    //TODO: fix when creat class ServiceEmployeeComplaintInfoController
+        LocalDateTime receivedDateTime = LocalDateTime.of(date, time);
+        LocalDateTime deadlineDateTime = receivedDateTime.plusHours(24);
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(now, deadlineDateTime);
+        if (duration.isNegative()) {
+            return "0";
+        } else {
+            long hours = duration.toHours();
+            long minutes = duration.toMinutesPart();
+            return String.format("%02d:%02d", hours, minutes);
+        }
+
+    }
+
+
     @FXML
     void onItemSelected(MouseEvent event) throws IOException {
         // if selected item is null
@@ -109,6 +137,7 @@ public class ServiceEmployeeComplaintListController {
         // set selected complaint
         ServiceEmployeeComplaintInfoController serviceEmployeeComplaintInfo = CinemaClient.setContent("serviceEmployeeComplaintInfo").getController();
         serviceEmployeeComplaintInfo.setSelectedComplaint(selectedComplaint);
+        serviceEmployeeComplaintInfo.setComplaintStatus(calculateRemainingTime(selectedComplaint.get("receivedAt"), selectedComplaint.get("receivedDate")));
 
         EventBus.getDefault().unregister(this);
     }

@@ -131,6 +131,10 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new NewServiceEmployeeComplaintListEvent(message));
 		}
 
+		else if(message.getMessage().equals("handled Complaint successfully")) {
+			EventBus.getDefault().post(new NewHandledComplaintEvent(message));
+		}
+
 		else {
 			EventBus.getDefault().post(new MessageEvent(message));
 		}

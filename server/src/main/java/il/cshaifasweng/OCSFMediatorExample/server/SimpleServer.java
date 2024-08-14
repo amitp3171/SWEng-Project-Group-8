@@ -789,6 +789,24 @@ public class SimpleServer extends AbstractServer {
 		sendMessage(message, "added Complaint successfully", "complaint submission successful", client);
 	}
 
+	public void handleHandleComplaint(Message message, ConnectionToClient client) throws IOException {
+		String[] messageData = message.getData().split(","); //id, refund, response
+		Complaint complaint = db.executeNativeQuery("SELECT * FROM complaints WHERE id = ?", Complaint.class, messageData[0]).get(0);
+		String response = "סכום הזיכוי: " + messageData[1] + "\n";
+		response += messageData[2];
+		String responseFormat = "[" + response + "]";
+		// add the response to the matching complaint
+		complaint.setResponse(responseFormat);
+		db.updateEntity(complaint);
+
+		//update the complaint sender's entity
+		Customer customer = complaint.getCreator();
+		db.updateEntity(customer);
+
+		sendMessage(message, "handled Complaint successfully", "complaint submission successful", client);
+
+	}
+
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
@@ -942,6 +960,10 @@ public class SimpleServer extends AbstractServer {
 
 			else if(request.equals("get Complaint list for ServiceEmployee")) {
 				handleServiceEmployeeComplaintListRequest(message, client);
+			}
+
+			else if(request.equals("handle complaint")) {
+				handleHandleComplaint(message, client);
 			}
 
 			else {
