@@ -409,12 +409,23 @@ public class SimpleServer extends AbstractServer {
 		String customerGovId = messageData[0];
 		String movieId = messageData[1];
 		String productPrice = messageData[2];
+		String selectedDateString = messageData[3]; //format yyyy-MM-dd
+		String selectedTimeString = messageData[4]; //format hh-mm
+
+		//debug
+		System.out.println(messageData[3]);
+		System.out.println(messageData[4]);
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate selectedDate = LocalDate.parse(selectedDateString, formatter);
+		DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("HH:mm");
+		LocalTime selectedTime = LocalTime.parse(selectedTimeString, formatter1);
 
 		Customer owner = db.executeNativeQuery("SELECT * FROM customers WHERE govId=?", Customer.class, customerGovId).get(0);
 		HomeMovie homeMovie = db.executeNativeQuery("SELECT * FROM homemovie WHERE id=?", HomeMovie.class, movieId).get(0);
 
-		Link newLink = new Link(owner, Double.parseDouble(productPrice), homeMovie, LocalDate.now(), LocalTime.now().plusHours(1), LocalTime.now().plusHours(3), "https://www.youtube.com/watch?v=Xithigfg7dA");
-		Purchase newPurchase = new Purchase(newLink, owner, "Credit Card", LocalDate.now(), LocalTime.now());
+		Link newLink = new Link(owner, Double.parseDouble(productPrice), homeMovie, selectedDate, selectedTime, selectedTime.plusHours(3), "https://www.youtube.com/watch?v=Xithigfg7dA");
+		Purchase newPurchase = new Purchase(newLink, owner, "Credit Card", selectedDate, selectedTime);
 		CustomerMessage customerMessage = new CustomerMessage("לינק חדש",  "תודה שרכשת לינק לצפייה ביתית לסרט: " + homeMovie.getMovieName() + "\n" + "הקישור לסרט: " + newLink.getLink() + "\n" + "יהיה זמין בשעות: " + newLink.getAvailableHour() + "-" + newLink.getExpiresAt(), LocalDateTime.now(), owner);
 
 		owner.addMessageToList(customerMessage);

@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="345.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.CustomerMessageInfoController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="345.0" prefWidth="609.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.CustomerMessageInfoController">
     <top>
         <MenuBar nodeOrientation="RIGHT_TO_LEFT" prefWidth="600.0" BorderPane.alignment="CENTER">
             <menus>
@@ -31,7 +31,7 @@
                         <Font size="22.0" />
                     </font>
                 </Label>
-                <Label fx:id="contentLabel" alignment="TOP_LEFT" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" prefHeight="128.0" prefWidth="600.0" text="תוכן ההודעה" textAlignment="RIGHT" wrapText="true">
+                <Label fx:id="contentLabel" alignment="TOP_LEFT" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" prefHeight="128.0" prefWidth="700.0" text="תוכן ההודעה" textAlignment="RIGHT" wrapText="true">
                     <font>
                         <Font size="17.0" />
                     </font>
