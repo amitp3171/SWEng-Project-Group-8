@@ -757,6 +757,26 @@ public class SimpleServer extends AbstractServer {
 		connectedUsers.remove(userId);
 	}
 
+	private void handleCreateComplaintRequest(Message message, ConnectionToClient client) throws IOException{
+		// TODO: finish this
+		String[] messageData = message.getData().split(",");
+
+		String customerId = messageData[0];
+
+		Customer customer = db.executeNativeQuery("SELECT * FROM customers WHERE id = ?", Customer.class, customerId).get(0);
+
+		String complaintTitle = messageData[1];
+		String complaintContent = messageData[2];
+
+		Complaint newComplaint = new Complaint(customer, LocalTime.now(), complaintTitle, complaintContent);
+		customer.addComplaintToList(newComplaint);
+
+		db.addInstance(newComplaint);
+		db.updateEntity(customer);
+
+		sendMessage(message, "added Complaint successfully", "complaint submission successful", client);
+	}
+
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
@@ -906,6 +926,10 @@ public class SimpleServer extends AbstractServer {
 
 			else if (request.equals("logout user")) {
 				handleLogOutRequest(message, client);
+			}
+
+			else if (request.equals("submit Customer Complaint")) {
+				handleCreateComplaintRequest(message, client);
 			}
 
 			else {

@@ -1,6 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.server.dataClasses;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -14,6 +15,7 @@ public class Complaint {
     @ManyToOne(cascade = CascadeType.ALL)
     private Customer creator;
     private LocalTime receivedAt;
+    private LocalDate receivedDate;
     private String title;
     private String complaintContent;
     private String response;
@@ -21,6 +23,7 @@ public class Complaint {
     public Complaint(Customer creator, LocalTime receivedAt, String title, String complaintContent) {
         this.creator = creator;
         this.receivedAt = receivedAt.truncatedTo(ChronoUnit.MINUTES);
+        this.receivedDate = LocalDate.now();
         this.title = title;
         this.complaintContent = complaintContent;
         this.response = "[טרם התקבלה תגובה מהצוות]";
@@ -44,6 +47,14 @@ public class Complaint {
 
     public void setRecievedAt(LocalTime recievedAt) {
         this.receivedAt = recievedAt.truncatedTo(ChronoUnit.MINUTES);
+    }
+
+    public LocalDate getReceivedDate() {
+        return receivedDate;
+    }
+
+    public void setReceivedDate(LocalDate receivedDate) {
+        this.receivedDate = receivedDate;
     }
 
     public String getComplaintContent() {
@@ -72,7 +83,7 @@ public class Complaint {
 
     @Override
     public String toString(){
-        return String.join(",", String.valueOf(this.id) , this.title, this.complaintContent, this.response);
+        return String.join(",", String.valueOf(this.id) , this.receivedAt.toString(), this.receivedDate.toString(), this.title, this.complaintContent, this.response);
     }
 
 }

@@ -46,6 +46,12 @@ public class CustomerPersonalAreaController {
     }
 
     @FXML
+    void onSubmitComplaint(ActionEvent event) throws IOException {
+        // TODO: load complaint dialog
+        CinemaClient.getDialogCreationManager().loadDialog("customerComplaintSubmissionView");
+    }
+
+    @FXML
     void initialize() {
         userDataManager = CinemaClient.getUserDataManager();
         if (userDataManager.isGuest())

@@ -54,7 +54,7 @@ public class DataParser {
     }
 
     public static Map<String, String> parseComplaint(String stringRepresentation) {
-        return generateMap(stringRepresentation, "id", "title", "complaintContent", "response");
+        return generateMap(stringRepresentation, "id", "receivedAt", "receivedDate", "title", "complaintContent", "response");
     }
 
     public static Map<String, String> parsePurchase(String stringRepresentation) {

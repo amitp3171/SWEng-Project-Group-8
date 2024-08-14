@@ -148,6 +148,7 @@ public class CinemaClient extends Application {
 		// TODO Auto-generated method stub
     	EventBus.getDefault().unregister(this);
 		super.stop();
+        System.exit(0);
 	}
 
     @Subscribe
@@ -156,6 +157,11 @@ public class CinemaClient extends Application {
     }
 
 	public static void main(String[] args) {
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            public void run() {
+                userDataManager.logoutUser();
+            }
+        }));
         launch();
     }
 }

@@ -1,5 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class UserDataManager {
@@ -28,11 +29,15 @@ public class UserDataManager {
         return instance;
     }
 
-//    public static ArrayList<String> fetchUserData() {
-//        if (!isCustomer()) return null;
-//
-//
-//    }
+    public static void logoutUser() {
+        if (!isGuest()) {
+            try {
+                CinemaClient.sendToServer("logout user", CinemaClient.getUserDataManager().getId());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     public static boolean isCustomer() {
         return govId != null;

@@ -29,7 +29,7 @@ public class CustomerComplaintInfoController {
         String title = selectedComplaint.get("title").substring(1, selectedComplaint.get("title").length() - 1);
         String content = selectedComplaint.get("complaintContent").substring(1, selectedComplaint.get("complaintContent").length() - 1);
         String response = selectedComplaint.get("response").substring(1, selectedComplaint.get("response").length() - 1);
-        titleLabel.setText(title);
+        titleLabel.setText(title + " (" + "התקבלה ב-" + selectedComplaint.get("receivedAt") + ", " + selectedComplaint.get("receivedDate") + ")");
         contentLabel.setText(String.format("תוכן התלונה: %s", content));
         responseLabel.setText(String.format("תגובת הסרטייה: %s", response));
     }
