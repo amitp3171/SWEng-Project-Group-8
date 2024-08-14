@@ -412,9 +412,6 @@ public class SimpleServer extends AbstractServer {
 		String selectedDateString = messageData[3]; //format yyyy-MM-dd
 		String selectedTimeString = messageData[4]; //format hh-mm
 
-		//debug
-		System.out.println(messageData[3]);
-		System.out.println(messageData[4]);
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDate selectedDate = LocalDate.parse(selectedDateString, formatter);
@@ -497,6 +494,23 @@ public class SimpleServer extends AbstractServer {
 			messagesContents.add(customerMessage.toString());
 		}
 		sendMessage(message, "updated Customer Message list successfully", messagesContents, client);
+	}
+
+	private void handleServiceEmployeeComplaintListRequest(Message message, ConnectionToClient client) throws IOException {
+		List<Complaint> receivedComplaints = db.executeNativeQuery("SELECT * FROM complaints", Complaint.class);
+
+		//debug
+		for (Complaint complaint: receivedComplaints){
+			System.out.println(complaint);
+		}
+
+		List<String> complaintsContents = new ArrayList<>();
+		for (Complaint complaint: receivedComplaints){
+			complaintsContents.add(complaint.toString());
+		}
+		sendMessage(message, "updated ServiceEmployee Complaint list successfully", complaintsContents, client);
+
+
 	}
 
 	private void handleCustomerPurchaseListRequest(Message message, ConnectionToClient client) throws IOException{
@@ -767,6 +781,10 @@ public class SimpleServer extends AbstractServer {
 			}
 			else if(request.equals("get Customer Message list")) {
 				handleCustomerMessageListRequest(message, client);
+			}
+
+			else if(request.equals("get Complaint list for ServiceEmployee")) {
+				handleServiceEmployeeComplaintListRequest(message, client);
 			}
 
 			else {

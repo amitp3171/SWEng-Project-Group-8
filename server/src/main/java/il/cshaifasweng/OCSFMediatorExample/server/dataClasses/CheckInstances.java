@@ -409,7 +409,7 @@ public class CheckInstances {
             complaints[3] = new Complaint(customers[3], LocalTime.now(), "[bad service]", "[the tickets seller was rude]");
             complaints[4] = new Complaint(customers[4], LocalTime.now(),"[too cheap]", "[the tickets are too cheap]");
             ServiceEmployee[] serviceEmployees = new ServiceEmployee[5];
-            serviceEmployees[0] = new ServiceEmployee("John", "Doe", "johndoe", "password1");
+            serviceEmployees[0] = new ServiceEmployee("John", "Doe", "j", "j");
             serviceEmployees[1] = new ServiceEmployee("Jane", "Smith", "janesmith", "password2");
             serviceEmployees[2] = new ServiceEmployee("Michael", "Brown", "michaelbrown", "password3");
             serviceEmployees[3] = new ServiceEmployee("Emily", "Davis", "emilydavis", "password4");
