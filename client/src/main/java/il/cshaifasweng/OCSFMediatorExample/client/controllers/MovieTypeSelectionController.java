@@ -96,7 +96,8 @@ public class MovieTypeSelectionController {
 
         if (userDataManager.isEmployee()) {
             actionsMenu.setVisible(true);
-            priceUpdateMenuItem.setVisible(true);
+            if (userDataManager.getEmployeeType().equals("ContentManager"))
+                priceUpdateMenuItem.setVisible(true);
         }
 
         personalAreaMenuItem.setVisible(true);
