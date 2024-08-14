@@ -94,10 +94,9 @@ public class MovieTypeSelectionController {
             return;
         }
 
-        if (userDataManager.isEmployee()) {
+        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
             actionsMenu.setVisible(true);
-            if (userDataManager.getEmployeeType().equals("ContentManager"))
-                priceUpdateMenuItem.setVisible(true);
+            priceUpdateMenuItem.setVisible(true);
         }
 
         personalAreaMenuItem.setVisible(true);
