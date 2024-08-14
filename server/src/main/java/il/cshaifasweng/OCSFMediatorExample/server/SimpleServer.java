@@ -512,7 +512,7 @@ public class SimpleServer extends AbstractServer {
 			Purchase newPurchase = new Purchase(newSubscriptionCard, owner, "Credit Card", LocalDate.now(), LocalTime.now());
 			owner.addSubscriptionCardToList(newSubscriptionCard);
 			owner.addPurchaseToList(newPurchase);
-			CustomerMessage customerMessage = new CustomerMessage("כרטיסייה חדשה", "תודה שרכשת כרטיסיית סרטים", LocalDateTime.now(), owner);
+			CustomerMessage customerMessage = new CustomerMessage("כרטיסייה חדשה", "[תודה שרכשת כרטיסיית סרטים, נותרו 20 כרטיסים]", LocalDateTime.now(), owner);
 			owner.addMessageToList(customerMessage);
 			db.addInstance(newSubscriptionCard);
 			db.addInstance(newPurchase);

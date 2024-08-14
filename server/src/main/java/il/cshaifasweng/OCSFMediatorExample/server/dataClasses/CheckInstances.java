@@ -388,7 +388,7 @@ public class CheckInstances {
 
             CustomerMessage[] customerMessages = new CustomerMessage[5];
             for (int i = 0; i < 5; i++) {
-                customerMessages[i] = new CustomerMessage("hello message", "hello " + customers[i].getFirstName(), LocalDateTime.now(), customers[i]);
+                customerMessages[i] = new CustomerMessage("hello message", "[hello " + customers[i].getFirstName() + "]", LocalDateTime.now(), customers[i]);
             }
 
             Link[] links =new Link[5];
