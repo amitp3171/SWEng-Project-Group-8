@@ -98,9 +98,9 @@ public class MovieTypeSelectionController {
             actionsMenu.setVisible(true);
             priceUpdateMenuItem.setVisible(true);
         }
-        else {
-            personalAreaMenuItem.setVisible(true);
-        }
+
+        personalAreaMenuItem.setVisible(true);
+
 
         welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", userDataManager.getFirstName(), userDataManager.getLastName()));
     }
