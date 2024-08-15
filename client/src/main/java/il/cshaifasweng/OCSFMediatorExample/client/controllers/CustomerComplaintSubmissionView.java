@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 
+
 public class CustomerComplaintSubmissionView implements DialogInterface {
 
     DataParser dataParser;
@@ -35,6 +36,7 @@ public class CustomerComplaintSubmissionView implements DialogInterface {
 
     private Dialog<ButtonType> dialog;
 
+
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
     }
@@ -45,7 +47,6 @@ public class CustomerComplaintSubmissionView implements DialogInterface {
 
     @FXML
     void cancelLogin(ActionEvent event) {
-        dialog.setResult(ButtonType.OK);
         dialog.close();
     }
 
@@ -62,6 +63,7 @@ public class CustomerComplaintSubmissionView implements DialogInterface {
             statusLabel.setText("תלונה נשלחה בהצלחה");
             statusLabel.setTextFill(Color.GREEN);
             statusLabel.setVisible(true);
+            sendComplaintButton.setDisable(true);
         }
     }
 

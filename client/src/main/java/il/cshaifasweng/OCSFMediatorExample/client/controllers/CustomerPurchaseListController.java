@@ -22,6 +22,7 @@ public class CustomerPurchaseListController {
     @FXML
     ListView<String> customerPurchasesListView;
 
+
     UserDataManager userDataManager;
 
     DataParser dataParser;

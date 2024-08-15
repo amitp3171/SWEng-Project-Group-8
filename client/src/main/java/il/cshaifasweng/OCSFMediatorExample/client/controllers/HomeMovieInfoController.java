@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
@@ -128,8 +129,25 @@ public class HomeMovieInfoController implements DialogInterface {
     }
 
     public boolean isValidTimeFormat(String time) {
-        return time.matches("([01]\\d|2[0-3]):[0-5]\\d");
+        // Check if the time format is valid (HH:mm)
+        if (!time.matches("([01]\\d|2[0-3]):[0-5]\\d")) {
+            return false;
+        }
+
+        // Parse the time string to LocalTime
+        LocalTime parsedTime = LocalTime.parse(time);
+
+        // Check if the selected date is today
+        if (selectedDate.equals(LocalDate.now())) {
+            // Check if the selected time is before the current time
+            if (parsedTime.isBefore(LocalTime.now())) {
+                return false;
+            }
+        }
+
+        return true;
     }
+
 
     @FXML
     void onDateSelected(ActionEvent event) {
@@ -147,7 +165,7 @@ public class HomeMovieInfoController implements DialogInterface {
                         super.updateItem(item, empty);
 
                         if (!empty && item != null) {
-                            if (item.isAfter(LocalDate.now()))
+                            if (!item.isBefore(LocalDate.now()))
                                 this.setStyle("-fx-background-color: lightgreen");
                             else
                                 this.setDisable(true);

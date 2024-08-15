@@ -73,6 +73,8 @@ public class Purchase {
         this.paymentTime = paymentTime.truncatedTo(ChronoUnit.MINUTES);
     }
 
+    public int getId() { return id; }
+
     @Override
     public String toString() {
         return String.join(",", String.valueOf(this.id), String.valueOf(this.customer.getId()), String.valueOf(this.relatedProduct.getId()), this.paymentTime.toString(), this.paymentDate.toString(), this.paymentMethod);

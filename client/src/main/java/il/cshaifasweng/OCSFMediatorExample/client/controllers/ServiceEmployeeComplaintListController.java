@@ -73,6 +73,7 @@ public class ServiceEmployeeComplaintListController {
                 e.printStackTrace();
             }
             // update list
+
             initializeList();
             System.out.println("serviceEmployeeComplaintList request received");
         });

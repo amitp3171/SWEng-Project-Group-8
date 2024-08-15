@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -35,6 +37,9 @@ public class CustomerPurchaseViewController implements DialogInterface {
     @FXML
     private Button refundButton;
 
+    @FXML
+    private Button complaintButton;
+
     Dialog<ButtonType> dialog;
 
     DataParser dataParser;
@@ -46,6 +51,7 @@ public class CustomerPurchaseViewController implements DialogInterface {
     Map<String, String> relatedProduct;
 
     ButtonType refundStatus = ButtonType.CANCEL;
+
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
@@ -73,17 +79,23 @@ public class CustomerPurchaseViewController implements DialogInterface {
             switch (this.productClass) {
                 case "Ticket":
                     this.relatedProduct = dataParser.parseTicket(productToString);
-                    productDescLabel.setText(
-                            String.format("כרטיס: %s, אולם %s, מושב %s, %s, %n %s, סניף %s",
-                                    this.relatedProduct.get("movieName"),
-                                    (1 + ((Integer.parseInt(this.relatedProduct.get("theaterId"))-1) % 10)),
-                                    this.relatedProduct.get("seatNumber"),
-                                    this.relatedProduct.get("screeningTime"),
-                                    this.relatedProduct.get("screeningDate"),
-                                    this.relatedProduct.get("branchLocation")));
-                    if (this.selectedPurchase.get("paymentMethod").equals("Subscription Card")) {
+                    if (isBeforeScreeningTime(this.relatedProduct.get("screeningTime"), this.relatedProduct.get("screeningDate"))) {
+                        productDescLabel.setText(
+                                String.format("כרטיס: %s, אולם %s, מושב %s, %s, %n %s, סניף %s",
+                                        this.relatedProduct.get("movieName"),
+                                        (1 + ((Integer.parseInt(this.relatedProduct.get("theaterId")) - 1) % 10)),
+                                        this.relatedProduct.get("seatNumber"),
+                                        this.relatedProduct.get("screeningTime"),
+                                        this.relatedProduct.get("screeningDate"),
+                                        this.relatedProduct.get("branchLocation")));
+                    }
+                    else if (this.selectedPurchase.get("paymentMethod").equals("Subscription Card")) {
                         refundButton.setDisable(true);
                         refundButton.setText("אין אפשרות לקבל החזר כספי על מימוש כרטיסיות");
+                    }
+                    else {
+                        refundButton.setDisable(true);
+                        refundButton.setText("אין אפשרות לקבל החזר כספי לאחר הקרנת הסרט");
                     }
                     break;
                 case "SubscriptionCard":
@@ -119,9 +131,31 @@ public class CustomerPurchaseViewController implements DialogInterface {
                     }
                     break;
             }
+            if (refundButton.isDisable())
+                complaintButton.setDisable(false);
 
             System.out.println("Product details request received");
         });
+    }
+
+    //return true if the time in the parameters is before the current time
+    public boolean isBeforeScreeningTime(String time, String date) {
+        // Time and date strings
+        String timeString = time;
+        String dateString = date;
+
+
+
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        LocalTime parsedTime = LocalTime.parse(timeString, timeFormatter);
+        LocalDate parsedDate = LocalDate.parse(dateString, dateFormatter);
+        LocalDateTime parsedDateTime = LocalDateTime.of(parsedDate, parsedTime);
+        LocalDateTime currentTime = LocalDateTime.now().withSecond(0).withNano(0);
+        System.out.println("Parsed LocalDateTime: " + parsedDateTime);
+        System.out.println("Current LocalDateTime: " + currentTime);
+        return currentTime.isBefore(parsedDateTime);
     }
 
     @FXML
@@ -141,6 +175,7 @@ public class CustomerPurchaseViewController implements DialogInterface {
         this.refundStatus = CinemaClient.getDialogCreationManager().loadDialog("customerRefundRequestView", this.productClass, this.relatedProduct);
         if (this.refundStatus.equals(ButtonType.OK)) {
             refundButton.setDisable(true);
+            complaintButton.setDisable(true);
         }
     }
 

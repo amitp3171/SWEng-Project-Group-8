@@ -558,13 +558,16 @@ public class SimpleServer extends AbstractServer {
 	}
 
 	private void handleServiceEmployeeComplaintListRequest(Message message, ConnectionToClient client) throws IOException {
-		List<Complaint> receivedComplaints = db.executeNativeQuery("SELECT * FROM complaints", Complaint.class);
+		List<Complaint> receivedComplaints = db.getAll(Complaint.class, false);
+
 
 
 		List<String> complaintsContents = new ArrayList<>();
+
 		for (Complaint complaint: receivedComplaints){
 			complaintsContents.add(complaint.toString());
 		}
+
 		sendMessage(message, "updated ServiceEmployee Complaint list successfully", complaintsContents, client);
 
 
@@ -653,9 +656,27 @@ public class SimpleServer extends AbstractServer {
 
 		Purchase relatedPurchase = db.executeNativeQuery("SELECT * FROM purchases WHERE relatedProduct_id = ?", Purchase.class, productId).get(0);
 
+		List<Complaint> relatedComplaints = db.executeNativeQuery("SELECT * FROM complaints WHERE relatedPurchase_id = ?", Complaint.class, relatedPurchase.getId());
+
+		if (relatedComplaints != null && !relatedComplaints.isEmpty()) {
+			for (int i=0;i<relatedComplaints.size();i++) {
+				Complaint relatedComplaint = relatedComplaints.get(0);
+				//detach Complaint
+				relatedComplaint.setRelatedPurchase(null);
+				relatedComplaint.setResponse("הרכישה בוטלה");
+			}
+
+		}
+
 		Seat selectedSeat = selectedTicket.getSeat();
 
 		Customer owner = selectedTicket.getOwner();
+
+		CustomerMessage customerMessage = new CustomerMessage("פיצוי כספי", "קיבלת פיצוי כספי עבור רכישת כרטיס לסרט: " + selectedTicket.getMovieName() + " בסך " + selectedTicket.getPrice() + " שח ", LocalDateTime.now(), owner);
+
+		owner.addMessageToList(customerMessage);
+
+		db.addInstance(customerMessage);
 
 		// free Seat
 		selectedSeat.setTaken(false);
@@ -689,7 +710,25 @@ public class SimpleServer extends AbstractServer {
 
 		Purchase relatedPurchase = db.executeNativeQuery("SELECT * FROM purchases WHERE relatedProduct_id = ?", Purchase.class, productId).get(0);
 
+		List<Complaint> relatedComplaints = db.executeNativeQuery("SELECT * FROM complaints WHERE relatedPurchase_id = ?", Complaint.class, relatedPurchase.getId());
+
+		if (relatedComplaints != null && !relatedComplaints.isEmpty()) {
+			for (int i=0;i<relatedComplaints.size();i++) {
+				Complaint relatedComplaint = relatedComplaints.get(0);
+				//detach Complaint
+				relatedComplaint.setRelatedPurchase(null);
+				relatedComplaint.setResponse("הרכישה בוטלה");
+			}
+
+		}
+
 		Customer owner = selectedLink.getOwner();
+
+		CustomerMessage customerMessage = new CustomerMessage("פיצוי כספי", "קיבלת פיצוי כספי עבור רכישת לינק לסרט: " + selectedLink.getHomeMovie().getMovieName() + " בסך " + selectedLink.getPrice() + " שח ", LocalDateTime.now(), owner);
+
+		owner.addMessageToList(customerMessage);
+
+		db.addInstance(customerMessage);
 
 		// detach Customer
 		relatedPurchase.setCustomer(null);
@@ -794,7 +833,9 @@ public class SimpleServer extends AbstractServer {
 			productType = "כרטיסייה";
 		}
 
-		CustomerMessage customerMessage = new CustomerMessage("תלונה חדשה",  "תלונתך בנוגע לרכישת: " + productType + " התקבלה ותטופל בתוך 24 שעות", LocalDateTime.now(), customer)  ;
+		String messageBody = "תלונתך בנוגע לרכישת: " + productType + " התקבלה ותטופל בתוך 24 שעות";
+
+		CustomerMessage customerMessage = new CustomerMessage("תלונה חדשה",  "[ " + messageBody + " ]", LocalDateTime.now(), customer)  ;
 		customer.addMessageToList(customerMessage);
 		db.addInstance(customerMessage);
 
