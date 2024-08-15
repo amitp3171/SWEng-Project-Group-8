@@ -132,8 +132,8 @@ public class CustomerPurchaseViewController implements DialogInterface {
     }
 
     @FXML
-    void onOkPressed(ActionEvent event) {
-        this.onCancelPressed(event);
+    void onSubmitComplaint(ActionEvent event) throws IOException{
+        CinemaClient.getDialogCreationManager().loadDialog("customerComplaintSubmissionView", selectedPurchase);
     }
 
     @FXML

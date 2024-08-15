@@ -74,6 +74,10 @@ public class Customer extends AbstractUser {
         return this.messages;
     }
 
+    public List<Purchase> getPurchaseHistory(){
+        return this.purchaseHistory;
+    }
+
 
     public void cancelPurchase(Purchase purchase) {}
     public Complaint makeAComplaint(Complaint complaint) {

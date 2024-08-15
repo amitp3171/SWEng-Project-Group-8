@@ -26,7 +26,7 @@ public class Purchase {
         this.customer = customer;
         this.paymentMethod = paymentMethod;
         this.paymentDate = paymentDate;
-        this.paymentTime = paymentTime.truncatedTo(ChronoUnit.MINUTES);;
+        this.paymentTime = paymentTime.truncatedTo(ChronoUnit.MINUTES);
     }
 
     public Purchase() {

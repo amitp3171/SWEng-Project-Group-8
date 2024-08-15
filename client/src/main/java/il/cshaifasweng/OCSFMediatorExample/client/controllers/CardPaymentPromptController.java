@@ -59,7 +59,9 @@ public class CardPaymentPromptController implements DialogInterface {
 
     @FXML
     void onPayPressed(ActionEvent event) throws IOException {
-        if (creditCardNumberField.getText().isEmpty() || creditCardDateField.getText().isEmpty() || creditCardCVCField.getText().isEmpty()) {
+        if (creditCardNumberField.getText().isEmpty() || creditCardDateField.getText().isEmpty()
+                || creditCardCVCField.getText().isEmpty() || !(creditCardNumberField.getText().matches("\\d{16}"))
+                || !(creditCardDateField.getText().matches("\\d{4}")) || !(creditCardCVCField.getText().matches("\\d{3}"))) {
             statusLabel.setVisible(true);
             return;
         }

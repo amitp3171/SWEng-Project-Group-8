@@ -8,6 +8,8 @@ import java.util.stream.IntStream;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewCompanyComplaintReportEvent;
+import il.cshaifasweng.OCSFMediatorExample.client.events.NewBranchComplaintReportEvent;
+
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewCompanySubscriptionCardLinkReportEvent;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -73,7 +75,7 @@ public class ComplaintReportViewController implements DialogInterface {
     }
 
     @Subscribe
-    public void onUpdateComplaintCompanyReport(NewCompanyComplaintReportEvent event) {
+    public void onUpdateCompanyComplaintReport(NewCompanyComplaintReportEvent event) {
         // on event received
         Platform.runLater(() -> {
             try {
@@ -83,7 +85,22 @@ public class ComplaintReportViewController implements DialogInterface {
             catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println("get Company Ticket Report request received");
+            System.out.println("get Company Complaint List Report request received");
+        });
+    }
+
+    @Subscribe
+    public void onUpdateBranchComplaintReport(NewBranchComplaintReportEvent event) {
+        // on event received
+        Platform.runLater(() -> {
+            try {
+                this.complaints =  CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+                initializeBarChart();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("get Branch Complaint List Report request received");
         });
     }
 
@@ -91,8 +108,8 @@ public class ComplaintReportViewController implements DialogInterface {
     void initialize() throws IOException {
         EventBus.getDefault().register(this);
         if (CinemaClient.getUserDataManager().getEmployeeType().equals("BranchManager")) {
-//            CinemaClient.sendToServer("get Branch Complaint Report", CinemaClient.getUserDataManager().getAdditionalFields());
-//            reportTitleLabel.setText("דוח תלונות (" + CinemaClient.getUserDataManager().getAdditionalFields() + ")");
+           CinemaClient.sendToServer("get Branch Complaint Report", CinemaClient.getUserDataManager().getAdditionalFields());
+           reportTitleLabel.setText("דוח תלונות (" + CinemaClient.getUserDataManager().getAdditionalFields() + ")");
         }
         else {
             CinemaClient.sendToServer("get Company Complaint Report");

@@ -44,7 +44,7 @@
                               <Insets right="3.0" />
                            </HBox.margin>
                         </Button>
-                        <Button mnemonicParsing="false" onAction="#onOkPressed" text="אישור" />
+                        <Button mnemonicParsing="false" onAction="#onSubmitComplaint" text="הגש תלונה" />
                      </children>
                   </HBox>
                </children>

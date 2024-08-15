@@ -57,7 +57,7 @@ public class CheckInstances {
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
         configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "20danny05");
+        configuration.setProperty("hibernate.connection.password", "Gamal385");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
@@ -220,11 +220,10 @@ public class CheckInstances {
         }
     }
 
-    private static void generateCompanyManagers(CompanyManager[] companyManagers) throws Exception {
-        for (CompanyManager companyManager : companyManagers) {
+    private static void generateCompanyManagers(CompanyManager companyManager) throws Exception {
             session.save(companyManager);
             session.flush();
-        }
+
     }
 
     private static void generateBranchManagers(BranchManager[] branchManagers) throws Exception {
@@ -421,11 +420,11 @@ public class CheckInstances {
 
 
             Complaint[] complaints = new Complaint[5];
-            complaints[0] = new Complaint(customers[0], LocalTime.now(), "[יקר מדי]", "[the tickets too expensive]");
-            complaints[1] = new Complaint(customers[1], LocalTime.now(),"[ארוך מדי]", "[the movie too long]");
-            complaints[2] = new Complaint(customers[2], LocalTime.now(), "[קצר מדי]", "[the movie too short]");
-            complaints[3] = new Complaint(customers[3], LocalTime.now(), "[שירות גרוע]", "[the tickets seller was rude]");
-            complaints[4] = new Complaint(customers[4], LocalTime.now(),"[זול מדי]", "[the tickets are too cheap]");
+            complaints[0] = new Complaint(customers[0].getPurchaseHistory().get(0), customers[0], LocalTime.now(), "[יקר מדי]", "[the tickets too expensive]");
+            complaints[1] = new Complaint(customers[1].getPurchaseHistory().get(0), customers[1], LocalTime.now(),"[ארוך מדי]", "[the movie too long]");
+            complaints[2] = new Complaint(customers[2].getPurchaseHistory().get(0), customers[2], LocalTime.now(), "[קצר מדי]", "[the movie too short]");
+            complaints[3] = new Complaint(customers[3].getPurchaseHistory().get(0), customers[3], LocalTime.now(), "[שירות גרוע]", "[the tickets seller was rude]");
+            complaints[4] = new Complaint(customers[4].getPurchaseHistory().get(0), customers[4], LocalTime.now(),"[זול מדי]", "[the tickets are too cheap]");
             ServiceEmployee[] serviceEmployees = new ServiceEmployee[5];
             serviceEmployees[0] = new ServiceEmployee("John", "Doe", "j", "j");
             serviceEmployees[1] = new ServiceEmployee("Jane", "Smith", "janesmith", "password2");
@@ -433,12 +432,8 @@ public class CheckInstances {
             serviceEmployees[3] = new ServiceEmployee("Emily", "Davis", "emilydavis", "password4");
             serviceEmployees[4] = new ServiceEmployee("David", "Wilson", "davidwilson", "password5");
 
-            CompanyManager[] companyManagers = new CompanyManager[5];
-            companyManagers[0] = new CompanyManager("Yosi", "Levi", "yosilevi", "password1");
-            companyManagers[1] = new CompanyManager("Moshe", "Cohen", "moshecohen", "password2");
-            companyManagers[2] = new CompanyManager("Yogev", "Perry", "yogevperry", "password3");
-            companyManagers[3] = new CompanyManager("Noam", "Platipus", "noamplatipus", "password4");
-            companyManagers[4] = new CompanyManager("Orpaz", "Filusim", "orpazfilusim", "password5");
+
+            CompanyManager companyManager = new CompanyManager("Yosi", "Levi", "yosilevi", "password1");
 
             BranchManager[] branchManagers = new BranchManager[5];
             branchManagers[0] = new BranchManager("Alice", "Johnson", "alicejohnson", "password1", branches[0]);
@@ -470,7 +465,7 @@ public class CheckInstances {
             generatePurchases(purchases);
             generateComplaints(complaints);
             generateServiceEmployees(serviceEmployees);
-            generateCompanyManagers(companyManagers);
+            generateCompanyManagers(companyManager);
             generateBranchManagers(branchManagers);
             generateContentManagers(contentManagers);
             generateTickets(tickets);

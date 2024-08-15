@@ -34,7 +34,14 @@ public class ServiceEmployeeComplaintInfoController {
         this.selectedComplaint = selectedComplaint;
         String title = selectedComplaint.get("title").substring(1, selectedComplaint.get("title").length() - 1);
         String content = selectedComplaint.get("complaintContent").substring(1, selectedComplaint.get("complaintContent").length() - 1);
-        titleLabel.setText(title);
+        String relatedProduct;
+        if(selectedComplaint.get("relatedProduct").equals("Ticket"))
+                relatedProduct = "כרטיס";
+        else if (selectedComplaint.get("relatedProduct").equals("Link"))
+            relatedProduct = "לינק";
+        else
+            relatedProduct = "כרטיסייה";
+        titleLabel.setText(String.format("תלונה על רכישת: %s" + "\n" + "נושא התלונה: %s",relatedProduct, title));
         contentLabel.setText(String.format("תוכן התלונה: %s", content));
 
     }

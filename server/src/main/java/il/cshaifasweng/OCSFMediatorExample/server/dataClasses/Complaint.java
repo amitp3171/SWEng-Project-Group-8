@@ -20,7 +20,11 @@ public class Complaint {
     private String complaintContent;
     private String response;
 
-    public Complaint(Customer creator, LocalTime receivedAt, String title, String complaintContent) {
+    @OneToOne(cascade = CascadeType.ALL)
+    private Purchase relatedPurchase;
+
+    public Complaint(Purchase relatedPurchase, Customer creator, LocalTime receivedAt, String title, String complaintContent) {
+        this.relatedPurchase = relatedPurchase;
         this.creator = creator;
         this.receivedAt = receivedAt.truncatedTo(ChronoUnit.MINUTES);
         this.receivedDate = LocalDate.now();
@@ -41,12 +45,12 @@ public class Complaint {
         this.creator = creator;
     }
 
-    public LocalTime getRecievedAt() {
+    public LocalTime getReceivedAt() {
         return receivedAt;
     }
 
-    public void setRecievedAt(LocalTime recievedAt) {
-        this.receivedAt = recievedAt.truncatedTo(ChronoUnit.MINUTES);
+    public void setReceivedAt(LocalTime receivedAt) {
+        this.receivedAt = receivedAt.truncatedTo(ChronoUnit.MINUTES);
     }
 
     public LocalDate getReceivedDate() {
@@ -81,9 +85,17 @@ public class Complaint {
         this.response = response;
     }
 
+    public Purchase getRelatedPurchase() {
+        return this.relatedPurchase;
+    }
+
+    public void setRelatedPurchase(Purchase relatedPurchase) {
+        this.relatedPurchase = relatedPurchase;
+    }
+
     @Override
     public String toString(){
-        return String.join(",", String.valueOf(this.id) , this.receivedAt.toString(), this.receivedDate.toString(), this.title, this.complaintContent, this.response);
+        return String.join(",", String.valueOf(this.id) , this.receivedAt.toString(), this.receivedDate.toString(), this.title, this.complaintContent, this.response, this.relatedPurchase.getRelatedProduct().getClass().getName().substring(55));
     }
 
 }

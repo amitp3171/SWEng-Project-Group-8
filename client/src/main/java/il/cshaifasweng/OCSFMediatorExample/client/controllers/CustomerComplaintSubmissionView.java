@@ -2,15 +2,21 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 
 public class CustomerComplaintSubmissionView implements DialogInterface {
+
+    DataParser dataParser;
+
+    Map<String,String> relatedPurchase;
 
     @FXML
     private Button cancelButton;
@@ -33,7 +39,9 @@ public class CustomerComplaintSubmissionView implements DialogInterface {
         this.dialog = dialog;
     }
 
-    public void setData(Object... params) {}
+    public void setData(Object... params) {
+        this.relatedPurchase = (Map<String,String>)params[0];
+    }
 
     @FXML
     void cancelLogin(ActionEvent event) {
@@ -49,8 +57,8 @@ public class CustomerComplaintSubmissionView implements DialogInterface {
             statusLabel.setVisible(true);
         }
         else {
-            // TODO: create server handler
-            CinemaClient.sendToServer("submit Customer Complaint", String.format("%s,[%s],[%s]", CinemaClient.getUserDataManager().getId(), complaintTitleField.getText(), complaintContentField.getText()));
+
+            CinemaClient.sendToServer("submit Customer Complaint", String.format("%s,[%s],[%s], %s", CinemaClient.getUserDataManager().getId(), complaintTitleField.getText(), complaintContentField.getText(), relatedPurchase.get("id")));
             statusLabel.setText("תלונה נשלחה בהצלחה");
             statusLabel.setTextFill(Color.GREEN);
             statusLabel.setVisible(true);

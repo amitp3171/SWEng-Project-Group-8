@@ -560,10 +560,6 @@ public class SimpleServer extends AbstractServer {
 	private void handleServiceEmployeeComplaintListRequest(Message message, ConnectionToClient client) throws IOException {
 		List<Complaint> receivedComplaints = db.executeNativeQuery("SELECT * FROM complaints", Complaint.class);
 
-		//debug
-		for (Complaint complaint: receivedComplaints){
-			System.out.println(complaint);
-		}
 
 		List<String> complaintsContents = new ArrayList<>();
 		for (Complaint complaint: receivedComplaints){
@@ -773,21 +769,42 @@ public class SimpleServer extends AbstractServer {
 	}
 
 	private void handleCreateComplaintRequest(Message message, ConnectionToClient client) throws IOException{
-		// TODO: finish this
-		String[] messageData = message.getData().split(",");
+
+		String[] messageData = message.getData().split(","); // id, title, content, relatedPurchase_id
 
 		String customerId = messageData[0];
 
 		Customer customer = db.executeNativeQuery("SELECT * FROM customers WHERE id = ?", Customer.class, customerId).get(0);
 
+
+		Purchase purchase  = db.executeNativeQuery("SELECT * FROM purchases WHERE id = ?", Purchase.class, messageData[3]).get(0);
+
+
 		String complaintTitle = messageData[1];
 		String complaintContent = messageData[2];
+		String productType;
 
-		Complaint newComplaint = new Complaint(customer, LocalTime.now(), complaintTitle, complaintContent);
+		if (purchase.getRelatedProduct().getClass().getName().substring(55).equals("Ticket")) {
+			productType = "כרטיס";
+		}
+		else if (purchase.getRelatedProduct().getClass().getName().substring(55).equals("Link")) {
+			productType = "לינק";
+		}
+		else {
+			productType = "כרטיסייה";
+		}
+
+		CustomerMessage customerMessage = new CustomerMessage("תלונה חדשה",  "תלונתך בנוגע לרכישת: " + productType + " התקבלה ותטופל בתוך 24 שעות", LocalDateTime.now(), customer)  ;
+		customer.addMessageToList(customerMessage);
+		db.addInstance(customerMessage);
+
+		Complaint newComplaint = new Complaint(purchase, customer, LocalTime.now(), complaintTitle, complaintContent);
 		customer.addComplaintToList(newComplaint);
+
 
 		db.addInstance(newComplaint);
 		db.updateEntity(customer);
+
 
 		sendMessage(message, "added Complaint successfully", "complaint submission successful", client);
 	}
@@ -1011,6 +1028,50 @@ public class SimpleServer extends AbstractServer {
 		sendMessage(message, "updated Company Complaint report successfully", reportToString, client);
 	}
 
+	public void handleBranchComplaintReportRequest(Message message, ConnectionToClient client) throws IOException {
+
+		String[] messageData = message.getData().split(",");
+
+		Branch branch = db.executeNativeQuery("SELECT * FROM branches WHERE location = ?", Branch.class, messageData[0]).get(0);
+
+		List<Complaint> allComplaints = db.getAll(Complaint.class, false);
+
+		List<Complaint> branchComplaints = new ArrayList<>();
+
+		for(Complaint complaint : allComplaints){
+			if (complaint.getRelatedPurchase().getRelatedProduct().getClass().getName().substring(55).equals("Ticket")) {
+				Ticket ticket = db.executeNativeQuery("SELECT * FROM tickets WHERE id = ?", Ticket.class, complaint.getRelatedPurchase().getRelatedProduct().getId()).get(0);
+				if (ticket.getScreeningTime().getBranch().getLocation().equals(branch.getLocation())) {
+					System.out.println(ticket);
+					branchComplaints.add(complaint);
+				}
+			}
+		}
+
+		ArrayList<String> reportToString = new ArrayList<>();
+		ArrayList<Integer> complaintAmounts = new ArrayList<>();
+
+		for (int i = 0; i < 31; ++i) {
+			complaintAmounts.add(0);
+		}
+
+		for (Complaint complaint : branchComplaints){
+			// if payment was made in current month
+			if (complaint.getReceivedDate().getMonthValue() == LocalDate.now().getMonthValue() && complaint.getReceivedDate().getYear() == LocalDate.now().getYear()) {
+				complaintAmounts.set(complaint.getReceivedDate().getDayOfMonth() - 1, complaintAmounts.get(complaint.getReceivedDate().getDayOfMonth() - 1) + 1);
+			}
+
+		}
+
+		for (int amount : complaintAmounts){
+			reportToString.add(String.valueOf(amount));
+		}
+
+		System.out.println(reportToString);
+
+		sendMessage(message, "updated Branch Complaint report successfully", reportToString, client);
+	}
+
 
 
 	@Override
@@ -1202,6 +1263,10 @@ public class SimpleServer extends AbstractServer {
 
 			else if (request.equals("get Company Complaint Report")) {
 				handleCompanyComplaintReportRequest(message, client);
+			}
+
+			else if(request.equals("get Branch Complaint Report")) {
+				handleBranchComplaintReportRequest(message, client);
 			}
 
 			else {

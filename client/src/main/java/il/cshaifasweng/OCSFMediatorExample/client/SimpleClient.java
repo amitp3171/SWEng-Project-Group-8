@@ -155,6 +155,10 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new NewCompanyComplaintReportEvent(message));
 		}
 
+		else if(message.getMessage().equals("updated Branch Complaint report successfully")) {
+			EventBus.getDefault().post(new NewBranchComplaintReportEvent(message));
+		}
+
 		else {
 			EventBus.getDefault().post(new MessageEvent(message));
 		}

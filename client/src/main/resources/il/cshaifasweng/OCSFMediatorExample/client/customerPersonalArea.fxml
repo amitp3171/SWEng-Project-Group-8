@@ -47,11 +47,6 @@
                         <Insets top="5.0" />
                     </VBox.margin>
                 </Button>
-            <Button maxWidth="-Infinity" minHeight="30.0" minWidth="150.0" mnemonicParsing="false" onAction="#onSubmitComplaint" prefHeight="31.0" prefWidth="150.0" text="הגש תלונה">
-               <VBox.margin>
-                  <Insets top="5.0" />
-               </VBox.margin>
-            </Button>
             </children>
         </VBox>
     </center>
