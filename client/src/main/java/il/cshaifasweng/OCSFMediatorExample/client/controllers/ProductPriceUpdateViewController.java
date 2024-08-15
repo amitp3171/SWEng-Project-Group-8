@@ -79,7 +79,9 @@ public class ProductPriceUpdateViewController implements DialogInterface {
             statusLabel.setVisible(true);
         }
         else {
-            // TODO: send change price request to company manager
+            CinemaClient.sendToServer("add new Price change request", String.join(",", CinemaClient.getUserDataManager().getId(), parseProductSelection(), newPriceField.getText()));
+            statusLabel.setText("בקשת השינוי נשלחה בהצלחה");
+            statusLabel.setVisible(true);
         }
     }
 

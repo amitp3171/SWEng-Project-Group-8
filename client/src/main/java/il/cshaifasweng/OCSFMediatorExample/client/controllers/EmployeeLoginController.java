@@ -104,7 +104,12 @@ public class EmployeeLoginController implements DialogInterface {
                 Map<String, String> employeeDictionary = dataParser.parseEmployee(messageData);
                 try {
                     // set content
-                    CinemaClient.setUserDataManager(employeeDictionary.get("id"), employeeDictionary.get("firstName"), employeeDictionary.get("lastName"), this.employeeUserName, employeeDictionary.get("employeeType"));
+                    if (employeeDictionary.get("employeeType").equals("BranchManager")) {
+                        CinemaClient.setUserDataManager(employeeDictionary.get("id"), employeeDictionary.get("firstName"), employeeDictionary.get("lastName"), this.employeeUserName, employeeDictionary.get("employeeType"), employeeDictionary.get("additionalFields"));
+                    }
+                    else {
+                        CinemaClient.setUserDataManager(employeeDictionary.get("id"), employeeDictionary.get("firstName"), employeeDictionary.get("lastName"), this.employeeUserName, employeeDictionary.get("employeeType"));
+                    }
                     CinemaClient.setContent("movieTypeSelection");
                     // close dialog
                     EventBus.getDefault().unregister(this);

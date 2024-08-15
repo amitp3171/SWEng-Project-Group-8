@@ -195,7 +195,6 @@ public class ScreeningListController {
 
         if (CinemaClient.getUserDataManager().isEmployee() && CinemaClient.getUserDataManager().getEmployeeType().equals("ContentManager"))
             onItemSelectedContentManager(selectedItem, selectedIndex, screeningTime);
-        // TODO: might need to add a dialog for price changes
         else
             onItemSelectedCustomer(screeningTime);
     }

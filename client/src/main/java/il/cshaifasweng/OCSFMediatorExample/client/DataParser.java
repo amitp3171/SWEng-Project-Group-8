@@ -40,7 +40,7 @@ public class DataParser {
     public static Map<String, String> parseEmployee(String stringRepresentation) {
         return generateMap(stringRepresentation, "id", "firstName", "lastName", "employeeType");
     }
-    // TODO: verify this actually works for all subclasses of AbstractMovie
+
     public static Map<String, String> parseMovie(String stringRepresentation) {
         return generateMap(stringRepresentation, "id", "movieName", "description", "mainActors", "producerName", "picture");
     }
@@ -75,6 +75,10 @@ public class DataParser {
 
     public static Map<String, String> parseCustomerMessage(String stringRepresentation) {
         return generateMap(stringRepresentation, "id", "messageHeadline", "messageBody", "sendTime");
+    }
+
+    public static Map<String, String> parsePriceChangeRequest(String stringRepresentation) {
+        return generateMap(stringRepresentation, "id", "newPrice", "selectedProduct", "status");
     }
 
 }

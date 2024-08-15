@@ -95,7 +95,6 @@ public class ServiceEmployeeComplaintListController {
                 }
             }
             else {
-//            complaintTitles[i] = String.format("תלונה #%s : %s (%s(", complaints.get(i).get("id"), "\"" + complaintTitles[i].substring(1, complaintTitles[i].length() - 1) + "\"", complaints.get(i).get("receivedAt"));
                 complaintTitles[i] = ("תלונה #" + complaint.get("id") + ": " + "\"" + title.substring(1, title.length() - 1) + "\"" + " (" + complaint.get("receivedAt") + ", " + complaint.get("receivedDate") + ")" + " התלונה טופלה");
             }
         }

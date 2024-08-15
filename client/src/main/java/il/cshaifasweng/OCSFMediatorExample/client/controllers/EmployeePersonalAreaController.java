@@ -18,10 +18,10 @@ public class EmployeePersonalAreaController {
     private Button complaintListButton;
 
     @FXML
-    private Button reportListButton;
+    private Button showEmployeeRequestsButton;
 
     @FXML
-    private VBox buttonContainer;
+    private Button reportListButton;
 
     UserDataManager userDataManager;
 
@@ -41,8 +41,8 @@ public class EmployeePersonalAreaController {
     }
 
     @FXML
-    void onShowMessages(ActionEvent event) throws IOException {
-        CinemaClient.setContent("employeeMessageList");
+    void onShowEmployeeRequests(ActionEvent event) throws IOException {
+        CinemaClient.setContent("employeeRequestList");
     }
 
     @FXML
@@ -52,7 +52,7 @@ public class EmployeePersonalAreaController {
 
     @FXML
     void onShowReports(ActionEvent event) throws IOException {
-        CinemaClient.setContent("reportsList");
+        CinemaClient.setContent("reportSelection");
     }
 
     @FXML
@@ -60,8 +60,13 @@ public class EmployeePersonalAreaController {
         userDataManager = CinemaClient.getUserDataManager();
         welcomeUserLabel.setText(String.format("%s, %s %s!", "ברוך הבא", userDataManager.getFirstName(), userDataManager.getLastName()));
 
-        if (userDataManager.getEmployeeType().equals("BranchManager") || userDataManager.getEmployeeType().equals("CompanyManager"))
+        if (userDataManager.getEmployeeType().equals("BranchManager")) {
             reportListButton.setVisible(true);
+        }
 
+        else if (userDataManager.getEmployeeType().equals("CompanyManager")) {
+            reportListButton.setVisible(true);
+            showEmployeeRequestsButton.setVisible(true);
+        }
     }
 }

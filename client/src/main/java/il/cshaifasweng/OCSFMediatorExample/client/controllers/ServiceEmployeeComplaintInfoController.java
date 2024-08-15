@@ -30,7 +30,6 @@ public class ServiceEmployeeComplaintInfoController {
     private Map<String, String> selectedComplaint;
 
 
-
     public void setSelectedComplaint(Map<String, String> selectedComplaint) throws IOException {
         this.selectedComplaint = selectedComplaint;
         String title = selectedComplaint.get("title").substring(1, selectedComplaint.get("title").length() - 1);
@@ -53,7 +52,6 @@ public class ServiceEmployeeComplaintInfoController {
             complaintStatus.setText("הפנייה טופלה");
             handleComplaintButton.setDisable(true);
         }
-
     }
 
     @FXML

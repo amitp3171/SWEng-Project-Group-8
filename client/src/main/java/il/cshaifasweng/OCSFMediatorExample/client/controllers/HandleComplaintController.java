@@ -54,7 +54,7 @@ public class HandleComplaintController implements DialogInterface{
     public boolean isPositiveInteger(String s) {
         try {
             int value = Integer.parseInt(s);
-            return value > 0;
+            return value >= 0;
         } catch (NumberFormatException e) {
             return false;
         }

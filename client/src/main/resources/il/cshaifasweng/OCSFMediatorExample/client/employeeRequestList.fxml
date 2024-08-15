@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.EmployeeRequestListController">
+    <top>
+        <MenuBar nodeOrientation="RIGHT_TO_LEFT" BorderPane.alignment="CENTER">
+            <menus>
+                <Menu mnemonicParsing="false" text="חלון">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#onGoBack" text="חזור" />
+                        <MenuItem mnemonicParsing="false" onAction="#onCloseProgram" text="סגור" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="משתמש">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#showPersonalArea" text="אזור אישי" />
+                        <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <center>
+        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="TOP_CENTER">
+            <children>
+                <Label alignment="TOP_CENTER" prefHeight="82.0" prefWidth="456.0" text="בקשות עדכון מחירים">
+                    <font>
+                        <Font size="45.0" />
+                    </font>
+                </Label>
+            <ListView fx:id="employeeRequestsListView" maxHeight="-Infinity" minHeight="-Infinity" nodeOrientation="RIGHT_TO_LEFT" onMouseClicked="#onItemSelected" prefHeight="250.0" prefWidth="200.0" />
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

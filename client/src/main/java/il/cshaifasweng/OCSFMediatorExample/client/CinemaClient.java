@@ -85,6 +85,15 @@ public class CinemaClient extends Application {
         userDataManager.setEmployeeType(employeeRole);
     }
 
+    public static void setUserDataManager(String id, String employeeFirstName, String employeeLastName, String employeeUserName, String employeeRole, String additionalFields) {
+        userDataManager.setId(id);
+        userDataManager.setFirstName(employeeFirstName);
+        userDataManager.setLastName(employeeLastName);
+        userDataManager.setEmployeeUserName(employeeUserName);
+        userDataManager.setEmployeeType(employeeRole);
+        userDataManager.setAdditionalFields(additionalFields);
+    }
+
     public static DialogCreationManager getDialogCreationManager() {
         return dialogCreationManager;
     }

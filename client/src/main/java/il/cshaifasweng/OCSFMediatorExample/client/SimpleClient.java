@@ -135,6 +135,26 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new NewHandledComplaintEvent(message));
 		}
 
+		else if(message.getMessage().equals("updated PriceChangeRequest list successfully")) {
+			EventBus.getDefault().post(new NewPriceChangeListRequestEvent(message));
+		}
+
+		else if(message.getMessage().equals("updated Branch Ticket report successfully")) {
+			EventBus.getDefault().post(new NewBranchTicketReportEvent(message));
+		}
+
+		else if(message.getMessage().equals("updated Company Ticket report successfully")) {
+			EventBus.getDefault().post(new NewCompanyTicketReportEvent(message));
+		}
+
+		else if(message.getMessage().equals("updated Company SubscriptionCardLink report successfully")) {
+			EventBus.getDefault().post(new NewCompanySubscriptionCardLinkReportEvent(message));
+		}
+
+		else if(message.getMessage().equals("updated Company Complaint report successfully")) {
+			EventBus.getDefault().post(new NewCompanyComplaintReportEvent(message));
+		}
+
 		else {
 			EventBus.getDefault().post(new MessageEvent(message));
 		}

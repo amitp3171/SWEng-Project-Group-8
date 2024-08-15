@@ -363,7 +363,10 @@ public class SimpleServer extends AbstractServer {
 				if (connectedUsers.containsKey(employee.getId()))
 					data = "user already logged in";
 				else {
-					data = String.join(",", String.valueOf(employee.getId()), employee.getFirstName(), employee.getLastName(), employee.getClass().getName().substring(55));
+					String employeeType = employee.getClass().getName().substring(55);
+					data = String.join(",", String.valueOf(employee.getId()), employee.getFirstName(), employee.getLastName(), employeeType);
+					if (employeeType.equals("BranchManager"))
+						data += "," + ((BranchManager) employee).getBranch().getLocation();
 					connectedUsers.put(employee.getId(), true);
 				}
 				break;
@@ -480,7 +483,7 @@ public class SimpleServer extends AbstractServer {
 		HomeMovie homeMovie = db.executeNativeQuery("SELECT * FROM homemovie WHERE id=?", HomeMovie.class, movieId).get(0);
 
 		Link newLink = new Link(owner, Double.parseDouble(productPrice), homeMovie, selectedDate, selectedTime);
-		Purchase newPurchase = new Purchase(newLink, owner, "Credit Card", selectedDate, selectedTime);
+		Purchase newPurchase = new Purchase(newLink, owner, "Credit Card", LocalDate.now(), LocalTime.now());
 		CustomerMessage customerMessage = new CustomerMessage("לינק חדש",  "תודה שרכשת לינק לצפייה ביתית לסרט: " + homeMovie.getMovieName() + "\n" + "הקישור לסרט: " + newLink.getLink() + "\n" + "יהיה זמין בשעות: " + newLink.getAvailableHour() + "-" + newLink.getExpiresAt(), LocalDateTime.now(), owner);
 
 		owner.addMessageToList(customerMessage);
@@ -807,6 +810,209 @@ public class SimpleServer extends AbstractServer {
 
 	}
 
+	public void handleCreateNewPriceChangeRequest(Message message, ConnectionToClient client) throws IOException {
+		String[] messageData = message.getData().split(",");
+
+		ContentManager requestingEmployee = db.executeNativeQuery("SELECT * FROM contentmanagers WHERE id = ?", ContentManager.class, messageData[0]).get(0);
+
+		PriceChangeRequest newRequest = new PriceChangeRequest(requestingEmployee, messageData[1], Double.parseDouble(messageData[2]));
+
+		db.addInstance(newRequest);
+		db.updateEntity(requestingEmployee);
+
+
+		sendMessage(message, "create NewPriceRequest successfully", "NewPriceRequest creation successful", client);
+	}
+
+	private void handlePriceChangeRequestListRequest(Message message, ConnectionToClient client) throws IOException{
+		List<PriceChangeRequest> requestList = db.getAll(PriceChangeRequest.class, false);
+
+		ArrayList<String> requestsToString = new ArrayList<>();
+
+		for (PriceChangeRequest request: requestList){
+			requestsToString.add(request.toString());
+		}
+
+		sendMessage(message, "updated PriceChangeRequest list successfully", requestsToString, client);
+	}
+
+	private void handlePriceChangeUpdateRequest(Message message, ConnectionToClient client) throws IOException {
+		String[] messageData = message.getData().split(",");
+
+		PriceChangeRequest request = db.executeNativeQuery("SELECT * FROM pricechangerequest WHERE id = ?", PriceChangeRequest.class, messageData[0]).get(0);
+
+		if (messageData[1].equals("accept")) {
+			request.setStatus("accepted");
+
+			Price productPrice = db.executeNativeQuery("SELECT * FROM prices WHERE productClass = ?", Price.class, request.getSelectedProduct()).get(0);
+
+			productPrice.setPrice(request.getNewPrice());
+
+			db.updateEntity(productPrice);
+		}
+		else {
+			request.setStatus("rejected");
+		}
+
+		db.updateEntity(request);
+
+		sendMessage(message, "updated PriceChangeRequest successfully", "updated request successfully", client);
+	}
+
+	private void handleBranchTicketReportRequest(Message message, ConnectionToClient client) throws IOException {
+		String branchLocation = message.getData();
+
+		List<Purchase> allPurchases = db.getAll(Purchase.class, false);
+
+		ArrayList<String> reportToString = new ArrayList<>();
+		ArrayList<Integer> ticketAmounts = new ArrayList<>();
+
+		for (int i = 0; i < 31; ++i) {
+			ticketAmounts.add(0);
+		}
+
+		for (Purchase purchase: allPurchases){
+			// if payment was made in current month
+			if (purchase.getPaymentDate().getMonthValue() == LocalDate.now().getMonthValue() && purchase.getPaymentDate().getYear() == LocalDate.now().getYear()) {
+				// if product is ticket
+				if (purchase.getRelatedProduct().getClass().getName().substring(55).equals("Ticket")) {
+					// if the branch is equal to the specified one
+					if (((Ticket) purchase.getRelatedProduct()).getScreeningTime().getBranch().getLocation().equals(branchLocation)) {
+						ticketAmounts.set(purchase.getPaymentDate().getDayOfMonth() - 1, ticketAmounts.get(purchase.getPaymentDate().getDayOfMonth() - 1) + 1);
+					}
+				}
+			}
+		}
+
+		for (int amount : ticketAmounts){
+			reportToString.add(String.valueOf(amount));
+		}
+
+		System.out.println(reportToString);
+
+		sendMessage(message, "updated Branch Ticket report successfully", reportToString, client);
+	}
+
+	private void handleCompanyTicketReportRequest(Message message, ConnectionToClient client) throws IOException {
+
+		List<Purchase> allPurchases = db.getAll(Purchase.class, false);
+
+		ArrayList<String> reportToString = new ArrayList<>();
+		ArrayList<Integer> ticketAmounts = new ArrayList<>();
+
+		for (int i = 0; i < 31; ++i) {
+			ticketAmounts.add(0);
+		}
+
+		for (Purchase purchase: allPurchases){
+			// if payment was made in current month
+			if (purchase.getPaymentDate().getMonthValue() == LocalDate.now().getMonthValue() && purchase.getPaymentDate().getYear() == LocalDate.now().getYear()) {
+				// if product is ticket
+				if (purchase.getRelatedProduct().getClass().getName().substring(55).equals("Ticket")) {
+					ticketAmounts.set(purchase.getPaymentDate().getDayOfMonth() - 1, ticketAmounts.get(purchase.getPaymentDate().getDayOfMonth() - 1) + 1);
+				}
+			}
+		}
+
+		for (int amount : ticketAmounts){
+			reportToString.add(String.valueOf(amount));
+		}
+
+		System.out.println(reportToString);
+
+		sendMessage(message, "updated Company Ticket report successfully", reportToString, client);
+	}
+
+	private void handleCompanySubscriptionCardLinkReportRequest(Message message, ConnectionToClient client) throws IOException {
+
+		List<Purchase> allPurchases = db.getAll(Purchase.class, false);
+
+		ArrayList<String> reportToString = new ArrayList<>();
+		ArrayList<Integer> amounts = new ArrayList<>();
+
+		for (int i = 0; i < 31; ++i) {
+			amounts.add(0);
+		}
+
+		for (Purchase purchase: allPurchases){
+			// if payment was made in current month
+			if (purchase.getPaymentDate().getMonthValue() == LocalDate.now().getMonthValue() && purchase.getPaymentDate().getYear() == LocalDate.now().getYear()) {
+				// if product is ticket
+				if (!purchase.getRelatedProduct().getClass().getName().substring(55).equals("Ticket")) {
+					amounts.set(purchase.getPaymentDate().getDayOfMonth() - 1, amounts.get(purchase.getPaymentDate().getDayOfMonth() - 1) + 1);
+				}
+			}
+		}
+
+		for (int amount : amounts){
+			reportToString.add(String.valueOf(amount));
+		}
+
+		System.out.println(reportToString);
+
+		sendMessage(message, "updated Company SubscriptionCardLink report successfully", reportToString, client);
+	}
+
+//	private void handleBranchComplaintReportRequest(Message message, ConnectionToClient client) throws IOException {
+//
+//		List<Purchase> allPurchases = db.getAll(Purchase.class, false);
+//
+//		ArrayList<String> reportToString = new ArrayList<>();
+//		ArrayList<Integer> ticketAmounts = new ArrayList<>();
+//
+//		for (int i = 0; i < 31; ++i) {
+//			ticketAmounts.add(0);
+//		}
+//
+//		for (Purchase purchase: allPurchases){
+//			// if payment was made in current month
+//			if (purchase.getPaymentDate().getMonthValue() == LocalDate.now().getMonthValue() && purchase.getPaymentDate().getYear() == LocalDate.now().getYear()) {
+//				// if product is ticket
+//				if (purchase.getRelatedProduct().getClass().getName().substring(55).equals("Ticket")) {
+//					ticketAmounts.set(purchase.getPaymentDate().getDayOfMonth() - 1, ticketAmounts.get(purchase.getPaymentDate().getDayOfMonth() - 1) + 1);
+//				}
+//			}
+//		}
+//
+//		for (int amount : ticketAmounts){
+//			reportToString.add(String.valueOf(amount));
+//		}
+//
+//		System.out.println(reportToString);
+//
+//		sendMessage(message, "updated Company Ticket report successfully", reportToString, client);
+//	}
+
+	private void handleCompanyComplaintReportRequest(Message message, ConnectionToClient client) throws IOException {
+
+		List<Complaint> allComplaints = db.getAll(Complaint.class, false);
+
+		ArrayList<String> reportToString = new ArrayList<>();
+		ArrayList<Integer> complaintAmounts = new ArrayList<>();
+
+		for (int i = 0; i < 31; ++i) {
+			complaintAmounts.add(0);
+		}
+
+		for (Complaint complaint : allComplaints){
+			// if payment was made in current month
+			if (complaint.getReceivedDate().getMonthValue() == LocalDate.now().getMonthValue() && complaint.getReceivedDate().getYear() == LocalDate.now().getYear()) {
+				complaintAmounts.set(complaint.getReceivedDate().getDayOfMonth() - 1, complaintAmounts.get(complaint.getReceivedDate().getDayOfMonth() - 1) + 1);
+			}
+
+		}
+
+		for (int amount : complaintAmounts){
+			reportToString.add(String.valueOf(amount));
+		}
+
+		System.out.println(reportToString);
+
+		sendMessage(message, "updated Company Complaint report successfully", reportToString, client);
+	}
+
+
+
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
@@ -966,6 +1172,38 @@ public class SimpleServer extends AbstractServer {
 				handleHandleComplaint(message, client);
 			}
 
+			else if(request.equals("add new Price change request")) {
+				handleCreateNewPriceChangeRequest(message, client);
+			}
+
+			else if(request.equals("get Employee Price change requests")) {
+				handlePriceChangeRequestListRequest(message, client);
+			}
+
+			else if(request.equals("update Product price")) {
+				handleProductPriceChangeRequest(message, client);
+			}
+
+			else if(request.equals("update PriceChangeRequest")) {
+				handlePriceChangeUpdateRequest(message, client);
+			}
+
+			else if (request.equals("get Branch Ticket Report")) {
+				handleBranchTicketReportRequest(message, client);
+			}
+
+			else if (request.equals("get Company Ticket Report")) {
+				handleCompanyTicketReportRequest(message, client);
+			}
+
+			else if (request.equals("get Company SubscriptionCardLink Report")) {
+				handleCompanySubscriptionCardLinkReportRequest(message, client);
+			}
+
+			else if (request.equals("get Company Complaint Report")) {
+				handleCompanyComplaintReportRequest(message, client);
+			}
+
 			else {
 				//add code here to send received message to all clients.
 				//The string we received in the message is the message we will send back to all clients subscribed.
@@ -973,8 +1211,8 @@ public class SimpleServer extends AbstractServer {
 					// message received: "Good morning"
 					// message sent: "Good morning"
 				//see code for changing submitters IDs for help
-				message.setMessage(request);
-				sendToAllClients(message);
+//				message.setMessage(request);
+//				sendToAllClients(message);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

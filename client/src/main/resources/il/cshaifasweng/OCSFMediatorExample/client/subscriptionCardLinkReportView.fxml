@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="534.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.SubscriptionCardLinkReportViewController">
+    <content>
+        <StackPane prefHeight="387.0" prefWidth="424.0">
+            <children>
+                <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="441.0" prefWidth="292.0" spacing="10.0" StackPane.alignment="CENTER">
+                    <children>
+                        <Label fx:id="reportTitleLabel" alignment="TOP_CENTER" text="דוח כרטיסיות וחבילות צפייה">
+                            <font>
+                                <Font size="15.0" />
+                            </font>
+                        </Label>
+                  <ListView fx:id="reportListView" maxHeight="-Infinity" minHeight="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="380.0" prefWidth="200.0" />
+
+                        <HBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="340.0">
+                            <children>
+                                <Button mnemonicParsing="false" onAction="#onOkPressed" text="סגור">
+                                    <HBox.margin>
+                                        <Insets right="3.0" />
+                                    </HBox.margin>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </StackPane>
+    </content>
+</DialogPane>

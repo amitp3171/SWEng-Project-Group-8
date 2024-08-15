@@ -19,6 +19,8 @@ public class UserDataManager {
     private static String employeeUserName;
     private static String employeeType;
 
+    private static String additionalFields;
+
     private UserDataManager() {}
 
     public static synchronized UserDataManager getInstance() {
@@ -75,6 +77,10 @@ public class UserDataManager {
         return employeeType;
     }
 
+    public static String getAdditionalFields() {
+        return additionalFields;
+    }
+
     public static void setId(String newId) {
         id = newId;
     }
@@ -97,6 +103,10 @@ public class UserDataManager {
 
     public static void setEmployeeType(String newEmployeeType) {
         employeeType = newEmployeeType;
+    }
+
+    public static void setAdditionalFields(String newAdditionalFields) {
+        additionalFields = newAdditionalFields;
     }
 
     public static void resetData() {
