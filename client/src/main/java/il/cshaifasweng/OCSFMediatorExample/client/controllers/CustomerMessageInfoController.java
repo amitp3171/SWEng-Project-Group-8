@@ -8,6 +8,7 @@ import java.util.*;
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import javafx.event.ActionEvent;
+import javafx.scene.text.TextAlignment;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -36,7 +37,6 @@ public class CustomerMessageInfoController {
         titleLabel.setText(title);
         contentLabel.setText(content);
         sendTimeLabel.setText(formattedSendTime);
-
     }
 
     @FXML

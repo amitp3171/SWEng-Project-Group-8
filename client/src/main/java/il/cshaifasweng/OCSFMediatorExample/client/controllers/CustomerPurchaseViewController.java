@@ -57,6 +57,10 @@ public class CustomerPurchaseViewController implements DialogInterface {
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
+        this.dialog.setOnCloseRequest(event -> {
+            // X button acts as cancel button
+            dialog.setResult(refundStatus);
+        });
     }
 
     public void setData(Object... params) {

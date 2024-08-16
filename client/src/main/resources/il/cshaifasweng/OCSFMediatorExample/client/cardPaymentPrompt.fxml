@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.CardPaymentPromptController">
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.CardPaymentPromptController">
    <content>
       <StackPane prefHeight="88.0" prefWidth="359.0">
          <children>
@@ -24,7 +24,7 @@
                   <TextField fx:id="creditCardNumberField" alignment="CENTER" promptText="XXXX-XXXX-XXXX-XXXX" />
                   <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <TextField fx:id="creditCardDateField" alignment="CENTER" promptText="MM-DD">
+                        <TextField fx:id="creditCardDateField" alignment="CENTER" promptText="MMYY">
                            <HBox.margin>
                               <Insets right="10.0" />
                            </HBox.margin>

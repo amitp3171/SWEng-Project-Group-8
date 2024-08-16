@@ -31,7 +31,7 @@
                         <Font size="22.0" />
                     </font>
                 </Label>
-                <Label fx:id="contentLabel" alignment="TOP_LEFT" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" prefHeight="128.0" prefWidth="700.0" text="תוכן ההודעה" textAlignment="RIGHT" wrapText="true">
+                <Label fx:id="contentLabel" alignment="TOP_LEFT" contentDisplay="RIGHT" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" prefHeight="265.0" prefWidth="600.0" text="תוכן ההודעה" textAlignment="RIGHT" wrapText="true">
                     <font>
                         <Font size="17.0" />
                     </font>

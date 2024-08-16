@@ -474,15 +474,14 @@ public class SimpleServer extends AbstractServer {
 		Customer owner = db.executeNativeQuery("SELECT * FROM customers WHERE govId=?", Customer.class, customerGovId).get(0);
 		ScreeningTime screeningTime = db.executeNativeQuery("SELECT * FROM screeningtimes WHERE id=?", ScreeningTime.class, screeningTimeId).get(0);
 
-		CustomerMessage customerMessage = new CustomerMessage("רכישת כרטיסים חדשים", "", LocalDateTime.now(), owner);
 		String messageContent = "תודה שרכשת כרטיסים לסרט: " + screeningTime.getInTheaterMovie().getMovieName() + "\n";
+		messageContent += "אשר יוקרן ב: " + screeningTime.getDate() + " בשעה: " + screeningTime.getTime() + "\n";
 		messageContent += "בסניף " + screeningTime.getBranch().getLocation() + " באולם מספר: " + screeningTime.getTheater().getTheaterNumber() + "\n";
 		messageContent += "מספר המושבים: " + selectedSeats.size() + "\n";
 		messageContent +=	" כיסאות מספר: " + seatNumbers;
 		messageContent = "[" + messageContent + "]";
-		System.out.println(seatNumbers);
-		System.out.println(messageContent);
-		customerMessage.setMessageBody(messageContent);
+
+		CustomerMessage customerMessage = new CustomerMessage("רכישת כרטיסים חדשים", messageContent, LocalDateTime.now(), owner);
 		owner.addMessageToList(customerMessage);
 		db.addInstance(customerMessage);
 
@@ -522,7 +521,7 @@ public class SimpleServer extends AbstractServer {
 		Link newLink = new Link(owner, Double.parseDouble(productPrice), homeMovie, selectedDate, selectedTime);
 		Purchase newPurchase = new Purchase(newLink, owner, "Credit Card", LocalDate.now(), LocalTime.now());
 
-		String messageBody = "תודה שרכשת לינק לצפייה ביתית לסרט: " + homeMovie.getMovieName() + "\n" + "הקישור לסרט: " + newLink.getLink() + "\n" + "יהיה זמין בשעות: " + newLink.getAvailableHour() + "-" + newLink.getExpiresAt();
+		String messageBody = "תודה שרכשת לינק לצפייה ביתית לסרט: " + homeMovie.getMovieName() + "\n" + "הקישור לסרט: " + newLink.getLink() + "\n" + "יהיה זמין בשעות: " + newLink.getAvailableHour() + "-" + newLink.getExpiresAt().toLocalTime();
 		CustomerMessage customerMessage = new CustomerMessage("לינק חדש",  "[" + messageBody + "]", LocalDateTime.now(), owner);
 
 		owner.addMessageToList(customerMessage);
@@ -713,8 +712,8 @@ public class SimpleServer extends AbstractServer {
 		Seat selectedSeat = selectedTicket.getSeat();
 
 		Customer owner = selectedTicket.getOwner();
-
-		CustomerMessage customerMessage = new CustomerMessage("פיצוי כספי", "קיבלת פיצוי כספי עבור רכישת כרטיס לסרט: " + selectedTicket.getMovieName() + " בסך " + selectedTicket.getPrice() + " שח ", LocalDateTime.now(), owner);
+		String messageBody = "קיבלת פיצוי כספי עבור רכישת כרטיס לסרט: " + "\n" + selectedTicket.getMovieName() + " בסך " + selectedTicket.getPrice() + " שח ";
+		CustomerMessage customerMessage = new CustomerMessage("פיצוי כספי","[" + messageBody + "]" , LocalDateTime.now(), owner);
 
 		owner.addMessageToList(customerMessage);
 
@@ -765,8 +764,8 @@ public class SimpleServer extends AbstractServer {
 		}
 
 		Customer owner = selectedLink.getOwner();
-
-		CustomerMessage customerMessage = new CustomerMessage("פיצוי כספי", "קיבלת פיצוי כספי עבור רכישת לינק לסרט: " + selectedLink.getHomeMovie().getMovieName() + " בסך " + selectedLink.getPrice() + " שח ", LocalDateTime.now(), owner);
+		String messageBody =   "קיבלת פיצוי כספי עבור רכישת לינק לסרט: " + "\n" + selectedLink.getHomeMovie().getMovieName() + " בסך " + selectedLink.getPrice() + " שח ";
+		CustomerMessage customerMessage = new CustomerMessage("פיצוי כספי","[" + messageBody + "]", LocalDateTime.now(), owner);
 
 		owner.addMessageToList(customerMessage);
 
