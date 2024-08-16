@@ -6,6 +6,7 @@ import java.util.Map;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewProductPriceEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewPurchaseStatusEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewSeatListEvent;
@@ -59,6 +60,8 @@ public class InTheaterMoviePurchaseScreenController {
 
     @FXML
     private Label statusLabel;
+
+    private UserDataManager userDataManager;
 
     private DataParser dataParser;
 
@@ -162,9 +165,10 @@ public class InTheaterMoviePurchaseScreenController {
             this.selectedSeats.add(newSelectedSeat);
             this.selectedSeatIds.add(newSelectedSeat.get("id"));
         }
-
-        cardPurchaseButton.setDisable(selectedSeatIds.isEmpty());
-        subscriptionCardPurchaseButton.setDisable(selectedSeatIds.isEmpty());
+        if(!userDataManager.isEmployee()){
+            cardPurchaseButton.setDisable(selectedSeatIds.isEmpty());
+            subscriptionCardPurchaseButton.setDisable(selectedSeatIds.isEmpty());
+        }
     }
 
     @Subscribe
@@ -287,6 +291,7 @@ public class InTheaterMoviePurchaseScreenController {
 
     @FXML
     void initialize() throws IOException {
+        userDataManager = CinemaClient.getUserDataManager();
         dataParser = CinemaClient.getDataParser();
         EventBus.getDefault().register(this);
         CinemaClient.sendToServer("get Product price", "Ticket");

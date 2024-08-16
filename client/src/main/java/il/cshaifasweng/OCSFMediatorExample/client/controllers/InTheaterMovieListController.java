@@ -164,7 +164,6 @@ public class InTheaterMovieListController {
         dataParser = CinemaClient.getDataParser();
 
         forceRefresh = false;
-
         if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
             addMenu.setVisible(true);
             addScreeningMenuitem.setVisible(true);
