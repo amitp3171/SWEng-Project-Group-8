@@ -8,10 +8,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.application.Platform;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import org.greenrobot.eventbus.Subscribe;
 
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +37,9 @@ public class AddHomeMovieController implements DialogInterface {
     private TextField descriptionField;
 
     @FXML
-    private TextField pictureField;
+    private Button choosePicture;
+
+    private String encodedImage = null;
 
     @FXML
     private TextField movieLengthField;
@@ -64,7 +71,7 @@ public class AddHomeMovieController implements DialogInterface {
         if (isInputValid()) {
             String mainActorsString = String.join(";", getMainActors());
             String description = "[" + getDescription() + "]";
-            CinemaClient.sendToServer("add new home movie", String.join(",", getMovieName(), getProducerName(), mainActorsString, description, getPicture(), getMovieLength()));
+            CinemaClient.sendToServer("add new home movie", String.join(",", getMovieName(), getProducerName(), mainActorsString, description, encodedImage, getMovieLength()));
             dialog.close();
         } else {
             statusLabel.setVisible(true);
@@ -95,7 +102,7 @@ public class AddHomeMovieController implements DialogInterface {
             else if (descriptionField.getText() == null || descriptionField.getText().isEmpty()) {
                 errorMessage = "תיאור סרט לא תקין!" + "\n";
             }
-            else if (pictureField.getText() == null || pictureField.getText().isEmpty()) {
+            else if (encodedImage == null) {
                 errorMessage = "תמונה לא תקינה!" + "\n";
             }
             // Validate the release date format
@@ -134,15 +141,27 @@ public class AddHomeMovieController implements DialogInterface {
         return descriptionField.getText();
     }
 
-    public String getPicture() {
-        return pictureField.getText();
-    }
 
     public String getMovieLength() { return movieLengthField.getText(); }
 
     @FXML
     void onCancelAddingMovie(ActionEvent event) throws IOException {
         dialog.close();
+    }
+
+    @FXML
+    private void onChoosePicture(ActionEvent event) throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("בחר תמונה");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
+        fileChooser.setInitialDirectory(new File("C:/"));
+
+        File selectedFile = fileChooser.showOpenDialog(CinemaClient.getStage());
+        if (selectedFile != null) {
+            System.out.println(selectedFile.toPath());
+            this.encodedImage = java.util.Base64.getEncoder().encodeToString(Files.readAllBytes(selectedFile.toPath()));
+        }
     }
 
     @Subscribe

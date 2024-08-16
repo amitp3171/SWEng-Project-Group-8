@@ -78,6 +78,14 @@ public class Customer extends AbstractUser {
         return this.purchaseHistory;
     }
 
+    public boolean isAvailableSubscriptionCardOwned() {
+        for (SubscriptionCard subscriptionCard : this.ownedSubscriptions) {
+            if (subscriptionCard.getRemainingTickets()>0)
+                return true;
+        }
+        return false;
+    }
+
 
     public void cancelPurchase(Purchase purchase) {}
     public Complaint makeAComplaint(Complaint complaint) {

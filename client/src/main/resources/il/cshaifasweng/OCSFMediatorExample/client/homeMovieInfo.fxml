@@ -47,7 +47,7 @@
                                 </Label>
                             </children>
                         </VBox>
-                        <ImageView fx:id="movieImageView" fitHeight="170.0" fitWidth="118.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
+                        <ImageView fx:id="movieImageView" fitHeight="170.0" fitWidth="200.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
                             <viewport>
                                 <Rectangle2D />
                             </viewport>

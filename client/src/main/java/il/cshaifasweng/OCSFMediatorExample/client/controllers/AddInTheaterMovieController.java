@@ -8,8 +8,16 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -33,7 +41,12 @@ public class AddInTheaterMovieController implements DialogInterface {
     private TextField descriptionField;
 
     @FXML
-    private TextField pictureField;
+    private Button choosePicture;
+
+    @FXML
+    private ImageView image;
+
+    private String encodedImage = null;
 
     public String getMovieName() {
         return movieNameField.getText();
@@ -49,10 +62,6 @@ public class AddInTheaterMovieController implements DialogInterface {
 
     public String getDescription() {
         return descriptionField.getText();
-    }
-
-    public String getPicture() {
-        return pictureField.getText();
     }
 
     @FXML
@@ -93,11 +102,27 @@ public class AddInTheaterMovieController implements DialogInterface {
         if (isInputValid()) {
             String mainActorsString = String.join(";", getMainActors());
             String description = "[" + getDescription() + "]";
-            CinemaClient.sendToServer("add new in theaters movie", String.join(",", getMovieName(), getProducerName(), mainActorsString, description, getPicture(),selectedBranch));
+            CinemaClient.sendToServer("add new in theaters movie", String.join(",", getMovieName(), getProducerName(), mainActorsString, description, encodedImage, selectedBranch));
             dialog.setResult(ButtonType.OK);
             dialog.close();
         } else {
             statusLabel.setVisible(true);
+        }
+    }
+
+    @FXML
+    private void onChoosePicture(ActionEvent event) throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("בחר תמונה");
+        fileChooser.getExtensionFilters().addAll(
+                new ExtensionFilter("Image Files", "*.png", "*.jpg"));
+        fileChooser.setInitialDirectory(new File("C:/"));
+
+        File selectedFile = fileChooser.showOpenDialog(CinemaClient.getStage());
+        if (selectedFile != null) {
+            System.out.println(selectedFile.toPath());
+            this.encodedImage = java.util.Base64.getEncoder().encodeToString(Files.readAllBytes(selectedFile.toPath()));
+
         }
     }
 
@@ -126,7 +151,7 @@ public class AddInTheaterMovieController implements DialogInterface {
             else if (descriptionField.getText() == null || descriptionField.getText().isEmpty()) {
                 errorMessage = "תיאור סרט לא תקין!" + "\n";
             }
-            else if (pictureField.getText() == null || pictureField.getText().isEmpty()) {
+            else if (encodedImage == null) {
                 errorMessage = "תמונה לא תקינה!" + "\n";
             }
 

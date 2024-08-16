@@ -1,5 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
+import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -12,6 +13,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class ComingSoonMovieInfoController implements DialogInterface {
@@ -58,6 +60,15 @@ public class ComingSoonMovieInfoController implements DialogInterface {
         // Format LocalDate to String
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String formattedReleaseDate = releaseDate.format(formatter);
+
+        String encodedImage = selectedMovie.get("picture");
+
+        byte[] decodedBytes = java.util.Base64.getDecoder().decode(encodedImage);
+        ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
+        Image movieImage = new Image(bis);
+
+        movieImageView.setImage(movieImage);
+        movieImageView.setScaleX(-1);
 
         movieLabel.setText(title);
         movieSummaryLabel.setText(String.format("תקציר: %s", description));

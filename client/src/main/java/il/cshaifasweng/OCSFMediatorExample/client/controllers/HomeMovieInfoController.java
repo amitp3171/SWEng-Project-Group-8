@@ -1,5 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
@@ -74,6 +76,15 @@ public class HomeMovieInfoController implements DialogInterface {
         String mainActors = selectedMovie.get("mainActors").substring(1, selectedMovie.get("mainActors").length() - 1);
         String producerName = selectedMovie.get("producerName");
         String movieLength = selectedMovie.get("additionalFields");
+
+        String encodedImage = selectedMovie.get("picture");
+
+        byte[] decodedBytes = java.util.Base64.getDecoder().decode(encodedImage);
+        ByteArrayInputStream bis = new ByteArrayInputStream(decodedBytes);
+        Image movieImage = new Image(bis);
+
+        movieImageView.setImage(movieImage);
+        movieImageView.setScaleX(-1);
 
         movieLabel.setText(title);
         movieSummaryLabel.setText(String.format("תקציר: %s", description));

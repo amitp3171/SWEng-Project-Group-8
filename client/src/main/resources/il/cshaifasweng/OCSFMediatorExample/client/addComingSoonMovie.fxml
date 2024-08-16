@@ -44,12 +44,12 @@
                         </Label>
                         <TextField fx:id="descriptionField" prefWidth="225.0" />
 
-                        <Label alignment="TOP_CENTER" text="תמונה (URL):">
+                        <Label alignment="TOP_CENTER" text="תמונה:">
                             <font>
                                 <Font size="15.0" />
                             </font>
                         </Label>
-                        <TextField fx:id="pictureField" prefWidth="225.0" />
+                        <Button fx:id="choosePicture" mnemonicParsing="false" onAction="#onChoosePicture" text="בחר תמונה" />
 
                         <Label alignment="TOP_CENTER" text="תאריך עלייה לקולנוע:">
                             <font>

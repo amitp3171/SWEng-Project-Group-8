@@ -31,6 +31,7 @@ public class SimpleServer extends AbstractServer {
 	public SimpleServer(int port) {
 		super(port);
 		mapper.registerModule(new JavaTimeModule());
+		setLinksScheduler();
 	}
 
 	private void sendMessage(Message message, String newMessage, List<String> newData, ConnectionToClient client) throws IOException {
@@ -55,6 +56,16 @@ public class SimpleServer extends AbstractServer {
 		client.sendToClient(message);
 	}
 
+	public void setLinksScheduler() {
+		List<Link> links = db.getAll(Link.class, false);
+		for (Link link : links) {
+			LocalDateTime availableTime = LocalDateTime.of(link.getAvailableDay(), link.getAvailableHour());
+			if(availableTime.isAfter(LocalDateTime.now())) {
+				scheduleMessage(link.getOwner(), link.getHomeMovie(), link, link.getAvailableDay(), link.getAvailableHour());
+			}
+		}
+	}
+
 	public void scheduleMessage(Customer owner, HomeMovie homeMovie, Link newLink, LocalDate selectedDate, LocalTime selectedTime) {
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -66,10 +77,11 @@ public class SimpleServer extends AbstractServer {
 		if (delay > 0) {
 			Runnable messageTask = new Runnable() {
 				public void run() {
+						String messageBody = "הלינק שרכשת לסרט " + homeMovie.getMovieName() + " יהפוך לזמין בעוד שעה. " + "\n" + "הלינק: " + newLink.getLink() + "\n" + ". זמין מ:  " + newLink.getAvailableHour() + " עד " + newLink.getExpiresAt().toLocalTime();
 
-						CustomerMessage customerMessage = new CustomerMessage(
+					CustomerMessage customerMessage = new CustomerMessage(
 								"לינק זמין בקרוב",
-								"הלינק שרכשת לסרט " + homeMovie.getMovieName() + " יהפוך לזמין בעוד שעה. הלינק: " + newLink.getLink() + ". זמין מ:  " + newLink.getAvailableHour() + " עד " + newLink.getExpiresAt(),
+								"[" + messageBody + "]",
 								LocalDateTime.now(),
 								owner
 						);
@@ -342,6 +354,35 @@ public class SimpleServer extends AbstractServer {
 		String data = "request successful";
 
 		db.addInstance(inTheaterMovie);
+
+		//send message to subscription card owners
+		String messageBody = "הסרט: " + inTheaterMovie.getMovieName() + " נוסף לקולנוע. " + "\n" + "ניתן לצפות באתר בזמני ההקרנה של הסרט.";
+		List<Customer> customers = db.getAll(Customer.class, true);
+		for (Customer customer : customers) {
+			if(customer.isAvailableSubscriptionCardOwned()) {
+				CustomerMessage customerMessage = new CustomerMessage("סרט חדש בקולנוע!", "[" + messageBody + "]", LocalDateTime.now(), customer);
+				customer.addMessageToList(customerMessage);
+				System.out.println(customer.getFirstName());
+				db.addInstance(customerMessage);
+				db.updateEntity(customer);
+			}
+		}
+
+//		List<SubscriptionCard> subscriptionCards = db.executeNativeQuery("SELECT * FROM subscriptioncards WHERE remainingTickets>0", SubscriptionCard.class);
+//		ArrayList<Customer> cardOwners = new ArrayList<>();
+//		for(SubscriptionCard subscriptionCard: subscriptionCards){
+//			if(!cardOwners.contains(subscriptionCard.getOwner())){
+//				cardOwners.add(subscriptionCard.getOwner());
+//			}
+//		}
+//		for (Customer customer : cardOwners) {
+//				CustomerMessage customerMessage = new CustomerMessage("סרט חדש בקולנוע!", "[" + messageBody + "]", LocalDateTime.now(), customer);
+//				customer.addMessageToList(customerMessage);
+//				System.out.println(customer.getFirstName());
+//				db.addInstance(customerMessage);
+//				db.updateEntity(customer);
+//		}
+
 
 		sendMessage(message, "created new InTheaterMovie successfully", data, client);
 	}

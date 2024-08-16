@@ -9,6 +9,8 @@ import org.hibernate.service.ServiceRegistry;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import java.io.File;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -24,6 +26,9 @@ public class CheckInstances {
 
     private static Session session;
     private static SessionFactory sessionFactory;
+
+    //path to pictures file
+    private static String startPath = "C:\\Users\\USER\\Desktop\\University\\softwareDesign\\projectImages\\";
 
 
     private static SessionFactory getSessionFactory() throws HibernateException {
@@ -153,9 +158,15 @@ public class CheckInstances {
         mainActors.add("Yu");
         LocalDate localDate = LocalDate.of(2024, 7, 27);
 
+        //creat image
+
+        File newFile = new File(startPath + "deadpool.png");
+        String encodedImage = java.util.Base64.getEncoder().encodeToString(Files.readAllBytes(newFile.toPath()));
+
+
         // Convert LocalDate to java.util.Date
         LocalDate ld = LocalDate.now();
-        ComingSoonMovie comingSoonMovie = new ComingSoonMovie("Deadpool דדפול", "Shon", mainActors, "[Funny Movie]", "pic", ld);
+        ComingSoonMovie comingSoonMovie = new ComingSoonMovie("Deadpool דדפול", "Shon", mainActors, "[Funny Movie]", encodedImage, ld);
         session.save(comingSoonMovie);
         session.flush();
         return  comingSoonMovie;
@@ -165,7 +176,14 @@ public class CheckInstances {
         List<String> mainActors = new ArrayList<>();
         mainActors.add("Simba");
         mainActors.add("Scar");
-        HomeMovie homeMovie = new HomeMovie("Lion King מלך האריות", "Don", mainActors, "[Great movie, lots of animals]", "pic", 2);
+
+
+
+        //creat image
+        File newFile = new File(startPath + "lion_king.jpg");
+        String encodedImage = java.util.Base64.getEncoder().encodeToString(Files.readAllBytes(newFile.toPath()));
+
+        HomeMovie homeMovie = new HomeMovie("Lion King מלך האריות", "Don", mainActors, "[Great movie, lots of animals]", encodedImage, 2);
         session.save(homeMovie);
         session.flush();
         return homeMovie;
@@ -341,28 +359,37 @@ public class CheckInstances {
 
             InTheaterMovie[] inTheaterMovies= new InTheaterMovie[5];
 
+            //creat image
+            File[] newFiles = new File[5];
+            String[] encodedImages = new String[5];
+            for (int i=0;i<5;i++) {
+                newFiles[i] = new File(startPath+i+".jpg");
+                encodedImages[i] = java.util.Base64.getEncoder().encodeToString(Files.readAllBytes(newFiles[i].toPath()));
+
+            }
+
             List<String> mainActors1 = new ArrayList<String>();
             mainActors1.add("Zohar");
             mainActors1.add("Dan");
-            inTheaterMovies[0] = new InTheaterMovie("Mad Max מקס הזועם", "Amit Perry", mainActors1, "[Good movie]", "pic1");
+            inTheaterMovies[0] = new InTheaterMovie("Mad Max מקס הזועם", "Amit Perry", mainActors1, "[Good movie]", encodedImages[0]);
 
             List<String> mainActors2 = new ArrayList<>();
             mainActors2.add("Ceaser");
-            inTheaterMovies[1] = new InTheaterMovie("Planet of the Apes כוכב הקופים", "Peter", mainActors2, "[Movie about apes]", "pic2");
+            inTheaterMovies[1] = new InTheaterMovie("Planet of the Apes כוכב הקופים", "Peter", mainActors2, "[Movie about apes]", encodedImages[1]);
 
             List<String> mainActors3 = new ArrayList<>();
             mainActors3.add("Daniel");
-            inTheaterMovies[2] = new InTheaterMovie("Harry Potter הארי פוטר", "David", mainActors3, "[Movie about friendship and magics]", "pic3");
+            inTheaterMovies[2] = new InTheaterMovie("Harry Potter הארי פוטר", "David", mainActors3, "[Movie about friendship and magics]", encodedImages[2]);
 
             List<String> mainActors4 = new ArrayList<>();
             mainActors4.add("Luke");
             mainActors4.add("Han");
             mainActors4.add("Lia");
-            inTheaterMovies[3] = new InTheaterMovie("Star Wars מלחמת הכוכבים", "George Lucas", mainActors4, "[Movie about some guys waving light swords]", "pic4" );
+            inTheaterMovies[3] = new InTheaterMovie("Star Wars מלחמת הכוכבים", "George Lucas", mainActors4, "[Movie about some guys waving light swords]", encodedImages[3]);
 
             List<String> mainActors5 = new ArrayList<>();
             mainActors5.add("Kevin");
-            inTheaterMovies[4] = new InTheaterMovie("The Usual Suspects החשוד המיידי", "Bryan", mainActors5, "[Thrilling movie]", "pic5");
+            inTheaterMovies[4] = new InTheaterMovie("The Usual Suspects החשוד המיידי", "Bryan", mainActors5, "[Thrilling movie]", encodedImages[4]);
 
             Theater[] theaters = generateTheaters();
 
