@@ -357,32 +357,21 @@ public class SimpleServer extends AbstractServer {
 
 		//send message to subscription card owners
 		String messageBody = "הסרט: " + inTheaterMovie.getMovieName() + " נוסף לקולנוע. " + "\n" + "ניתן לצפות באתר בזמני ההקרנה של הסרט.";
-		List<Customer> customers = db.getAll(Customer.class, true);
-		for (Customer customer : customers) {
-			if(customer.isAvailableSubscriptionCardOwned()) {
-				CustomerMessage customerMessage = new CustomerMessage("סרט חדש בקולנוע!", "[" + messageBody + "]", LocalDateTime.now(), customer);
-				customer.addMessageToList(customerMessage);
-				System.out.println(customer.getFirstName());
-				db.addInstance(customerMessage);
-				db.updateEntity(customer);
+		List<SubscriptionCard> subscriptionCards = db.executeNativeQuery("SELECT * FROM subscriptioncards WHERE remainingTickets>0", SubscriptionCard.class);
+		ArrayList<Customer> cardOwners = new ArrayList<>();
+		for(SubscriptionCard subscriptionCard: subscriptionCards){
+			if(!cardOwners.contains(subscriptionCard.getOwner())){
+				cardOwners.add(subscriptionCard.getOwner());
 			}
 		}
-
-//		List<SubscriptionCard> subscriptionCards = db.executeNativeQuery("SELECT * FROM subscriptioncards WHERE remainingTickets>0", SubscriptionCard.class);
-//		ArrayList<Customer> cardOwners = new ArrayList<>();
-//		for(SubscriptionCard subscriptionCard: subscriptionCards){
-//			if(!cardOwners.contains(subscriptionCard.getOwner())){
-//				cardOwners.add(subscriptionCard.getOwner());
-//			}
-//		}
-//		for (Customer customer : cardOwners) {
-//				CustomerMessage customerMessage = new CustomerMessage("סרט חדש בקולנוע!", "[" + messageBody + "]", LocalDateTime.now(), customer);
-//				customer.addMessageToList(customerMessage);
-//				System.out.println(customer.getFirstName());
-//				db.addInstance(customerMessage);
-//				db.updateEntity(customer);
-//		}
-
+		for (Customer customer : cardOwners) {
+				CustomerMessage customerMessage = new CustomerMessage("סרט חדש בקולנוע!", "[" + messageBody + "]", LocalDateTime.now(), customer);
+				customer.addMessageToList(customerMessage);
+				db.addInstance(customerMessage);
+		}
+		for (Customer customer : cardOwners) {
+			db.updateEntity(customer);
+		}
 
 		sendMessage(message, "created new InTheaterMovie successfully", data, client);
 	}
