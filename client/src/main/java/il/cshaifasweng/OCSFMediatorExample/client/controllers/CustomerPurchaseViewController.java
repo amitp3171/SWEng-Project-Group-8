@@ -18,8 +18,10 @@ import il.cshaifasweng.OCSFMediatorExample.client.events.NewComplaintListEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewProductDetailsEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.WindowEvent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -68,6 +70,7 @@ public class CustomerPurchaseViewController implements DialogInterface {
         try {
             CinemaClient.sendToServer("request Product details", selectedPurchase.get("relatedProductId"));
         } catch (IOException e) {System.out.println(e.getMessage());};
+
     }
 
     @Subscribe
@@ -131,8 +134,10 @@ public class CustomerPurchaseViewController implements DialogInterface {
                     }
                     break;
             }
-            if (refundButton.isDisable())
+            if (refundButton.isDisable()) {
+                complaintButton.setText("הגש תלונה");
                 complaintButton.setDisable(false);
+            }
 
             System.out.println("Product details request received");
         });
@@ -143,8 +148,6 @@ public class CustomerPurchaseViewController implements DialogInterface {
         // Time and date strings
         String timeString = time;
         String dateString = date;
-
-
 
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

@@ -165,6 +165,10 @@ public class CinemaClient extends Application {
 
     }
 
+    public static Stage getStage() {
+        return appStage;
+    }
+
 	public static void main(String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {

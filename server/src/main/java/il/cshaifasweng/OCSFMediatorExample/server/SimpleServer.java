@@ -10,12 +10,16 @@ import il.cshaifasweng.OCSFMediatorExample.server.ocsf.SubscribedClient;
 import il.cshaifasweng.OCSFMediatorExample.server.dataClasses.*;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.lang.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class SimpleServer extends AbstractServer {
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
@@ -50,6 +54,39 @@ public class SimpleServer extends AbstractServer {
 		message.setMessage("client added successfully");
 		client.sendToClient(message);
 	}
+
+	public void scheduleMessage(Customer owner, HomeMovie homeMovie, Link newLink, LocalDate selectedDate, LocalTime selectedTime) {
+		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+		// Calculate the time for the message
+		LocalDateTime notificationTime = LocalDateTime.of(selectedDate, selectedTime).minusHours(1);
+		LocalDateTime now = LocalDateTime.now();
+		long delay = Duration.between(now, notificationTime).toSeconds();
+
+		if (delay > 0) {
+			Runnable messageTask = new Runnable() {
+				public void run() {
+
+						CustomerMessage customerMessage = new CustomerMessage(
+								"לינק זמין בקרוב",
+								"הלינק שרכשת לסרט " + homeMovie.getMovieName() + " יהפוך לזמין בעוד שעה. הלינק: " + newLink.getLink() + ". זמין מ:  " + newLink.getAvailableHour() + " עד " + newLink.getExpiresAt(),
+								LocalDateTime.now(),
+								owner
+						);
+
+						db.addInstance(customerMessage); // Save the message to the database
+						owner.addMessageToList(customerMessage); // Add the message to the customer's list
+						db.updateEntity(owner);
+						System.out.println("created upcoming available link message successfully");
+
+				}
+			};
+			scheduler.schedule(messageTask, delay, TimeUnit.SECONDS);
+		} else {
+			System.out.println("Notification time is in the past. Cannot schedule message.");
+		}
+	}
+
 
 	private void handleBranchListRequest(Message message, ConnectionToClient client) throws IOException {
 		List<Branch> receivedData = db.getAll(Branch.class, true);
@@ -484,7 +521,9 @@ public class SimpleServer extends AbstractServer {
 
 		Link newLink = new Link(owner, Double.parseDouble(productPrice), homeMovie, selectedDate, selectedTime);
 		Purchase newPurchase = new Purchase(newLink, owner, "Credit Card", LocalDate.now(), LocalTime.now());
-		CustomerMessage customerMessage = new CustomerMessage("לינק חדש",  "תודה שרכשת לינק לצפייה ביתית לסרט: " + homeMovie.getMovieName() + "\n" + "הקישור לסרט: " + newLink.getLink() + "\n" + "יהיה זמין בשעות: " + newLink.getAvailableHour() + "-" + newLink.getExpiresAt(), LocalDateTime.now(), owner);
+
+		String messageBody = "תודה שרכשת לינק לצפייה ביתית לסרט: " + homeMovie.getMovieName() + "\n" + "הקישור לסרט: " + newLink.getLink() + "\n" + "יהיה זמין בשעות: " + newLink.getAvailableHour() + "-" + newLink.getExpiresAt();
+		CustomerMessage customerMessage = new CustomerMessage("לינק חדש",  "[" + messageBody + "]", LocalDateTime.now(), owner);
 
 		owner.addMessageToList(customerMessage);
 		owner.addLinkToList(newLink);
@@ -494,6 +533,9 @@ public class SimpleServer extends AbstractServer {
 		db.addInstance(newPurchase);
 		db.updateEntity(owner);
 		sendMessage(message, "created Link Purchase successfully", "payment successful", client);
+
+		// Schedule the customer message creation
+		scheduleMessage(owner, homeMovie, newLink, selectedDate, selectedTime);
 	}
 
 	private void handleCreateSubscriptionCardPurchase(Message message, ConnectionToClient client) throws IOException {

@@ -40,13 +40,17 @@ public class HandleComplaintController implements DialogInterface{
         String refundAmount = this.refundAmount.getText();
         String response = this.response.getText();
         // send request to server
-        if(isPositiveInteger(refundAmount)) {
+        if(isPositiveInteger(refundAmount) && !(response.isEmpty())) {
             CinemaClient.sendToServer("handle complaint", String.join(",", selectedComplaint.get("id"), refundAmount, response));
             dialog.setResult(ButtonType.OK);
             dialog.close();
         }
-        else {
+        else if(!isPositiveInteger(refundAmount)) {
             statusLabel.setText("סכום הזיכוי חייב להיות מספר שלם!");
+            statusLabel.setVisible(true);
+        }
+        else {
+            statusLabel.setText("נא למלא את שדה התשובה ללקוח");
             statusLabel.setVisible(true);
         }
     }

@@ -44,7 +44,7 @@
                               <Insets right="3.0" />
                            </HBox.margin>
                         </Button>
-                        <Button fx:id="complaintButton" mnemonicParsing="false" onAction="#onSubmitComplaint" text="הגש תלונה" disable="true" />
+                        <Button fx:id="complaintButton" mnemonicParsing="false" onAction="#onSubmitComplaint" text="ניתן להגיש תלונה על המוצר רק לאחר שהוא פעיל" disable="true" />
                      </children>
                   </HBox>
                </children>
