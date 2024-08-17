@@ -28,7 +28,7 @@ public class CheckInstances {
     private static SessionFactory sessionFactory;
 
     //path to pictures file
-    private static String startPath = "C:\\Users\\Perry\\Downloads\\projectImages-20240816T200050Z-001\\projectImages\\";
+    private static String startPath = "C:\\Users\\Amit\\Downloads\\projectImages-20240817T134139Z-001\\projectImages\\";
 
 
     private static SessionFactory getSessionFactory() throws HibernateException {
@@ -46,8 +46,6 @@ public class CheckInstances {
         configuration.addAnnotatedClass(Link.class);
         configuration.addAnnotatedClass(SubscriptionCard.class);
         configuration.addAnnotatedClass(Ticket.class);
-        configuration.addAnnotatedClass(Purchase.class);
-        configuration.addAnnotatedClass(Complaint.class);
         configuration.addAnnotatedClass(Purchase.class);
         configuration.addAnnotatedClass(Complaint.class);
         configuration.addAnnotatedClass(ServiceEmployee.class);
