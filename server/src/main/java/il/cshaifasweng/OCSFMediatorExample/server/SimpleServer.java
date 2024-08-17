@@ -241,8 +241,11 @@ public class SimpleServer extends AbstractServer {
 		List<HomeMovie> receivedData = db.getAll(HomeMovie.class, forceRefresh);
 		ArrayList<String> movieToString = new ArrayList<>();
 
-		for (HomeMovie movie : receivedData)
-			movieToString.add(movie.toString());
+		List<Link> links = new ArrayList<>();
+		for (HomeMovie movie : receivedData) {
+			links = db.executeNativeQuery("SELECT * FROM links WHERE homeMovie_id=?", Link.class, movie);
+			movieToString.add(movie.toString() + "," + !links.isEmpty());
+		}
 
 		sendMessage(message, "updated HomeMovie list successfully", movieToString, client);
 	}

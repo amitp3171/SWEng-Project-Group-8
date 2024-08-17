@@ -66,8 +66,12 @@ public class RemoveHomeMovieController implements DialogInterface {
         int selectedIndex = chooseMovieComboBox.getSelectionModel().getSelectedIndex();
         Map<String, String> selectedMovie = homeMovies.get(selectedIndex);
 
+        if (selectedMovie.get("additionalFields").split(",")[1].equals("true")) {
+            statusLabel.setText("לא ניתן למחוק סרט זה כיוון שקיימות הקרנות פעילות");
+            statusLabel.setVisible(true);
+            return;
+        }
         CinemaClient.sendToServer("remove home movie", selectedMovie.get("id"));
-
         dialog.close();
     }
 }
