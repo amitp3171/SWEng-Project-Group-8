@@ -258,9 +258,15 @@ public class SimpleServer extends AbstractServer {
 
 		if (existingScreenings.isEmpty()) {
 			ScreeningTime screening = db.executeNativeQuery("SELECT * FROM ScreeningTimes WHERE id=?", ScreeningTime.class, splitMessage[0]).get(0);
+			InTheaterMovie relatedMovie = screening.getInTheaterMovie();
+			relatedMovie.removeScreeningTime(screening);
 			screening.setTime(splitMessage[2]);
 			screening.setDate(LocalDate.parse(splitMessage[1], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 			screening.setTheater(db.executeNativeQuery("SELECT * FROM Theaters WHERE theaterID=?", Theater.class, splitMessage[3]).get(0));
+			relatedMovie.addScreeningTime(screening);
+
+
+			db.updateEntity(relatedMovie);
 			db.updateEntity(screening);
 			data = "request successful";
 		}
@@ -829,9 +835,22 @@ public class SimpleServer extends AbstractServer {
 		ScreeningTime selectedScreeningTime = db.executeNativeQuery("SELECT * FROM screeningtimes WHERE id = ?", ScreeningTime.class, screeningTimeId).get(0);
 
 		InTheaterMovie relatedMovie = selectedScreeningTime.getInTheaterMovie();
+
+		//debug
+		System.out.println(relatedMovie.getMovieName());
+		System.out.println(selectedScreeningTime.getInTheaterMovie().getMovieName());
+
 		selectedScreeningTime.setInTheaterMovie(null);
+
+		//more debug
+
+		System.out.println(selectedScreeningTime.getTime());
+
 		relatedMovie.removeScreeningTime(selectedScreeningTime);
+
 		db.updateEntity(relatedMovie);
+
+
 
 		List<Seat> screeningSeats = selectedScreeningTime.getSeats();
 
