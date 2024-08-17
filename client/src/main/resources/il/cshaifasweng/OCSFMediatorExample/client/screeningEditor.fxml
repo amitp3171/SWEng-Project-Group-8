@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="310.0" prefWidth="349.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningEditorController">
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="310.0" prefWidth="349.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningEditorController">
    <content>
       <StackPane prefHeight="88.0" prefWidth="359.0">
          <children>
@@ -22,7 +22,7 @@
                      <font>
                         <Font size="15.0" />
                      </font></Label>
-                  <TextField fx:id="screeningHourTF" alignment="TOP_RIGHT" prefWidth="225.0" promptText="XX:XX" />
+                  <TextField fx:id="screeningHourTF" alignment="TOP_RIGHT" prefWidth="225.0" promptText="HH:mm" />
                   <Label alignment="TOP_CENTER" text="בחר תאריך:">
                      <font>
                         <Font size="15.0" />

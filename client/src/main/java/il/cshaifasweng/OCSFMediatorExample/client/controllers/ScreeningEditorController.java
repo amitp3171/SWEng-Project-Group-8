@@ -3,7 +3,9 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Map;
@@ -49,7 +51,6 @@ public class ScreeningEditorController implements DialogInterface {
         screeningHourTF.setText(((String)params[0]).split(",")[0]);
         this.selectedScreeningTime = (Map<String, String>) params[1];
         this.availableScreeningTimes = (ArrayList<Map<String, String>>) params[3];
-        screeningDatePicker.setValue(LocalDate.parse(selectedScreeningTime.get("date"), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         theaterChoiceBox.setValue(String.valueOf(1 + (Integer.parseInt(selectedScreeningTime.get("theaterId"))-1) % 10));
 
         if (this.selectedScreeningTime.get("additionalFields").equals("true")) {
@@ -90,6 +91,26 @@ public class ScreeningEditorController implements DialogInterface {
         String newDate = screeningDatePicker.getValue().toString();
         String newTheaterId = theaterIds.get(Integer.parseInt(theaterChoiceBox.getValue())-1);
 
+        // Validate the input time format
+        if (!isValidTime(newTime)) {
+            screeningExistsLabel.setText("השעה שנבחרה לא תקינה");
+            screeningExistsLabel.setVisible(true);
+            return;
+        }
+
+        // Check if the selected date is today
+        if (screeningDatePicker.getValue().isEqual(LocalDate.now())) {
+            LocalTime currentTime = LocalTime.now();
+            LocalTime selectedTime = LocalTime.parse(newTime, DateTimeFormatter.ofPattern("HH:mm"));
+
+            // Ensure the selected time is not earlier than the current time
+            if (selectedTime.isBefore(currentTime)) {
+                screeningExistsLabel.setText("לא ניתן לשנות את זמן ההקרנה למועד שכבר עבר");
+                screeningExistsLabel.setVisible(true);
+                return;
+            }
+        }
+
         for (Map<String, String> screening : availableScreeningTimes) {
             if (screening.get("time").equals(newTime) && screening.get("date").equals(newDate) && screening.get("theaterId").equals(newTheaterId)) {
                 screeningExistsLabel.setVisible(true);
@@ -110,6 +131,16 @@ public class ScreeningEditorController implements DialogInterface {
         dialog.close();
     }
 
+    private boolean isValidTime(String time) {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        try {
+            LocalTime.parse(time, timeFormatter);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
     //remove screening time if there are no tickets purchased
     @FXML
     void removeScreeningTime(ActionEvent event) {
@@ -123,5 +154,18 @@ public class ScreeningEditorController implements DialogInterface {
         // register to EventBus
         EventBus.getDefault().register(this);
         theaterChoiceBox.getItems().addAll(new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"});
+
+        // Set DatePicker to start from the current day
+        screeningDatePicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                if (date.isBefore(LocalDate.now())) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #ffc0cb;"); // Optionally, color past dates
+                }
+            }
+        });
+        screeningDatePicker.setValue(LocalDate.now()); // Set default value to current date
     }
 }

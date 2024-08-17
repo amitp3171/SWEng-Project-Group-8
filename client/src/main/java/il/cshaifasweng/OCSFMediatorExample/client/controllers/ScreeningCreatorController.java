@@ -2,6 +2,10 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -104,7 +108,43 @@ public class ScreeningCreatorController implements DialogInterface {
         // get text-field input
         String selectedDate = screeningDatePicker.getValue().toString();
         String selectedTime = screeningTimePromptTF.getText();
+
+        //check if a movie has been selected
+        if(inTheaterMovieChoiceBox.getSelectionModel().isEmpty()) {
+            creationStatusLabel.setText("יש לבחור סרט");
+            creationStatusLabel.setVisible(true);
+            return;
+        }
+
+        // Check if a theater has been selected
+        if (theaterChoiceBox.getSelectionModel().isEmpty()) {
+            creationStatusLabel.setText("יש לבחור אולם");
+            creationStatusLabel.setVisible(true);
+            return;
+        }
+
         String selectedTheaterId = theaters.get(theaterChoiceBox.getSelectionModel().getSelectedIndex());
+
+        // Validate the input time format
+        if (!isValidTime(selectedTime)) {
+            creationStatusLabel.setText("שעה לא תקינה");
+            creationStatusLabel.setVisible(true);
+            return;
+        }
+
+        // Check if the selected date is today
+        if (screeningDatePicker.getValue().isEqual(LocalDate.now())) {
+            LocalTime currentTime = LocalTime.now();
+            LocalTime selectedTimeParsed = LocalTime.parse(selectedTime, DateTimeFormatter.ofPattern("HH:mm"));
+
+            // Ensure the selected time is not earlier than the current time
+            if (selectedTimeParsed.isBefore(currentTime)) {
+                creationStatusLabel.setText("לא ניתן ליצור הקרנה למועד שכבר עבר");
+                creationStatusLabel.setVisible(true);
+                return;
+            }
+        }
+
         // send request to server
         CinemaClient.sendToServer("create ScreeningTime",
                 String.join(",",
@@ -116,6 +156,16 @@ public class ScreeningCreatorController implements DialogInterface {
                 );
     }
 
+    private boolean isValidTime(String time) {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        try {
+            LocalTime.parse(time, timeFormatter);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
     @FXML
     void onDateSelected(ActionEvent event) {}
 
@@ -124,6 +174,19 @@ public class ScreeningCreatorController implements DialogInterface {
         // register to EventBus
         EventBus.getDefault().register(this);
         theaterChoiceBox.getItems().addAll(new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"});
+
+        // Set DatePicker to start from the current day
+        screeningDatePicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                if (date.isBefore(LocalDate.now())) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #ffc0cb;"); // Optionally, color past dates
+                }
+            }
+        });
+        screeningDatePicker.setValue(LocalDate.now()); // Set default value to current date
     }
 
 }
