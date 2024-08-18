@@ -23,6 +23,7 @@ import org.greenrobot.eventbus.Subscribe;
  * JavaFX App
  */
 public class CinemaClient extends Application {
+    public static String ip;
     private static Stage appStage;
     private static Scene scene;
     private static SimpleClient client;
@@ -170,6 +171,12 @@ public class CinemaClient extends Application {
     }
 
 	public static void main(String[] args) {
+        if(args.length != 0){
+            ip = args[0];
+        }
+        else {
+            ip = "localhost";
+        }
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
                 userDataManager.logoutUser();
