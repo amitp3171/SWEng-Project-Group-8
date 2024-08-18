@@ -63,6 +63,10 @@ public class HomeMovieListController {
         CinemaClient.setContent("primary");
         EventBus.getDefault().unregister(this);
     }
+    @FXML
+    void showPersonalArea(ActionEvent event) throws IOException {
+        this.onGoBack(event);
+    }
 
     @FXML
     void onCloseProgram(ActionEvent event) {

@@ -26,6 +26,10 @@ public class ReportSelectionController {
     void onLogOut(ActionEvent event) throws IOException {
         CinemaClient.setContent("primary");
     }
+    @FXML
+    void showPersonalArea(ActionEvent event) throws IOException {
+        this.onGoBack(event);
+    }
 
     @FXML
     void onShowTicketReport(ActionEvent event) throws IOException {

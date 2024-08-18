@@ -252,9 +252,14 @@ public class InTheaterMoviePurchaseScreenController {
             return;
         }
 
+
         ButtonType status = CinemaClient.getDialogCreationManager().loadDialog("subscriptionCardPaymentPrompt", selectedSeats.size());
 
         handleDialogStatus(status, false);
+    }
+    @FXML
+    void showPersonalArea(ActionEvent event) throws IOException {
+        this.onGoBack(event);
     }
 
     @FXML
