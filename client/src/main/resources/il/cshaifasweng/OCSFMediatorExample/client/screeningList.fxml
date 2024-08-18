@@ -30,7 +30,6 @@
                   <MenuItem mnemonicParsing="false" onAction="#showPersonalArea" text="אזור אישי" />
 
                </items></Menu>
-            <Menu mnemonicParsing="false" text="עדכן" />
         </menus>
       </MenuBar>
    </top>

@@ -49,6 +49,15 @@ public class CustomerMessageInfoController {
         // get controller
         CinemaClient.setContent("customerMessageList").getController();
     }
+    @FXML
+    void onLogOut(ActionEvent event) throws IOException {
+        CinemaClient.setContent("primary");
+    }
+
+    @FXML
+    void showPersonalArea(ActionEvent event) throws IOException {
+        this.onGoBack(event);
+    }
 
     @FXML
     void initialize() {

@@ -18,8 +18,11 @@
                         <MenuItem mnemonicParsing="false" onAction="#onCloseProgram" text="סגור" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="משתמש" />
-                <Menu mnemonicParsing="false" text="עדכן" />
+                <Menu mnemonicParsing="false" text="משתמש">
+                <items>
+                    <MenuItem mnemonicParsing="false" onAction="#showPersonalArea" text="אזור אישי" />
+                    <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
+                </items></Menu>
             </menus>
         </MenuBar>
     </top>

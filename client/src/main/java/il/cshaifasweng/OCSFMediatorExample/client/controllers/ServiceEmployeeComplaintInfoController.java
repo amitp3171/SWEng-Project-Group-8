@@ -9,6 +9,7 @@ import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.greenrobot.eventbus.EventBus;
 
 public class ServiceEmployeeComplaintInfoController {
     @FXML
@@ -70,6 +71,19 @@ public class ServiceEmployeeComplaintInfoController {
     void onGoBack(ActionEvent event) throws IOException {
         // get controller
         CinemaClient.setContent("serviceEmployeeComplaintList").getController();
+    }
+    @FXML
+    void showPersonalArea(ActionEvent event) throws IOException {
+        EventBus.getDefault().unregister(this);
+        if (userDataManager.isCustomer())
+            CinemaClient.setContent("customerPersonalArea");
+        else
+            CinemaClient.setContent("employeePersonalArea");
+    }
+    @FXML
+    void onLogOut(ActionEvent event) throws IOException {
+        CinemaClient.setContent("primary");
+        EventBus.getDefault().unregister(this);
     }
 
     @FXML

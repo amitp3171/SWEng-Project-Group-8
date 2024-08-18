@@ -3,11 +3,13 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 import java.io.IOException;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
 public class ReportSelectionController {
+    UserDataManager userDataManager;
 
     @FXML
     private Button showSubscriptionCardLinkReportButton;
@@ -28,7 +30,10 @@ public class ReportSelectionController {
     }
     @FXML
     void showPersonalArea(ActionEvent event) throws IOException {
-        this.onGoBack(event);
+        if (userDataManager.isCustomer())
+            CinemaClient.setContent("customerPersonalArea");
+        else
+            CinemaClient.setContent("employeePersonalArea");
     }
 
     @FXML
@@ -48,6 +53,8 @@ public class ReportSelectionController {
 
     @FXML
     void initialize() {
+        userDataManager = CinemaClient.getUserDataManager();
+
         if (CinemaClient.getUserDataManager().getEmployeeType().equals("CompanyManager"))
             showSubscriptionCardLinkReportButton.setVisible(true);
     }

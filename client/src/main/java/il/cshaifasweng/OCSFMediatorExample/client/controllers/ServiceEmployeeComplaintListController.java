@@ -50,7 +50,10 @@ public class ServiceEmployeeComplaintListController {
 
     @FXML
     void showPersonalArea(ActionEvent event) throws IOException {
-        this.onGoBack(event);
+        if (userDataManager.isCustomer())
+            CinemaClient.setContent("customerPersonalArea");
+        else
+            CinemaClient.setContent("employeePersonalArea");
     }
 
     public void getComplaintList() throws IOException {

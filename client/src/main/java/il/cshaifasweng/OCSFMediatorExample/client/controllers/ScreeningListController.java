@@ -46,6 +46,7 @@ public class ScreeningListController {
     private ListView<String> screeningListView;
 
     DataParser dataParser;
+    UserDataManager userDataManager;
 
     private String selectedBranch;
     private Map<String, String> selectedMovie;
@@ -195,7 +196,11 @@ public class ScreeningListController {
     }
     @FXML
     void showPersonalArea(ActionEvent event) throws IOException {
-        this.onGoBack(event);
+        EventBus.getDefault().unregister(this);
+        if (userDataManager.isCustomer())
+            CinemaClient.setContent("customerPersonalArea");
+        else
+            CinemaClient.setContent("employeePersonalArea");
     }
 
     @FXML
@@ -303,6 +308,7 @@ public class ScreeningListController {
 
     @FXML
     void initialize() {
+        userDataManager = CinemaClient.getUserDataManager();
         dataParser = CinemaClient.getDataParser();
         // register to EventBus
         EventBus.getDefault().register(this);

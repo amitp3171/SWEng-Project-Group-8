@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewPriceChangeListRequestEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewServiceEmployeeComplaintListEvent;
 import javafx.application.Platform;
@@ -20,6 +21,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 public class EmployeeRequestListController {
+    UserDataManager userDataManager;
+
 
     @FXML
     private ListView<String> employeeRequestsListView;
@@ -59,7 +62,10 @@ public class EmployeeRequestListController {
 
     @FXML
     void showPersonalArea(ActionEvent event) throws IOException {
-        CinemaClient.setContent("employeePersonalArea");
+        if (userDataManager.isCustomer())
+            CinemaClient.setContent("customerPersonalArea");
+        else
+            CinemaClient.setContent("employeePersonalArea");
     }
 
     @Subscribe
@@ -107,6 +113,8 @@ public class EmployeeRequestListController {
 
     @FXML
     void initialize() throws IOException {
+        userDataManager = CinemaClient.getUserDataManager();
+
         EventBus.getDefault().register(this);
         dataParser = CinemaClient.getDataParser();
         CinemaClient.sendToServer("get Employee Price change requests");

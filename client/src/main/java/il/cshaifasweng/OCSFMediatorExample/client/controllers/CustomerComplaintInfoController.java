@@ -5,9 +5,11 @@ import java.util.*;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.greenrobot.eventbus.EventBus;
 
 public class CustomerComplaintInfoController {
 
@@ -19,6 +21,8 @@ public class CustomerComplaintInfoController {
 
     @FXML
     private Label responseLabel;
+
+    UserDataManager userDataManager;
 
     DataParser dataParser;
 
@@ -44,9 +48,21 @@ public class CustomerComplaintInfoController {
         // get controller
         CinemaClient.setContent("customerComplaintList").getController();
     }
+    @FXML
+    void showPersonalArea(ActionEvent event) throws IOException {
+        if (userDataManager.isCustomer())
+            CinemaClient.setContent("customerPersonalArea");
+        else
+            CinemaClient.setContent("employeePersonalArea");
+    }
+    @FXML
+    void onLogOut(ActionEvent event) throws IOException {
+        CinemaClient.setContent("primary");
+    }
 
     @FXML
-    void initialize() {
+    void initialize() throws IOException{
+        userDataManager = CinemaClient.getUserDataManager();
         dataParser = CinemaClient.getDataParser();
     }
 

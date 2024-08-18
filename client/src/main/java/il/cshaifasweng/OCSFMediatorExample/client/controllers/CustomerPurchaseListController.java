@@ -9,8 +9,10 @@ import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
 import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewComplaintListEvent;
+import il.cshaifasweng.OCSFMediatorExample.client.events.NewPurchaseListEvent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -48,7 +50,11 @@ public class CustomerPurchaseListController {
 
     @FXML
     void showPersonalArea(ActionEvent event) throws IOException {
-        this.onGoBack(event);
+        EventBus.getDefault().unregister(this);
+        if (userDataManager.isCustomer())
+            CinemaClient.setContent("customerPersonalArea");
+        else
+            CinemaClient.setContent("employeePersonalArea");
     }
 
     public void getUserPurchaseHistory() throws IOException {
@@ -56,7 +62,7 @@ public class CustomerPurchaseListController {
     }
 
     @Subscribe
-    public void onGetCustomerPurchaseListEvent(NewComplaintListEvent event) {
+    public void onGetCustomerPurchaseListEvent(NewPurchaseListEvent event) {
         // on event received
         Platform.runLater(() -> {
             try {

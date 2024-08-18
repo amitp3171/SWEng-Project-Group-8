@@ -6,6 +6,7 @@ import java.util.Map;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewProductPriceEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewPurchaseStatusEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewSeatListEvent;
@@ -61,6 +62,7 @@ public class InTheaterMoviePurchaseScreenController {
     private Label statusLabel;
 
     private DataParser dataParser;
+    UserDataManager userDataManager;
 
     private double productPrice;
 
@@ -259,7 +261,11 @@ public class InTheaterMoviePurchaseScreenController {
     }
     @FXML
     void showPersonalArea(ActionEvent event) throws IOException {
-        this.onGoBack(event);
+        EventBus.getDefault().unregister(this);
+        if (userDataManager.isCustomer())
+            CinemaClient.setContent("customerPersonalArea");
+        else
+            CinemaClient.setContent("employeePersonalArea");
     }
 
     @FXML
@@ -292,6 +298,8 @@ public class InTheaterMoviePurchaseScreenController {
 
     @FXML
     void initialize() throws IOException {
+        userDataManager = CinemaClient.getUserDataManager();
+
         dataParser = CinemaClient.getDataParser();
         EventBus.getDefault().register(this);
         CinemaClient.sendToServer("get Product price", "Ticket");
