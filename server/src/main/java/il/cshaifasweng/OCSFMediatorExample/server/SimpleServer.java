@@ -122,16 +122,29 @@ public class SimpleServer extends AbstractServer {
 		List<InTheaterMovie> receivedData = db.getAll(InTheaterMovie.class, forceRefresh);
 		ArrayList<String> movieToString = new ArrayList<>();
 
+		System.out.println("LOCAL TIME:" + LocalTime.now());
+
 		// attach flag
 		for (InTheaterMovie movie : receivedData) {
 			String isInBranch = ",false";
+			String hasActiveScreenings = ",false";
+
+			for (ScreeningTime screeningTime : movie.getScreenings()) {
+				if (
+						screeningTime.getBranch().getLocation().equals(selectedBranchLocation)
+								&& ((screeningTime.getTime().isAfter(LocalTime.now()) && screeningTime.getDate().isEqual(LocalDate.now())) || screeningTime.getDate().isAfter(LocalDate.now()))
+				) {
+					hasActiveScreenings = ",true";
+				}
+			}
+
 			for (Branch branch : movie.getBranches()) {
 				if (branch.getLocation().equals(selectedBranchLocation)) {
 					isInBranch = ",true";
 					break;
 				}
 			}
-			movieToString.add(movie.toString() + isInBranch);
+			movieToString.add(movie.toString() + isInBranch + hasActiveScreenings);
 		}
 
 		sendMessage(message, "updated InTheaterMovie list successfully", movieToString, client);
@@ -311,6 +324,7 @@ public class SimpleServer extends AbstractServer {
 			}
 			selectedMovie.addScreeningTime(newScreening);
 			db.updateEntity(selectedMovie);
+			db.updateEntity(newScreening);
 			data = "request successful";
 		}
 

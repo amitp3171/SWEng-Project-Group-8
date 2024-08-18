@@ -63,6 +63,9 @@ public class CheckInstances {
         configuration.setProperty("hibernate.connection.password", "babun13");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
+        configuration.setProperty("hibernate.id.new_generator_mappings", "false");
+
+
 
         ServiceRegistry serviceRegistry = new
                 StandardServiceRegistryBuilder()
