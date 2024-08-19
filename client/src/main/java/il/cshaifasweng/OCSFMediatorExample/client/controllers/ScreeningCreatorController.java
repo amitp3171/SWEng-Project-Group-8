@@ -90,8 +90,6 @@ public class ScreeningCreatorController implements DialogInterface {
         });
     }
 
-    // TODO: handle case when screeningtime already exists
-
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
     }

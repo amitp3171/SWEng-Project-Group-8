@@ -70,12 +70,12 @@ public class HomeMovieInfoController implements DialogInterface {
 
     public void setData(Object... params) {
         this.selectedMovie = (Map<String, String>) params[0];
-
+        System.out.println(selectedMovie.get("additionalFields"));
         String title = selectedMovie.get("title");
         String description = selectedMovie.get("description").substring(1, selectedMovie.get("mainActors").length() - 1);
         String mainActors = selectedMovie.get("mainActors").substring(1, selectedMovie.get("mainActors").length() - 1);
         String producerName = selectedMovie.get("producerName");
-        String movieLength = selectedMovie.get("additionalFields");
+        String[] movieLength = selectedMovie.get("additionalFields").split(",");
 
         String encodedImage = selectedMovie.get("picture");
 
@@ -90,13 +90,13 @@ public class HomeMovieInfoController implements DialogInterface {
         movieSummaryLabel.setText(String.format("תקציר: %s", description));
         primaryActorsLabel.setText(String.format("שחקנים ראשיים: %s", mainActors));
         producerNameLabel.setText(String.format("מפיק: %s", producerName));
-        movieLengthLabel.setText(String.format("משך הסרט: %s שעות", movieLength));
+        movieLengthLabel.setText(String.format("משך הסרט: %s שעות", movieLength[0]));
 
         movieLabel.setTooltip(new Tooltip(title));
         movieSummaryLabel.setTooltip(new Tooltip(description));
         primaryActorsLabel.setTooltip(new Tooltip(mainActors));
         producerNameLabel.setTooltip(new Tooltip(producerName));
-        movieLengthLabel.setTooltip(new Tooltip(movieLength));
+        movieLengthLabel.setTooltip(new Tooltip(movieLength[0]));
     }
 
     @FXML

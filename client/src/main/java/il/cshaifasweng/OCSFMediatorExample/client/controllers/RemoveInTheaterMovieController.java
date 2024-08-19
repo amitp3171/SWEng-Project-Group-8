@@ -44,7 +44,6 @@ public class RemoveInTheaterMovieController implements DialogInterface {
 
         for (int i = 0; i < this.inTheaterMovies.size(); i++) {
             items[i] = this.inTheaterMovies.get(i).get("movieName");
-            System.out.println(inTheaterMovies.get(i).toString());
         }
 
         chooseMovieComboBox.getItems().addAll(Arrays.asList(items));
