@@ -122,8 +122,6 @@ public class SimpleServer extends AbstractServer {
 		List<InTheaterMovie> receivedData = db.getAll(InTheaterMovie.class, forceRefresh);
 		ArrayList<String> movieToString = new ArrayList<>();
 
-		System.out.println("LOCAL TIME:" + LocalTime.now());
-
 		// attach flag
 		for (InTheaterMovie movie : receivedData) {
 			String isInBranch = ",false";
@@ -402,7 +400,6 @@ public class SimpleServer extends AbstractServer {
 	private void handleRemoveComingSoonMovie(Message message, ConnectionToClient client) throws IOException {
 		// Parse the incoming movie data string
 		String movieId = message.getData();
-		System.out.println(movieId);
 		ComingSoonMovie movieToRemove = db.executeNativeQuery("SELECT * FROM ComingSoonMovie WHERE id = ?", ComingSoonMovie.class, movieId).get(0);
 
 		//Remove movie
@@ -533,8 +530,6 @@ public class SimpleServer extends AbstractServer {
 		messageContent += "מספר המושבים: " + selectedSeats.size() + "\n";
 		messageContent +=	" כיסאות מספר: " + seatNumbers;
 		messageContent = "[" + messageContent + "]";
-		System.out.println(seatNumbers);
-		System.out.println(messageContent);
 		customerMessage.setMessageBody(messageContent);
 		owner.addMessageToList(customerMessage);
 		db.addInstance(customerMessage);
@@ -853,21 +848,11 @@ public class SimpleServer extends AbstractServer {
 
 		InTheaterMovie relatedMovie = selectedScreeningTime.getInTheaterMovie();
 
-		//debug
-		System.out.println(relatedMovie.getMovieName());
-		System.out.println(selectedScreeningTime.getInTheaterMovie().getMovieName());
-
 		selectedScreeningTime.setInTheaterMovie(null);
-
-		//more debug
-
-		System.out.println(selectedScreeningTime.getTime());
 
 		relatedMovie.removeScreeningTime(selectedScreeningTime);
 
 		db.updateEntity(relatedMovie);
-
-
 
 		List<Seat> screeningSeats = selectedScreeningTime.getSeats();
 
@@ -1054,8 +1039,6 @@ public class SimpleServer extends AbstractServer {
 			reportToString.add(String.valueOf(amount));
 		}
 
-		System.out.println(reportToString);
-
 		sendMessage(message, "updated Branch Ticket report successfully", reportToString, client);
 	}
 
@@ -1083,8 +1066,6 @@ public class SimpleServer extends AbstractServer {
 		for (int amount : ticketAmounts){
 			reportToString.add(String.valueOf(amount));
 		}
-
-		System.out.println(reportToString);
 
 		sendMessage(message, "updated Company Ticket report successfully", reportToString, client);
 	}
@@ -1114,40 +1095,8 @@ public class SimpleServer extends AbstractServer {
 			reportToString.add(String.valueOf(amount));
 		}
 
-		System.out.println(reportToString);
-
 		sendMessage(message, "updated Company SubscriptionCardLink report successfully", reportToString, client);
 	}
-
-//	private void handleBranchComplaintReportRequest(Message message, ConnectionToClient client) throws IOException {
-//
-//		List<Purchase> allPurchases = db.getAll(Purchase.class, false);
-//
-//		ArrayList<String> reportToString = new ArrayList<>();
-//		ArrayList<Integer> ticketAmounts = new ArrayList<>();
-//
-//		for (int i = 0; i < 31; ++i) {
-//			ticketAmounts.add(0);
-//		}
-//
-//		for (Purchase purchase: allPurchases){
-//			// if payment was made in current month
-//			if (purchase.getPaymentDate().getMonthValue() == LocalDate.now().getMonthValue() && purchase.getPaymentDate().getYear() == LocalDate.now().getYear()) {
-//				// if product is ticket
-//				if (purchase.getRelatedProduct().getClass().getName().substring(55).equals("Ticket")) {
-//					ticketAmounts.set(purchase.getPaymentDate().getDayOfMonth() - 1, ticketAmounts.get(purchase.getPaymentDate().getDayOfMonth() - 1) + 1);
-//				}
-//			}
-//		}
-//
-//		for (int amount : ticketAmounts){
-//			reportToString.add(String.valueOf(amount));
-//		}
-//
-//		System.out.println(reportToString);
-//
-//		sendMessage(message, "updated Company Ticket report successfully", reportToString, client);
-//	}
 
 	private void handleCompanyComplaintReportRequest(Message message, ConnectionToClient client) throws IOException {
 
@@ -1172,8 +1121,6 @@ public class SimpleServer extends AbstractServer {
 			reportToString.add(String.valueOf(amount));
 		}
 
-		System.out.println(reportToString);
-
 		sendMessage(message, "updated Company Complaint report successfully", reportToString, client);
 	}
 
@@ -1191,7 +1138,6 @@ public class SimpleServer extends AbstractServer {
 			if (complaint.getRelatedPurchase().getRelatedProduct().getClass().getName().substring(55).equals("Ticket")) {
 				Ticket ticket = db.executeNativeQuery("SELECT * FROM tickets WHERE id = ?", Ticket.class, complaint.getRelatedPurchase().getRelatedProduct().getId()).get(0);
 				if (ticket.getScreeningTime().getBranch().getLocation().equals(branch.getLocation())) {
-					System.out.println(ticket);
 					branchComplaints.add(complaint);
 				}
 			}
@@ -1216,8 +1162,6 @@ public class SimpleServer extends AbstractServer {
 			reportToString.add(String.valueOf(amount));
 		}
 
-		System.out.println(reportToString);
-
 		sendMessage(message, "updated Branch Complaint report successfully", reportToString, client);
 	}
 
@@ -1227,7 +1171,6 @@ public class SimpleServer extends AbstractServer {
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
 		String request = message.getMessage();
-		System.out.println("Received request: " + request);
 		try {
 			// if empty message is received
 			if (request.isBlank()){

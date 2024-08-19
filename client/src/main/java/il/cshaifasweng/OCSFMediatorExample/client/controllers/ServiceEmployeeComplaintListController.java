@@ -68,7 +68,6 @@ public class ServiceEmployeeComplaintListController {
             try {
                 ArrayList<String> receivedData = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
                 for (String complaintContent : receivedData) {
-                    System.out.println(complaintContent);
                     complaints.add(dataParser.parseComplaint(complaintContent));
                 }
             }
