@@ -28,7 +28,7 @@ public class CheckInstances {
     private static SessionFactory sessionFactory;
 
     //path to pictures file
-    private static String startPath = "C:\\Users\\Amit\\Downloads\\projectImages-20240817T134139Z-001\\projectImages\\";
+    private static String startPath = "C:\\Users\\Perry\\Downloads\\projectImages-20240816T200050Z-001\\projectImages\\";
 
 
     private static SessionFactory getSessionFactory() throws HibernateException {
