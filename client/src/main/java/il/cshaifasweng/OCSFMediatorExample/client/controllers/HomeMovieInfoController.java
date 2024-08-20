@@ -100,7 +100,7 @@ public class HomeMovieInfoController implements DialogInterface {
         primaryActorsLabel.setText(String.format("שחקנים ראשיים: %s", mainActors));
         producerNameLabel.setText(String.format("מפיק: %s", producerName));
         movieLengthLabel.setText(String.format("משך הסרט: %s שעות", movieLength[0]));
-
+        headerLabel.setText(String.format("הסרט יהיה זמין לצפייה ל-%s שעות לאחר הפעלת הקישור", Double.parseDouble(movieLength[0]) + 1));
         movieLabel.setTooltip(new Tooltip(title));
         movieSummaryLabel.setTooltip(new Tooltip(description));
         primaryActorsLabel.setTooltip(new Tooltip(mainActors));

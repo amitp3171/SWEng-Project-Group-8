@@ -81,7 +81,7 @@
         </VBox>
     </content>
    <header>
-      <Label fx:id="headerLabel" alignment="TOP_CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" prefHeight="54.0" prefWidth="462.0" text="הסרט יהיה זמין לצפייה ל-3 שעות לאחר הפעלת הקישור" textAlignment="CENTER" wrapText="true">
+      <Label fx:id="headerLabel" alignment="TOP_CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" prefHeight="54.0" prefWidth="462.0" textAlignment="CENTER" wrapText="true">
          <font>
             <Font size="16.0" />
          </font>
