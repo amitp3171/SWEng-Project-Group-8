@@ -299,7 +299,10 @@ public class InTheaterMoviePurchaseScreenController {
     @FXML
     void initialize() throws IOException {
         userDataManager = CinemaClient.getUserDataManager();
-
+        if(userDataManager.isEmployee()){
+            cardPurchaseButton.setVisible(false);
+            subscriptionCardPurchaseButton.setVisible(false);
+        }
         dataParser = CinemaClient.getDataParser();
         EventBus.getDefault().register(this);
         CinemaClient.sendToServer("get Product price", "Ticket");

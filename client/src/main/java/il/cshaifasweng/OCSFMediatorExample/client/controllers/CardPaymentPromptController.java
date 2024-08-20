@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewProductPriceEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewPurchaseStatusEvent;
 import javafx.application.Platform;
@@ -41,6 +42,7 @@ public class CardPaymentPromptController implements DialogInterface {
     @FXML
     private Button closeDialogButton;
 
+    UserDataManager userDataManager;
     Dialog<ButtonType> dialog;
 
     double productPrice;
@@ -78,7 +80,10 @@ public class CardPaymentPromptController implements DialogInterface {
 
     @FXML
     void initialize() {
-
+        userDataManager = CinemaClient.getUserDataManager();
+        if (userDataManager.isEmployee()) {
+            this.payButton.setVisible(false);
+        }
     }
 
 }

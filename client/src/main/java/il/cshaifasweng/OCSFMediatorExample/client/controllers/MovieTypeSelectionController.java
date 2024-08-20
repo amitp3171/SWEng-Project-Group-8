@@ -23,6 +23,9 @@ public class MovieTypeSelectionController {
     @FXML
     private Menu actionsMenu;
 
+    @FXML
+    private Button buySubscriptionCard;
+
     UserDataManager userDataManager;
 
     @FXML
@@ -92,6 +95,9 @@ public class MovieTypeSelectionController {
         if (userDataManager.isGuest()) {
             welcomeUserLabel.setText("ברוך הבא אורח!");
             return;
+        }
+        if(userDataManager.isEmployee()){
+            buySubscriptionCard.setVisible(false);
         }
 
         if (userDataManager.isEmployee() && (userDataManager.getEmployeeType().equals("ContentManager") || userDataManager.getEmployeeType().equals("CompanyManager"))) {

@@ -10,6 +10,7 @@ import java.util.ResourceBundle;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
 import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewProductPriceEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewPurchaseStatusEvent;
 import javafx.application.Platform;
@@ -22,6 +23,8 @@ import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import javax.swing.*;
 import java.util.*;
 
 public class HomeMovieInfoController implements DialogInterface {
@@ -56,6 +59,10 @@ public class HomeMovieInfoController implements DialogInterface {
     @FXML
     private DatePicker linkActivationDatePicker;
 
+    @FXML
+    private Button purchaseButton;
+
+
     private LocalDate selectedDate;
 
     private Dialog<ButtonType> dialog;
@@ -63,6 +70,8 @@ public class HomeMovieInfoController implements DialogInterface {
     private Map<String, String> selectedMovie;
 
     private double productPrice;
+
+    UserDataManager userDataManager;
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
@@ -210,7 +219,15 @@ public class HomeMovieInfoController implements DialogInterface {
     @FXML
     void initialize() throws IOException {
         EventBus.getDefault().register(this);
-        initializeDatePicker();
+        userDataManager = CinemaClient.getUserDataManager();
+        if(userDataManager.isEmployee()){
+            this.linkActivationDatePicker.setVisible(false);
+            this.selectedTime.setVisible(false);
+            this.purchaseButton.setVisible(false);
+        }
+        else{
+            initializeDatePicker();
+        }
         CinemaClient.sendToServer("get Product price", "Link");
     }
 }

@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.MovieTypeSelectionController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.MovieTypeSelectionController">
     <top>
         <MenuBar nodeOrientation="RIGHT_TO_LEFT" BorderPane.alignment="CENTER">
             <menus>
@@ -57,7 +57,7 @@
                         <Insets top="5.0" />
                     </VBox.margin>
                 </Button>
-                <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onBuySubscriptionCard" prefHeight="30.0" text="רכישת כרטיסייה">
+                <Button fx:id="buySubscriptionCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onBuySubscriptionCard" prefHeight="30.0" text="רכישת כרטיסייה">
                     <VBox.margin>
                         <Insets top="5.0" />
                     </VBox.margin>

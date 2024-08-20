@@ -63,7 +63,7 @@
                         <Insets bottom="10.0" left="5.0" right="5.0" />
                      </HBox.margin>
                   </Button>
-                  <Button mnemonicParsing="false" onAction="#onPurchaseButton" text="לרכישה">
+                  <Button fx:id="purchaseButton" mnemonicParsing="false" onAction="#onPurchaseButton" text="לרכישה">
                      <HBox.margin>
                         <Insets bottom="10.0" left="5.0" right="5.0" />
                      </HBox.margin>

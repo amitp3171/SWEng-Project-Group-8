@@ -28,8 +28,8 @@
           </Menu>
             <Menu mnemonicParsing="false" text="משתמש">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
                    <MenuItem mnemonicParsing="false" onAction="#showPersonalArea" text="אזור אישי" />
+                   <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
                </items></Menu>
             <Menu mnemonicParsing="false" text="עדכן" />
         </menus>
