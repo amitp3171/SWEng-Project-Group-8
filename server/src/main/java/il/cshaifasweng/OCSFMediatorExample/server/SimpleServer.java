@@ -762,9 +762,9 @@ public class SimpleServer extends AbstractServer {
 		Seat selectedSeat = selectedTicket.getSeat();
 
 		Customer owner = selectedTicket.getOwner();
-
-		CustomerMessage customerMessage = new CustomerMessage("פיצוי כספי", "קיבלת פיצוי כספי עבור רכישת כרטיס לסרט: " + selectedTicket.getMovieName() + " בסך " + selectedTicket.getPrice() + " שח ", LocalDateTime.now(), owner);
-
+		String messageBody = "קיבלת פיצוי כספי עבור רכישת כרטיס לסרט: " + selectedTicket.getMovieName() + " בסך " + selectedTicket.getPrice() + " שח ";
+		messageBody = "[" + messageBody + "]";
+		CustomerMessage customerMessage = new CustomerMessage("פיצוי כספי", messageBody , LocalDateTime.now(), owner);
 		owner.addMessageToList(customerMessage);
 
 		db.addInstance(customerMessage);
@@ -814,8 +814,9 @@ public class SimpleServer extends AbstractServer {
 		}
 
 		Customer owner = selectedLink.getOwner();
-
-		CustomerMessage customerMessage = new CustomerMessage("פיצוי כספי", "קיבלת פיצוי כספי עבור רכישת לינק לסרט: " + selectedLink.getHomeMovie().getMovieName() + " בסך " + selectedLink.getPrice() + " שח ", LocalDateTime.now(), owner);
+		String messageBody = "קיבלת פיצוי כספי עבור רכישת לינק לסרט: " + selectedLink.getHomeMovie().getMovieName() + " בסך " + selectedLink.getPrice() + " שח ";
+		messageBody = "[" + messageBody + "]";
+		CustomerMessage customerMessage = new CustomerMessage("פיצוי כספי", messageBody , LocalDateTime.now(), owner);
 
 		owner.addMessageToList(customerMessage);
 

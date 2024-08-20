@@ -29,8 +29,8 @@ public class CustomerMessageInfoController {
     public void setSelectedMessage(Map<String, String> selectedMessage) throws IOException {
         this.selectedMessage = selectedMessage;
         String title = selectedMessage.get("messageHeadline");
-        //String content = selectedMessage.get("messageBody").substring(1, selectedMessage.get("messageBody").length() - 1);
-        String content = selectedMessage.get("messageBody");
+        String content = selectedMessage.get("messageBody").substring(1, selectedMessage.get("messageBody").length() - 1);
+        //String content = selectedMessage.get("messageBody");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedSendTime = selectedMessage.get("sendTime").formatted(formatter);
 
