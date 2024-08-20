@@ -32,6 +32,10 @@ public class ApproveEmployeeRequestViewController implements DialogInterface {
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
+
+        this.dialog.setOnCloseRequest(event -> {
+            dialog.setResult(status);
+        });
     }
 
     public void setData(Object... params) {

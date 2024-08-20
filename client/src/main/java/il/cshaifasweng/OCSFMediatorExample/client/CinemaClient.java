@@ -175,7 +175,7 @@ public class CinemaClient extends Application {
             ip = args[0];
         }
         else {
-            ip = "localhost";
+            ip = "10.0.0.5";
         }
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {

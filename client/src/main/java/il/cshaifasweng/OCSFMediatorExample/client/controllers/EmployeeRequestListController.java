@@ -50,6 +50,7 @@ public class EmployeeRequestListController {
         ButtonType status = CinemaClient.getDialogCreationManager().loadDialog("approveEmployeeRequestView", selectedRequest);
 
         if (status.equals(ButtonType.OK)) {
+            System.out.println(selectedRequest.toString());
             int selectedIndex = employeeRequestsListView.getSelectionModel().getSelectedIndex();
             employeeRequestsListView.getItems().set(selectedIndex, "בקשה #" + selectedRequest.get("id") + " : " + parseStatus(selectedRequest.get("status")));
         }
