@@ -120,7 +120,6 @@ public class AddInTheaterMovieController implements DialogInterface {
 
         File selectedFile = fileChooser.showOpenDialog(CinemaClient.getStage());
         if (selectedFile != null) {
-            System.out.println(selectedFile.toPath());
             this.encodedImage = java.util.Base64.getEncoder().encodeToString(Files.readAllBytes(selectedFile.toPath()));
 
         }

@@ -63,7 +63,6 @@ public class CustomerPurchaseViewController implements DialogInterface {
     }
     public void setData(Object... params) {
         this.selectedPurchase = (Map<String, String>) params[0];
-        System.out.println(selectedPurchase.toString());
         purchaseDateLabel.setText(String.join(" ,", selectedPurchase.get("paymentTime"), selectedPurchase.get("paymentDate")));
         if (selectedPurchase.get("paymentMethod").equals("Credit Card"))
             paymentMethodLabel.setText("כרטיס אשראי");
@@ -120,8 +119,6 @@ public class CustomerPurchaseViewController implements DialogInterface {
                     LocalDateTime availableAt = LocalDateTime.of(availableDate, availableTime);
                     LocalDateTime expiresAt = LocalDateTime.parse(this.relatedProduct.get("expiresAt"), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
 
-                    System.out.println(relatedProduct.toString());
-
                     if (LocalDateTime.now().plusHours(1).isAfter(availableAt.plusHours(1))) {
                         refundButton.setText("ניתן לבטל עד שעה לפני מועד הפעלת הקישור");
                         refundButton.setDisable(true);
@@ -158,8 +155,6 @@ public class CustomerPurchaseViewController implements DialogInterface {
         LocalDate parsedDate = LocalDate.parse(dateString, dateFormatter);
         LocalDateTime parsedDateTime = LocalDateTime.of(parsedDate, parsedTime);
         LocalDateTime currentTime = LocalDateTime.now().withSecond(0).withNano(0);
-        System.out.println("Parsed LocalDateTime: " + parsedDateTime);
-        System.out.println("Current LocalDateTime: " + currentTime);
         return currentTime.isBefore(parsedDateTime);
     }
 

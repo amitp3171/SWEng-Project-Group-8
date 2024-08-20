@@ -77,7 +77,6 @@ public class CustomerRefundRequestViewController implements DialogInterface {
 
     @FXML
     void cancelRefundRequest(ActionEvent event) {
-//        EventBus.getDefault().unregister(this);
         dialog.setResult(this.refundStatus);
         dialog.close();
     }
@@ -99,29 +98,8 @@ public class CustomerRefundRequestViewController implements DialogInterface {
         this.refundStatus = ButtonType.OK;
     }
 
-//    @Subscribe
-//    public void onGetCustomerPurchaseListEvent(NewComplaintListEvent event) {
-//        // on event received
-//        Platform.runLater(() -> {
-////            try {
-////                customerPurchases.clear();
-////                ArrayList<String> receivedData = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
-////                for (String purchase : receivedData) {
-////                    customerPurchases.add(dataParser.parsePurchase(purchase));
-////                }
-////            }
-////            catch (IOException e) {
-////                e.printStackTrace();
-////            }
-////            // update list
-////            initializeList();
-////            System.out.println("Customer Purchase list request received");
-//        });
-//    }
-
     @FXML
     void initialize() {
-//        EventBus.getDefault().register(this);
     }
 
 }

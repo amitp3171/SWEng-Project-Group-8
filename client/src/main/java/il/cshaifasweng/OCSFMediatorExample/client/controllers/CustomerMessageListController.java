@@ -59,7 +59,6 @@ public class CustomerMessageListController {
             try {
                 ArrayList<String> receivedData = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
                 for (String messageContent : receivedData) {
-                    System.out.println(messageContent);
                     messages.add(dataParser.parseCustomerMessage(messageContent));
                 }
             }
