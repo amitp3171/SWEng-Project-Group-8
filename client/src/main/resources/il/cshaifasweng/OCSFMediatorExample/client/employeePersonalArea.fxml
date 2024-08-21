@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.EmployeePersonalAreaController">
+    <top>
+        <MenuBar nodeOrientation="RIGHT_TO_LEFT" BorderPane.alignment="CENTER">
+            <menus>
+                <Menu mnemonicParsing="false" text="חלון">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#onGoBack" text="חזור" />
+                        <MenuItem mnemonicParsing="false" onAction="#onCloseProgram" text="סגור" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="משתמש">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <center>
+        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+
+        <children>
+                <Label fx:id="welcomeUserLabel" text="ברוך הבא">
+                    <font>
+                        <Font size="45.0" />
+                    </font>
+                </Label>
+                <Button fx:id="complaintListButton" minHeight="30.0" minWidth="215.0" mnemonicParsing="false" onAction="#onShowComplaints" prefHeight="31.0" prefWidth="213.0" text="רשימת תלונות">
+                    <VBox.margin>
+                        <Insets top="5.0" />
+                    </VBox.margin>
+                </Button>
+                <Button fx:id="reportListButton" minHeight="30.0" minWidth="215.0" mnemonicParsing="false" onAction="#onShowReports" prefHeight="31.0" prefWidth="213.0" text="צפייה בדוחות" visible="false">
+                    <VBox.margin>
+                        <Insets top="5.0" />
+                    </VBox.margin>
+                </Button>
+                <Button fx:id="showEmployeeRequestsButton" minHeight="30.0" minWidth="215.0" mnemonicParsing="false" onAction="#onShowEmployeeRequests" prefHeight="30.0" prefWidth="215.0" text="בקשות עדכון מחירים" visible="false">
+                    <VBox.margin>
+                        <Insets top="5.0" />
+                    </VBox.margin>
+                </Button>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

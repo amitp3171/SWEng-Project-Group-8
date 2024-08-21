@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="343.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.CustomerPurchaseViewController">
+   <content>
+      <StackPane prefHeight="150.0" prefWidth="360.0">
+         <children>
+            <VBox alignment="TOP_RIGHT" minHeight="-Infinity" minWidth="-Infinity" prefHeight="0.0" prefWidth="340.0" spacing="10.0" StackPane.alignment="CENTER">
+               <children>
+                  <Label alignment="TOP_CENTER" text="תאריך ביצוע:">
+                     <font>
+                        <Font size="15.0" />
+                     </font></Label>
+                  <Label fx:id="purchaseDateLabel" text="תאריך" />
+                  <Label alignment="TOP_CENTER" text="אופן תשלום:">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="paymentMethodLabel" text="אופן תשלום" />
+                  <Label alignment="TOP_CENTER" text="מוצר:">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="productDescLabel" alignment="TOP_LEFT" contentDisplay="RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="340.0" text="תיאור מוצר" wrapText="true" />
+                  <HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="refundButton" mnemonicParsing="false" onAction="#onRefundRequested" text="בקש החזר כספי" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="340.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#onCancelPressed" text="בטל">
+                           <HBox.margin>
+                              <Insets right="3.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="complaintButton" mnemonicParsing="false" onAction="#onSubmitComplaint" text="ניתן להגיש תלונה על המוצר רק לאחר שהוא פעיל" disable="true" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </StackPane>
+   </content>
+</DialogPane>

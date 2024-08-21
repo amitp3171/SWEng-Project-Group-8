@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.util.*;
 
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewInTheaterMovieListEvent;
-import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import org.greenrobot.eventbus.EventBus;
@@ -23,40 +22,32 @@ public class InTheaterMovieListController {
     @FXML
     private Label branchNameLabel;
 
-    private String firstName;
-    private String lastName;
-    private String govId = null;
+    @FXML
+    private Menu addMenu;
 
-    private boolean isGuest = false;
+    @FXML
+    private Menu removeMenu;
 
-    private String employeeUserName = null;
-    private String employeeType = null;
+    @FXML
+    private MenuItem addScreeningMenuitem;
 
-    private ArrayList<String> allInTheaterMovies;
+    @FXML
+    private MenuItem addMovieMenuItem;
 
-    private ArrayList<String> inTheaterMovies;
+    @FXML
+    private MenuItem removeMovieMenuItem;
+
+    UserDataManager userDataManager;
+
+    DataParser dataParser;
+
+    private ArrayList<Map<String, String>> allInTheaterMovies = new ArrayList<>();
+
+    private ArrayList<Map<String, String>> inTheaterMovies = new ArrayList<>();
 
     private String selectedBranch;
 
     private boolean forceRefresh;
-
-    void setCustomerData() {
-        this.isGuest = true;
-    }
-
-    void setCustomerData(String firstName, String lastName, String govId) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.govId = govId;
-    }
-
-    void setEmployeeData(String firstName, String lastName, String userName, String employeeType) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.employeeUserName = userName;
-        this.employeeType = employeeType;
-        this.isGuest = false;
-    }
 
     public void setSelectedBranch(String branchLocation) throws IOException {
         selectedBranch = branchLocation;
@@ -71,19 +62,10 @@ public class InTheaterMovieListController {
 
         // get screeningTime object
         int selectedIndex = movieListView.getSelectionModel().getSelectedIndex();
-        String selectedMovie = inTheaterMovies.get(selectedIndex);
-
-        // load screening list selector
-        FXMLLoader screeningLoader = CinemaClient.setContent("screeningList");
+        Map<String, String> selectedMovie = inTheaterMovies.get(selectedIndex);
 
         // set selected movie
-        ScreeningListController screeningController = screeningLoader.getController();
-        if (this.isGuest)
-            screeningController.setCustomerData();
-        else if (this.employeeType == null)
-            screeningController.setCustomerData(this.firstName, this.lastName, this.govId);
-        else
-            screeningController.setEmployeeData(this.firstName, this.lastName, this.employeeUserName, this.employeeType);
+        ScreeningListController screeningController = CinemaClient.setContent("screeningList").getController();
         screeningController.setSelectedBranch(selectedBranch);
         screeningController.setSelectedMovie(selectedMovie, forceRefresh);
 
@@ -92,14 +74,22 @@ public class InTheaterMovieListController {
 
     @FXML
     void onGoBack(ActionEvent event) throws IOException {
-        MovieTypeSelectionController movieTypeSelectionController = CinemaClient.setContent("movieTypeSelection").getController();
-        if (isGuest)
-            movieTypeSelectionController.setCustomerData();
-        else if (this.employeeType == null)
-            movieTypeSelectionController.setCustomerData(this.firstName, this.lastName, this.govId);
-        else
-            movieTypeSelectionController.setEmployeeData(this.firstName, this.lastName, this.employeeUserName, this.employeeType);
+        CinemaClient.setContent("movieTypeSelection");
         EventBus.getDefault().unregister(this);
+    }
+
+    @FXML
+    void onLogOut(ActionEvent event) throws IOException {
+        CinemaClient.setContent("primary");
+        EventBus.getDefault().unregister(this);
+    }
+    @FXML
+    void showPersonalArea(ActionEvent event) throws IOException {
+        EventBus.getDefault().unregister(this);
+        if (userDataManager.isCustomer())
+            CinemaClient.setContent("customerPersonalArea");
+        else
+            CinemaClient.setContent("employeePersonalArea");
     }
 
     @FXML
@@ -109,38 +99,25 @@ public class InTheaterMovieListController {
 
     @FXML
     void onAddScreening(ActionEvent event) throws IOException {
-        // load dialog fxml
-        FXMLLoader dialogLoader = CinemaClient.getFXMLLoader("screeningCreator");
-        DialogPane screeningCreatorDialogPane = (DialogPane) CinemaClient.loadFXML(dialogLoader);
+        CinemaClient.getDialogCreationManager().loadDialog("screeningCreator", this.allInTheaterMovies, this.selectedBranch);
+    }
 
-        // get controller
-        ScreeningCreatorController screeningCreatorController = dialogLoader.getController();
-        screeningCreatorController.setData(this.allInTheaterMovies, this.selectedBranch);
+    @FXML
+    void onAddMovie(ActionEvent event) throws IOException {
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("addInTheaterMovie", this.inTheaterMovies, this.selectedBranch);
+        if (result.equals(ButtonType.OK))
+            requestInTheaterMovieList(true);
+    }
 
-        // create new dialog
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.getDialogPane().setContent(screeningCreatorDialogPane);
-        screeningCreatorController.setDialog(dialog);
-
-        // create hidden close button to support the close button (X)
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
-        closeButton.setVisible(false);
-
-        // show dialog
-        dialog.showAndWait();
-
-        // unregister dialog in case X button was pressed
-        if (EventBus.getDefault().isRegistered(screeningCreatorController)) EventBus.getDefault().unregister(screeningCreatorController);
+    @FXML
+    void onRemoveMovie(ActionEvent event) throws IOException {
+        ButtonType result = CinemaClient.getDialogCreationManager().loadDialog("removeInTheaterMovie", this.inTheaterMovies, this.selectedBranch);
+        if (result.equals(ButtonType.OK))
+            requestInTheaterMovieList(true);
     }
 
     private void requestInTheaterMovieList(boolean forceRefresh) throws IOException {
-        // send request to server
-        int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "get InTheaterMovie list");
-        newMessage.setData(String.format("%s,%s", selectedBranch, forceRefresh));
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("InTheaterMovie request sent");
+        CinemaClient.sendToServer("get InTheaterMovie list", String.join(",", selectedBranch, String.valueOf(forceRefresh)));
     }
 
     void initializeList() {
@@ -148,7 +125,7 @@ public class InTheaterMovieListController {
         // get movie names
         String[] movieNames = new String[inTheaterMovies.size()];
         for (int i = 0; i < movieNames.length; i++) {
-            movieNames[i] = inTheaterMovies.get(i).split(",")[1];
+            movieNames[i] = inTheaterMovies.get(i).get("movieName");
         }
         // display movies
         movieListView.getItems().addAll(movieNames);
@@ -159,16 +136,20 @@ public class InTheaterMovieListController {
         // on event received
         Platform.runLater(() -> {
             try {
-                inTheaterMovies = new ArrayList<>();
-                allInTheaterMovies = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+                this.allInTheaterMovies.clear();
+                this.inTheaterMovies.clear();
 
-                for (String movie : allInTheaterMovies) {
-                    boolean isInBranch = Boolean.parseBoolean(movie.split(",")[7]);
+                ArrayList<String> messageData = CinemaClient.getMapper().readValue(event.getMessage().getData(), ArrayList.class);
+
+                for (String movie : messageData) {
+                    Map<String, String> movieDictionary = dataParser.parseMovie(movie);
+                    allInTheaterMovies.add(movieDictionary);
+
+                    boolean isInBranch = Boolean.parseBoolean(movieDictionary.get("additionalFields").split(",")[0]);
                     if (isInBranch)
-                        inTheaterMovies.add(movie);
+                        inTheaterMovies.add(movieDictionary);
                 }
 
-                // update list
                 if (!inTheaterMovies.isEmpty())
                     initializeList();
             }
@@ -187,7 +168,19 @@ public class InTheaterMovieListController {
 
     @FXML
     void initialize() throws IOException {
+        userDataManager = CinemaClient.getUserDataManager();
+        dataParser = CinemaClient.getDataParser();
+
         forceRefresh = false;
+
+        if (userDataManager.isEmployee() && userDataManager.getEmployeeType().equals("ContentManager")) {
+            addMenu.setVisible(true);
+            addScreeningMenuitem.setVisible(true);
+            addMovieMenuItem.setVisible(true);
+            removeMenu.setVisible(true);
+            removeMovieMenuItem.setVisible(true);
+        }
+
         // register to EventBus
         EventBus.getDefault().register(this);
     }

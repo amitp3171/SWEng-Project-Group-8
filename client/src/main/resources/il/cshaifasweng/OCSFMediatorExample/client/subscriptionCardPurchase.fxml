@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.SubscriptionCardPurchaseController">
+   <content>
+      <StackPane prefHeight="88.0" prefWidth="359.0">
+         <children>
+            <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="0.0" prefWidth="340.0" spacing="10.0" StackPane.alignment="CENTER">
+               <children>
+                  <Label text="הכרטיסייה מקנה 20 כרטיסים לסרטים המוקרנים ברשת." textAlignment="CENTER" wrapText="true" />
+                  <Label text="שימו לב כי אין אפשרות לקבל החזר כספי על רכישת כרטיסייה." textAlignment="CENTER" wrapText="true" />
+                  <Label alignment="TOP_CENTER" text="בחר כמות:">
+                     <font>
+                        <Font size="15.0" />
+                     </font></Label>
+                  <ComboBox fx:id="selectAmountListBox" prefWidth="150.0" />
+                  <HBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="340.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#cancelPurchase" text="בטל">
+                           <HBox.margin>
+                              <Insets right="3.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#onPayment" text="לתשלום" />
+                     </children>
+                  </HBox>
+                  <Label fx:id="paymentStatusLabel" alignment="TOP_CENTER" text="סטטוס" visible="false" wrapText="true" />
+               </children>
+            </VBox>
+         </children>
+      </StackPane>
+   </content>
+</DialogPane>

@@ -23,10 +23,14 @@ import org.greenrobot.eventbus.Subscribe;
  * JavaFX App
  */
 public class CinemaClient extends Application {
+    public static String ip;
     private static Stage appStage;
     private static Scene scene;
     private static SimpleClient client;
     private static ObjectMapper mapper = new ObjectMapper();
+    private static UserDataManager userDataManager;
+    private static DataParser dataParser;
+    private static DialogCreationManager dialogCreationManager;
 
     private static int nextMessageId;
 
@@ -35,15 +39,18 @@ public class CinemaClient extends Application {
     	EventBus.getDefault().register(this);
         mapper.registerModule(new JavaTimeModule());
     	client = SimpleClient.getClient();
+        userDataManager = UserDataManager.getInstance();
+        dataParser = DataParser.getInstance();
+        dialogCreationManager = DialogCreationManager.getInstance();
         appStage = stage;
     	client.openConnection();
         client.sendToServer(new Message(0, "add client"));
-        scene = new Scene(loadFXML("primary"), 640, 480);
+        scene = new Scene(loadFXML("primary"), 640, 640);
         stage.setScene(scene);
         stage.show();
     }
 
-    public static int getNextMessageId() {
+    private static int getNextMessageId() {
         nextMessageId++;
         return nextMessageId;
     }
@@ -54,6 +61,42 @@ public class CinemaClient extends Application {
 
     public static ObjectMapper getMapper() {
         return mapper;
+    }
+
+    public static UserDataManager getUserDataManager() {
+        return userDataManager;
+    }
+
+    public static DataParser getDataParser() {
+        return dataParser;
+    }
+
+    public static void setUserDataManager(String id, String customerFirstName, String customerLastName, String customerGovId) {
+        userDataManager.setId(id);
+        userDataManager.setFirstName(customerFirstName);
+        userDataManager.setLastName(customerLastName);
+        userDataManager.setGovId(customerGovId);
+    }
+
+    public static void setUserDataManager(String id, String employeeFirstName, String employeeLastName, String employeeUserName, String employeeRole) {
+        userDataManager.setId(id);
+        userDataManager.setFirstName(employeeFirstName);
+        userDataManager.setLastName(employeeLastName);
+        userDataManager.setEmployeeUserName(employeeUserName);
+        userDataManager.setEmployeeType(employeeRole);
+    }
+
+    public static void setUserDataManager(String id, String employeeFirstName, String employeeLastName, String employeeUserName, String employeeRole, String additionalFields) {
+        userDataManager.setId(id);
+        userDataManager.setFirstName(employeeFirstName);
+        userDataManager.setLastName(employeeLastName);
+        userDataManager.setEmployeeUserName(employeeUserName);
+        userDataManager.setEmployeeType(employeeRole);
+        userDataManager.setAdditionalFields(additionalFields);
+    }
+
+    public static DialogCreationManager getDialogCreationManager() {
+        return dialogCreationManager;
     }
 
     // set scene root
@@ -97,30 +140,48 @@ public class CinemaClient extends Application {
         appStage.setTitle(title);
     }
 
+    public static void sendToServer(String messageHeader) throws IOException {
+        Message newMessage = new Message(getNextMessageId(), messageHeader);
+        getClient().sendToServer(newMessage);
+        System.out.printf("%s request sent.%n", messageHeader);
+    }
+
+    public static void sendToServer(String messageHeader, String messageData) throws IOException {
+        Message newMessage = new Message(getNextMessageId(), messageHeader);
+        newMessage.setData(messageData);
+        getClient().sendToServer(newMessage);
+        System.out.printf("%s request sent.%n", messageHeader);
+    }
+
     @Override
 	public void stop() throws Exception {
 		// TODO Auto-generated method stub
     	EventBus.getDefault().unregister(this);
 		super.stop();
+        System.exit(0);
 	}
 
     @Subscribe
     public void onMessageEvent(MessageEvent message) {
-//        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
-//        Platform.runLater(() -> {
-//            Alert alert = new Alert(AlertType.INFORMATION,
-//                    String.format("Message:\nId: %d\nData: %s\nTimestamp: %s\n",
-//                            message.getMessage().getId(),
-//                            message.getMessage().getMessage(),
-//                            message.getMessage().getTimeStamp().format(dtf))
-//            );
-//            alert.setTitle("new message");
-//            alert.setHeaderText("New Message:");
-//            alert.show();
-//        });
+
+    }
+
+    public static Stage getStage() {
+        return appStage;
     }
 
 	public static void main(String[] args) {
+        if(args.length != 0){
+            ip = args[0];
+        }
+        else {
+            ip = "10.0.0.5";
+        }
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            public void run() {
+                userDataManager.logoutUser();
+            }
+        }));
         launch();
     }
 }

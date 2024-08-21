@@ -19,9 +19,25 @@
                         <MenuItem mnemonicParsing="false" onAction="#onCloseProgram" text="סגור" />
                     </items>
                 </Menu>
+            <Menu mnemonicParsing="false" text="משתמש">
+              <items>
+                  <MenuItem mnemonicParsing="false" onAction="#showPersonalArea" text="אזור אישי" />
+                  <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
+              </items>
+            </Menu>
                 <Menu mnemonicParsing="false" text="פעולות">
                     <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onAddScreening" text="הוסף הקרנה" />
+                  <Menu fx:id="addMenu" mnemonicParsing="false" text="הוספה" visible="false">
+                    <items>
+                        <MenuItem fx:id="addScreeningMenuitem" mnemonicParsing="false" onAction="#onAddScreening" text="הוסף הקרנה" visible="false" />
+                      <MenuItem fx:id="addMovieMenuItem" mnemonicParsing="false" onAction="#onAddMovie" text="הוסף סרט" visible="false" />
+                    </items>
+                  </Menu>
+                  <Menu fx:id="removeMenu" mnemonicParsing="false" text="מחיקה" visible="false">
+                     <items>
+                        <MenuItem fx:id="removeMovieMenuItem" mnemonicParsing="false" onAction="#onRemoveMovie" text="מחיקת סרט" visible="false" />
+                     </items>
+                  </Menu>
                         <MenuItem mnemonicParsing="false" onAction="#onRefreshList" text="רענן רשימה" />
                     </items>
                 </Menu>

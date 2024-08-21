@@ -2,11 +2,15 @@ package il.cshaifasweng.OCSFMediatorExample.client.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.DataParser;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewBranchListEvent;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewVerifiedCustomerIdEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
@@ -17,7 +21,7 @@ import javafx.scene.control.*;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-public class CustomerLoginController {
+public class CustomerLoginController implements DialogInterface {
 
     @FXML
     private TextField customerIdNumField;
@@ -31,6 +35,8 @@ public class CustomerLoginController {
     @FXML
     private Label invalidUserLabel;
 
+    private DataParser dataParser;
+
     private Dialog<ButtonType> dialog;
 
     private String customerFirstName;
@@ -40,6 +46,8 @@ public class CustomerLoginController {
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
     }
+
+    public void setData(Object... items) {}
 
     @FXML
     void cancelLogin(ActionEvent event) {
@@ -73,11 +81,7 @@ public class CustomerLoginController {
         // get id
         customerGovId = customerIdNumField.getText();
         // verify credentials
-        int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "verify Customer id");
-        newMessage.setData(customerGovId);
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("verify Customer id request sent");
+        CinemaClient.sendToServer("verify Customer id", customerGovId);
         // disable buttons
         loginButton.setDisable(true);
         cancelButton.setDisable(true);
@@ -89,6 +93,15 @@ public class CustomerLoginController {
             String messageData = event.getMessage().getData();
 
             if (messageData.equals("user invalid")) {
+                invalidUserLabel.setText("פרטי כניסה שגויים");
+                invalidUserLabel.setVisible(true);
+                customerIdNumField.clear();
+                // enable buttons
+                loginButton.setDisable(false);
+                cancelButton.setDisable(false);
+            }
+            else if (messageData.equals("user already logged in")) {
+                invalidUserLabel.setText("אין אפשרות להתחבר למשתמש אשר מחובר במקום אחר");
                 invalidUserLabel.setVisible(true);
                 customerIdNumField.clear();
                 // enable buttons
@@ -96,13 +109,11 @@ public class CustomerLoginController {
                 cancelButton.setDisable(false);
             }
             else {
-                String[] splitData = messageData.split(",");
-                customerFirstName = splitData[0];
-                customerLastName = splitData[1];
+                Map<String, String> customerDictionary = dataParser.parseCustomer(messageData);
                 try {
                     // set content
-                    MovieTypeSelectionController movieTypeSelectionController = CinemaClient.setContent("movieTypeSelection").getController();
-                    movieTypeSelectionController.setCustomerData(customerFirstName, customerLastName, customerGovId);
+                    CinemaClient.setUserDataManager(customerDictionary.get("id"), customerDictionary.get("firstName"), customerDictionary.get("lastName"), customerGovId);
+                    CinemaClient.setContent("movieTypeSelection");
                     // close dialog
                     EventBus.getDefault().unregister(this);
                     dialog.setResult(ButtonType.OK);
@@ -116,6 +127,7 @@ public class CustomerLoginController {
 
     @FXML
     void initialize() {
+        dataParser = CinemaClient.getDataParser();
         // register to EventBus
         EventBus.getDefault().register(this);
     }

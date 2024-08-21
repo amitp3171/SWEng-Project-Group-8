@@ -2,7 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonType?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.DialogPane?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
@@ -11,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="122.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningEditorController">
+<DialogPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="310.0" prefWidth="349.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningEditorController">
    <content>
       <StackPane prefHeight="88.0" prefWidth="359.0">
          <children>
@@ -21,7 +22,19 @@
                      <font>
                         <Font size="15.0" />
                      </font></Label>
-                  <TextField fx:id="screeningHourTF" alignment="TOP_RIGHT" prefWidth="225.0" promptText="XX:XX" />
+                  <TextField fx:id="screeningHourTF" alignment="TOP_RIGHT" prefWidth="225.0" promptText="HH:mm" />
+                  <Label alignment="TOP_CENTER" text="בחר תאריך:">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <DatePicker fx:id="screeningDatePicker" editable="false" />
+                  <Label alignment="TOP_CENTER" text="בחר אולם:">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <ChoiceBox fx:id="theaterChoiceBox" prefWidth="150.0" />
                   <HBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="340.0">
                      <children>
                         <Button mnemonicParsing="false" onAction="#cancelScreeningUpdate" text="בטל">
@@ -32,6 +45,8 @@
                         <Button mnemonicParsing="false" onAction="#updateScreeningHour" text="עדכן" />
                      </children>
                   </HBox>
+                  <Button fx:id="removeScreeningButton" mnemonicParsing="false" onAction="#removeScreeningTime" text="מחק הקרנה" />
+                  <Label fx:id="screeningExistsLabel" text="שגיאה (הקרנה קיימת)" textFill="RED" visible="false" />
                </children>
             </VBox>
          </children>

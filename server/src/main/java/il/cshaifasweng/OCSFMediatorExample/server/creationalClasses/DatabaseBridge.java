@@ -1,4 +1,4 @@
-package il.cshaifasweng.OCSFMediatorExample.server;
+package il.cshaifasweng.OCSFMediatorExample.server.creationalClasses;
 
 import il.cshaifasweng.OCSFMediatorExample.server.dataClasses.*;
 import org.hibernate.HibernateException;
@@ -9,7 +9,6 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.service.ServiceRegistry;
 
-import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
@@ -46,13 +45,18 @@ public class DatabaseBridge {
         configuration.addAnnotatedClass(ServiceEmployee.class);
         configuration.addAnnotatedClass(CompanyManager.class);
         configuration.addAnnotatedClass(BranchManager.class);
+        configuration.addAnnotatedClass(ContentManager.class);
         configuration.addAnnotatedClass(AbstractProduct.class);
+        configuration.addAnnotatedClass(ContentManager.class);
+        configuration.addAnnotatedClass(Price.class);
+        configuration.addAnnotatedClass(CustomerMessage.class);
+        configuration.addAnnotatedClass(PriceChangeRequest.class);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
         configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "20danny05");
+        configuration.setProperty("hibernate.connection.password", "babun13");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "update");
 
@@ -64,7 +68,24 @@ public class DatabaseBridge {
         return configuration.buildSessionFactory(serviceRegistry);
     }
 
+    public static void beginTransaction() {
+        session.beginTransaction();
+    }
+
+    public static <T> void saveInstance(T newInstance) {
+        session.save(newInstance);
+    }
+
+    public static void flushSession() {
+        session.flush();
+    }
+
+    public static void commitTransaction() {
+        session.getTransaction().commit();
+    }
+
     public static <T> List<T> getAll(Class<T> entityClass, boolean forceRefresh) {
+        session.beginTransaction();
         if(forceRefresh) session.clear();
 
         // set session to read only
@@ -86,17 +107,26 @@ public class DatabaseBridge {
 
         // set to not read only
         session.setDefaultReadOnly(false);
+
+        session.flush();
+        session.getTransaction().commit();
+
         return data;
     }
 
     public static <T> List<T> executeNativeQuery(String sqlQuery, Class<T> resultClass, Object... params) {
         try {
-            session.clear();
+            session.beginTransaction();
+
             NativeQuery<T> query = session.createNativeQuery(sqlQuery, resultClass);
             for (int i = 0; i < params.length; i++) {
                 query.setParameter(i + 1, params[i]);
             }
             List<T> result = query.getResultList();
+
+            session.flush();
+            session.getTransaction().commit();
+
             return result;
         } catch (Exception e) {
             System.err.println("An error occurred in executeNativeQuery: " + e.getMessage());
@@ -131,7 +161,7 @@ public class DatabaseBridge {
         }
     }
 
-    public static DatabaseBridge getInstance() {
+    public static synchronized DatabaseBridge getInstance() {
         // if first access to class
         if (instance == null) {
             // create instance
@@ -141,6 +171,18 @@ public class DatabaseBridge {
             session = sessionFactory.openSession();
         }
         return instance;
+    }
+
+    public static <T> void removeInstance(T entity) {
+        try {
+            session.beginTransaction();
+            session.remove(entity);
+            session.flush();
+            session.getTransaction().commit();
+//            session.clear();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private DatabaseBridge() {}

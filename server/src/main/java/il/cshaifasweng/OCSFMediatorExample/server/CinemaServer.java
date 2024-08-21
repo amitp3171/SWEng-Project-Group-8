@@ -1,5 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.server;
 
+import il.cshaifasweng.OCSFMediatorExample.server.dataClasses.CheckInstances;
+
 import java.io.IOException;
 
 

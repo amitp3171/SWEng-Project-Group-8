@@ -7,6 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import il.cshaifasweng.OCSFMediatorExample.client.CinemaClient;
+import il.cshaifasweng.OCSFMediatorExample.client.UserDataManager;
 import il.cshaifasweng.OCSFMediatorExample.client.events.NewBranchListEvent;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
@@ -18,7 +19,7 @@ import javafx.scene.control.Dialog;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-public class BranchSelectorController {
+public class BranchSelectorController implements DialogInterface {
     @FXML
     private ComboBox<String> selectBranchListBox;
 
@@ -28,36 +29,13 @@ public class BranchSelectorController {
 
     private String selectedBranch;
 
-    private String firstName;
-    private String lastName;
-    private String govId;
-
-    private boolean isGuest = false;
-
-    private String employeeUserName = null;
-    private String employeeType = null;
+    UserDataManager userDataManager;
 
     public void setDialog(Dialog<ButtonType> dialog) {
         this.dialog = dialog;
     }
 
-    public void setCustomerData() {
-        this.isGuest = true;
-    }
-
-    void setCustomerData(String firstName, String lastName, String govId) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.govId = govId;
-    }
-
-    void setEmployeeData(String firstName, String lastName, String userName, String employeeType) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.employeeUserName = userName;
-        this.employeeType = employeeType;
-        this.isGuest = false;
-    }
+    public void setData(Object... items) {}
 
     @FXML
     void chooseBranch(ActionEvent event) {
@@ -78,12 +56,6 @@ public class BranchSelectorController {
         if (selectedBranch == null) return;
         // create controller
         InTheaterMovieListController inTheaterMovieListController = CinemaClient.setContent("inTheaterMovieList").getController();
-        if (this.isGuest)
-            inTheaterMovieListController.setCustomerData();
-        else if (this.employeeType == null)
-            inTheaterMovieListController.setCustomerData(firstName, lastName, govId);
-        else
-            inTheaterMovieListController.setEmployeeData(this.firstName, this.lastName, this.employeeUserName, this.employeeType);
         // set selected branch
         inTheaterMovieListController.setSelectedBranch(selectedBranch);
         // close dialog
@@ -110,13 +82,11 @@ public class BranchSelectorController {
 
     @FXML
     void initialize() throws IOException {
+        userDataManager = CinemaClient.getUserDataManager();
         // register to EventBus
         EventBus.getDefault().register(this);
         // send request to server
-        int messageId = CinemaClient.getNextMessageId();
-        Message newMessage = new Message(messageId, "get Branch list");
-        CinemaClient.getClient().sendToServer(newMessage);
-        System.out.println("Branch request sent");
+        CinemaClient.sendToServer("get Branch list");
     }
 
 }

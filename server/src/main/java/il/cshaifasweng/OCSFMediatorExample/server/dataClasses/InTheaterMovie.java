@@ -14,7 +14,7 @@ public class InTheaterMovie extends AbstractMovie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany/*(cascade = CascadeType.ALL)*/
     private List<ScreeningTime> screenings = new ArrayList<>();
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Branch> branches = new ArrayList<>();
@@ -26,15 +26,19 @@ public class InTheaterMovie extends AbstractMovie {
     public InTheaterMovie() {
         super();
     }
+
     public void addScreeningTime(ScreeningTime screeningTime) {
         screenings.add(screeningTime);
     }
+
     public void removeScreeningTime(ScreeningTime screeningTime) {
         screenings.remove(screeningTime);
     }
+
     public void addBranch(Branch branch) {
         branches.add(branch);
     }
+
     public void removeBranch(Branch branch) {
         branches.remove(branch);
     }
@@ -51,14 +55,17 @@ public class InTheaterMovie extends AbstractMovie {
     public void setScreenings(List<ScreeningTime> screenings){
         this.screenings = screenings;
     }
+
     public List<Branch> getBranches() {
         return branches;
     }
+
     public void setBranches(List<Branch> branches) {
         this.branches = branches;
     }
+
     @Override
     public String toString() {
-        return String.format("%s,%s,%s,%s,%s,%s", id, movieName, super.getDescription(), super.getMainActors(), super.getProducerName(), super.getPicture());
+        return String.join(",", String.valueOf(this.id), super.getMovieName(), super.getDescription(), super.getMainActors().toString(), super.getProducerName(), super.getPicture());
     }
 }

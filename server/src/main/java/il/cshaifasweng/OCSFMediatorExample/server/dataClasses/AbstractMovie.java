@@ -1,5 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.server.dataClasses;
 
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.MappedSuperclass;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ public abstract class AbstractMovie {
     @ElementCollection
     protected List<String> mainActors = new ArrayList<>();
     protected String description;
+    @Column(columnDefinition = "MEDIUMTEXT")
     protected String picture;
 
     // Constructor
@@ -65,4 +67,6 @@ public abstract class AbstractMovie {
     public void setPicture(String picture) {
         this.picture = picture;
     }
+
+
 }

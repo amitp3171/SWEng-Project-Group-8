@@ -9,18 +9,27 @@ public class SubscriptionCard extends AbstractProduct{
 
     private int remainingTickets;
 
-    public SubscriptionCard(Customer owner, int price) {
+    public SubscriptionCard(Customer owner, double price) {
         super(owner, price);
         this.remainingTickets = 20;
-}
+    }
 
     public SubscriptionCard() {}
 
     public int getRemainingTickets() {
-        return remainingTickets;
+        return this.remainingTickets;
     }
 
     public void setRemainingTickets(int remainingTickets) {
         this.remainingTickets = remainingTickets;
+    }
+
+    public void useTickets(int amount) {
+        this.remainingTickets -= amount;
+    }
+
+    @Override
+    public String toString() {
+        return String.join(",", String.valueOf(super.getId()), String.valueOf(this.remainingTickets));
     }
 }

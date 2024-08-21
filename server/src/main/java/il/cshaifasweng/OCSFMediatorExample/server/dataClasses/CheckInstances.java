@@ -9,6 +9,9 @@ import org.hibernate.service.ServiceRegistry;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import java.io.File;
+import java.nio.file.Files;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -17,11 +20,15 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Random;
+import il.cshaifasweng.OCSFMediatorExample.server.dataClasses.CompanyManager;
 
 public class CheckInstances {
 
     private static Session session;
     private static SessionFactory sessionFactory;
+
+    //path to pictures file
+    private static String startPath = "C:\\Users\\Perry\\Downloads\\projectImages-20240816T200050Z-001\\projectImages\\";
 
 
     private static SessionFactory getSessionFactory() throws HibernateException {
@@ -41,20 +48,24 @@ public class CheckInstances {
         configuration.addAnnotatedClass(Ticket.class);
         configuration.addAnnotatedClass(Purchase.class);
         configuration.addAnnotatedClass(Complaint.class);
-        configuration.addAnnotatedClass(Purchase.class);
-        configuration.addAnnotatedClass(Complaint.class);
         configuration.addAnnotatedClass(ServiceEmployee.class);
         configuration.addAnnotatedClass(CompanyManager.class);
         configuration.addAnnotatedClass(BranchManager.class);
-
+        configuration.addAnnotatedClass(ContentManager.class);
+        configuration.addAnnotatedClass(Price.class);
+        configuration.addAnnotatedClass(CustomerMessage.class);
+        configuration.addAnnotatedClass(PriceChangeRequest.class);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
         configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/projectdatabase?serverTimezone=Asia/Jerusalem");
         configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "20danny05");
+        configuration.setProperty("hibernate.connection.password", "amit1717");
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", "create");
+//        configuration.setProperty("hibernate.id.new_generator_mappings", "false");
+
+
 
         ServiceRegistry serviceRegistry = new
                 StandardServiceRegistryBuilder()
@@ -83,24 +94,23 @@ public class CheckInstances {
 
     }
 
-    private static ScreeningTime[] generateScreeningTimes(Branch[] branches, Theater[] theaters, InTheaterMovie[] inTheaterMovies) throws Exception {
+    private static ArrayList<ScreeningTime> generateScreeningTimes(Branch[] branches, Theater[] theaters, InTheaterMovie[] inTheaterMovies) throws Exception {
         // Create an array to hold ScreeningTime objects
-        ScreeningTime[] st = new ScreeningTime[5];
+//        ScreeningTime[] st = new ScreeningTime[5];
+        ArrayList<ScreeningTime> st = new ArrayList<>();
         Random random = new Random();
         LocalDate startDate = LocalDate.now(); // starting from today
         LocalDate endDate = startDate.plusDays(30); // up to 30 days in the future
 
-        int index = 0; // Index for the ScreeningTime array
-
         for (InTheaterMovie movie : inTheaterMovies) {
-            for (int i = 0; i < 5 && index < st.length; i++) {
+            for (int i = 0; i < 5; i++) {
                 // Generate a random date within the specified range
                 long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
                 LocalDate randomDate = startDate.plusDays(random.nextInt((int) daysBetween + 1));
 
                 int randomHour = random.nextInt(24);
-                Theater randomTheater = theaters[random.nextInt(theaters.length)];
                 Branch randomBranch = branches[random.nextInt(branches.length)];
+                Theater randomTheater = randomBranch.getTheaterList().get(random.nextInt(10));
 
                 ScreeningTime screeningTime = new ScreeningTime();
                 screeningTime.setBranch(randomBranch);
@@ -118,45 +128,66 @@ public class CheckInstances {
                 movie.addScreeningTime(screeningTime);
 
                 // Add the ScreeningTime object to the array
-                st[index++] = screeningTime;
+                st.add(screeningTime);
 
-                // Stop if the array is full
-                if (index >= st.length) {
-                    break;
+                for (Seat seat : screeningTime.getSeats()) {
+                    session.save(seat);
                 }
+
+                session.save(screeningTime);
+
+//                // Stop if the array is full
+//                if (index >= st.length) {
+//                    break;
+//                }
             }
-            session.save(movie);
+//            session.save(movie);
             session.flush();
 
             // Stop if the array is full
-            if (index >= st.length) {
-                break;
-            }
+//            if (index >= st.length) {
+//                break;
+//            }
         }
 
         return st;
     }
 
-    private static void generateComingSoonMovie() throws Exception {
+    private static ComingSoonMovie generateComingSoonMovie() throws Exception {
         List<String> mainActors = new ArrayList<>();
         mainActors.add("Ryan");
         mainActors.add("Yu");
         LocalDate localDate = LocalDate.of(2024, 7, 27);
 
+        //creat image
+
+        File newFile = new File(startPath + "deadpool.png");
+        String encodedImage = java.util.Base64.getEncoder().encodeToString(Files.readAllBytes(newFile.toPath()));
+
+
         // Convert LocalDate to java.util.Date
-        Date specificDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        ComingSoonMovie comingSoonMovie = new ComingSoonMovie("Deadpool דדפול", "Shon", mainActors, "Funny Movie", "pic", specificDate);
+        LocalDate ld = LocalDate.now();
+        ComingSoonMovie comingSoonMovie = new ComingSoonMovie("Deadpool דדפול", "Shon", mainActors, "[Funny Movie]", encodedImage, ld);
         session.save(comingSoonMovie);
         session.flush();
+        return  comingSoonMovie;
     }
 
-    private static void generateHomeMovie() throws Exception {
+    private static HomeMovie generateHomeMovie() throws Exception {
         List<String> mainActors = new ArrayList<>();
         mainActors.add("Simba");
         mainActors.add("Scar");
-        HomeMovie homeMovie = new HomeMovie("Lion King מלך האריות", "Don", mainActors, "Great movie, lots of animals", "pic", "link");
+
+
+
+        //creat image
+        File newFile = new File(startPath + "lion_king.jpg");
+        String encodedImage = java.util.Base64.getEncoder().encodeToString(Files.readAllBytes(newFile.toPath()));
+
+        HomeMovie homeMovie = new HomeMovie("Lion King מלך האריות", "Don", mainActors, "[Great movie, lots of animals]", encodedImage, 2);
         session.save(homeMovie);
         session.flush();
+        return homeMovie;
     }
 
     private static void generateLinks(Link[] links) throws Exception {
@@ -186,6 +217,7 @@ public class CheckInstances {
             session.flush();
         }
     }
+
     private static void generatePurchases(Purchase[] purchases) throws Exception {
         for (Purchase purchase : purchases) {
             session.save(purchase);
@@ -207,11 +239,10 @@ public class CheckInstances {
         }
     }
 
-    private static void generateCompanyManagers(CompanyManager[] companyManagers) throws Exception {
-        for (CompanyManager companyManager : companyManagers) {
+    private static void generateCompanyManagers(CompanyManager companyManager) throws Exception {
             session.save(companyManager);
             session.flush();
-        }
+
     }
 
     private static void generateBranchManagers(BranchManager[] branchManagers) throws Exception {
@@ -221,7 +252,34 @@ public class CheckInstances {
         }
     }
 
+    private static void generateContentManagers(ContentManager[] contentManagers) throws Exception {
+        for (ContentManager contentManager : contentManagers) {
+            session.save(contentManager);
+            session.flush();
+        }
+    }
 
+    private static void generatePrices(Price[] prices) throws Exception {
+        for (Price price : prices) {
+            session.save(price);
+            session.flush();
+        }
+    }
+
+    private static void generateInTheaterMovies(InTheaterMovie[] movies) throws Exception {
+        for (InTheaterMovie movie : movies) {
+            session.save(movie);
+            session.flush();
+        }
+    }
+
+
+    private static void generateCustomerMessages(CustomerMessage[] customerMessages) throws Exception {
+        for (CustomerMessage customerMessage: customerMessages) {
+            session.save(customerMessage);
+            session.flush();
+        }
+    }
 
 
 
@@ -289,7 +347,7 @@ public class CheckInstances {
             branches[0] = new Branch("Haifa");
             branches[1] = new Branch("Tel-Aviv");
             branches[2] = new Branch("Eilat");
-            branches[3] = new Branch("Rishon");
+            branches[3] = new Branch("Rishon LeTsiyon");
             branches[4] = new Branch("Jerusalem");
             for(Branch branch : branches) {
                 Theater[] theaters = generateTheaters();
@@ -302,38 +360,47 @@ public class CheckInstances {
 
             InTheaterMovie[] inTheaterMovies= new InTheaterMovie[5];
 
+            //creat image
+            File[] newFiles = new File[5];
+            String[] encodedImages = new String[5];
+            for (int i=0;i<5;i++) {
+                newFiles[i] = new File(startPath+i+".jpg");
+                encodedImages[i] = java.util.Base64.getEncoder().encodeToString(Files.readAllBytes(newFiles[i].toPath()));
+
+            }
+
             List<String> mainActors1 = new ArrayList<String>();
             mainActors1.add("Zohar");
             mainActors1.add("Dan");
-            inTheaterMovies[0] = new InTheaterMovie("Mad Max מקס הזועם", "Amit Perry", mainActors1, "Good movie", "pic1");
+            inTheaterMovies[0] = new InTheaterMovie("Mad Max מקס הזועם", "Amit Perry", mainActors1, "[Good movie]", encodedImages[0]);
 
             List<String> mainActors2 = new ArrayList<>();
             mainActors2.add("Ceaser");
-            inTheaterMovies[1] = new InTheaterMovie("Planet of the Apes כוכב הקופים", "Peter", mainActors2, "Movie about apes", "pic2");
+            inTheaterMovies[1] = new InTheaterMovie("Planet of the Apes כוכב הקופים", "Peter", mainActors2, "[Movie about apes]", encodedImages[1]);
 
             List<String> mainActors3 = new ArrayList<>();
             mainActors3.add("Daniel");
-            inTheaterMovies[2] = new InTheaterMovie("Harry Potter הארי פוטר", "David", mainActors3, "Movie about friendship and magics", "pic3");
+            inTheaterMovies[2] = new InTheaterMovie("Harry Potter הארי פוטר", "David", mainActors3, "[Movie about friendship and magics]", encodedImages[2]);
 
             List<String> mainActors4 = new ArrayList<>();
             mainActors4.add("Luke");
             mainActors4.add("Han");
             mainActors4.add("Lia");
-            inTheaterMovies[3] = new InTheaterMovie("Star Wars מלחמת הכוכבים", "George Lucas", mainActors4, "Movie about some guys waving light swords", "pic4" );
+            inTheaterMovies[3] = new InTheaterMovie("Star Wars מלחמת הכוכבים", "George Lucas", mainActors4, "[Movie about some guys waving light swords]", encodedImages[3]);
 
             List<String> mainActors5 = new ArrayList<>();
             mainActors5.add("Kevin");
-            inTheaterMovies[4] = new InTheaterMovie("The Usual Suspects החשוד המיידי", "Bryan", mainActors5, "Thrilling movie", "pic5");
+            inTheaterMovies[4] = new InTheaterMovie("The Usual Suspects החשוד המיידי", "Bryan", mainActors5, "[Thrilling movie]", encodedImages[4]);
 
             Theater[] theaters = generateTheaters();
 
-            ScreeningTime[] screeningTimes = generateScreeningTimes(branches, theaters,inTheaterMovies);
+            ArrayList<ScreeningTime> screeningTimes = generateScreeningTimes(branches, theaters,inTheaterMovies);
 
             printAllBranches();
             printAllSeats();
 
-            generateComingSoonMovie();
-            generateHomeMovie();
+            ComingSoonMovie comingSoonMovie = generateComingSoonMovie();
+            HomeMovie homeMovie = generateHomeMovie();
 
             //new classes instances: ---------19.07---------
 
@@ -347,52 +414,55 @@ public class CheckInstances {
             customers[3] = new Customer("Daniel", "Rubinstein", "252410942");
             customers[4] = new Customer("Kfir", "Back", "421344941");
 
+            generateCustomers(customers);
+
+            CustomerMessage[] customerMessages = new CustomerMessage[5];
+            for (int i = 0; i < 5; i++) {
+                customerMessages[i] = new CustomerMessage("hello message", "[hello " + customers[i].getFirstName() + "]", LocalDateTime.now(), customers[i]);
+            }
+
             Link[] links =new Link[5];
             for(int i=0;i<links.length;i++){
-                links[i] = new Link(customers[i],20,"Lion King",LocalTime.now(),LocalTime.now().plusHours(168));
-                purchases[i] = new Purchase(links[i], "Credit Card", LocalTime.now());
+                links[i] = new Link(customers[i],20, homeMovie, LocalDate.now(), LocalTime.now());
+                purchases[i] = new Purchase(links[i], customers[i], "Credit Card", LocalDate.now(), LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i]);
-
             }
 
 
             SubscriptionCard[] sc = new SubscriptionCard[5];
             for(int i=0;i<sc.length;i++) {
-                sc[i] = new SubscriptionCard(customers[i],200);
-                purchases[i+5] = new Purchase(sc[i], "Credit Card", LocalTime.now());
+                sc[i] = new SubscriptionCard(customers[i], 700);
+                purchases[i+5] = new Purchase(sc[i], customers[i], "Credit Card", LocalDate.now(), LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i+5]);
 
             }
+            sc[4].useTickets(20);
 
             Ticket[] tickets = new Ticket[5];
             for(int i=0;i<tickets.length;i++) {
-                tickets[i] = new Ticket(customers[i],30,screeningTimes[i].getInTheaterMovie().getMovieName(),screeningTimes[i], screeningTimes[i].getTheater().getSeat(i));
-                purchases[i+10] = new Purchase(tickets[i], "Credit Card", LocalTime.now());
+                tickets[i] = new Ticket(customers[i], 40,screeningTimes.get(i).getInTheaterMovie().getMovieName(),screeningTimes.get(/*i*/0), screeningTimes.get(/*i*/0).getSeat(i));
+                screeningTimes.get(/*i*/0).getSeat(i).setTaken(true);
+                purchases[i+10] = new Purchase(tickets[i], customers[i], "Credit Card", LocalDate.now(), LocalTime.now());
                 customers[i].addPurchaseToList(purchases[i+10]);
 
             }
 
 
             Complaint[] complaints = new Complaint[5];
-            complaints[0] = new Complaint(customers[0], LocalTime.now());
-            complaints[1] = new Complaint(customers[1], LocalTime.now());
-            complaints[2] = new Complaint(customers[2], LocalTime.now());
-            complaints[3] = new Complaint(customers[3], LocalTime.now());
-            complaints[4] = new Complaint(customers[4], LocalTime.now());
-
+            complaints[0] = new Complaint(customers[0].getPurchaseHistory().get(0), customers[0], LocalTime.now(), "[יקר מדי]", "[the tickets too expensive]");
+            complaints[1] = new Complaint(customers[1].getPurchaseHistory().get(0), customers[1], LocalTime.now(),"[ארוך מדי]", "[the movie too long]");
+            complaints[2] = new Complaint(customers[2].getPurchaseHistory().get(0), customers[2], LocalTime.now(), "[קצר מדי]", "[the movie too short]");
+            complaints[3] = new Complaint(customers[3].getPurchaseHistory().get(0), customers[3], LocalTime.now(), "[שירות גרוע]", "[the tickets seller was rude]");
+            complaints[4] = new Complaint(customers[4].getPurchaseHistory().get(0), customers[4], LocalTime.now(),"[זול מדי]", "[the tickets are too cheap]");
             ServiceEmployee[] serviceEmployees = new ServiceEmployee[5];
-            serviceEmployees[0] = new ServiceEmployee("John", "Doe", "johndoe", "password1");
+            serviceEmployees[0] = new ServiceEmployee("John", "Doe", "j", "j");
             serviceEmployees[1] = new ServiceEmployee("Jane", "Smith", "janesmith", "password2");
             serviceEmployees[2] = new ServiceEmployee("Michael", "Brown", "michaelbrown", "password3");
             serviceEmployees[3] = new ServiceEmployee("Emily", "Davis", "emilydavis", "password4");
             serviceEmployees[4] = new ServiceEmployee("David", "Wilson", "davidwilson", "password5");
 
-            CompanyManager[] companyManagers = new CompanyManager[5];
-            companyManagers[0] = new CompanyManager("Yosi", "Levi", "johndoe", "password1");
-            companyManagers[1] = new CompanyManager("Moshe", "Cohen", "janesmith", "password2");
-            companyManagers[2] = new CompanyManager("Yogev", "Perry", "michaelbrown", "password3");
-            companyManagers[3] = new CompanyManager("Noam", "Platipus", "emilydavis", "password4");
-            companyManagers[4] = new CompanyManager("Orpaz", "Filusim", "davidwilson", "password5");
+
+            CompanyManager companyManager = new CompanyManager("Yosi", "Levi", "yosilevi", "password1");
 
             BranchManager[] branchManagers = new BranchManager[5];
             branchManagers[0] = new BranchManager("Alice", "Johnson", "alicejohnson", "password1", branches[0]);
@@ -401,23 +471,38 @@ public class CheckInstances {
             branchManagers[3] = new BranchManager("Diana", "Garcia", "dianagarcia", "password4", branches[3]);
             branchManagers[4] = new BranchManager("Evan", "Martinez", "evanmartinez", "password5", branches[4]);
 
+            ContentManager[] contentManagers = new ContentManager[2];
+            contentManagers[0] = new ContentManager("Ron", "Weasley", "ronweasly", "itsmagicinnit");
+            contentManagers[1] = new ContentManager("Zohar", "Sahar", "z", "z");
+
             for(int i=0;i<customers.length;i++) {
                 customers[i].addComplaintToList(complaints[i]);
                 customers[i].addLinkToList(links[i]);
                 customers[i].addSubscriptionCardToList(sc[i]);
                 customers[i].addTicketToList(tickets[i]);
+                customers[i].addMessageToList(customerMessages[i]);
             }
 
+            Price ticketPrice = new Price("Ticket", 40);
+            Price linkPrice = new Price("Link", 20);
+            Price subscriptionCardPrice = new Price("SubscriptionCard", 700);
 
+            generatePrices(new Price[]{ticketPrice, linkPrice, subscriptionCardPrice});
+
+            generateCustomerMessages(customerMessages);
+//            generateCustomers(customers);
             generatePurchases(purchases);
             generateComplaints(complaints);
             generateServiceEmployees(serviceEmployees);
-            generateCompanyManagers(companyManagers);
+            generateCompanyManagers(companyManager);
             generateBranchManagers(branchManagers);
-            generateCustomers(customers);
+            generateContentManagers(contentManagers);
             generateTickets(tickets);
             generateLinks(links);
             generateSubscriptionCards(sc);
+
+
+
             //___________________________________________________
             session.getTransaction().commit(); // Save everything.
 
@@ -435,5 +520,6 @@ public class CheckInstances {
                 sessionFactory.close();
             }
         }
+
     }
 }

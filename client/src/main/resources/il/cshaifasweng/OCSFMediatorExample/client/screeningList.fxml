@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ComboBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningListController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="549.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.controllers.ScreeningListController">
    <top>
       <MenuBar nodeOrientation="RIGHT_TO_LEFT" BorderPane.alignment="CENTER">
         <menus>
@@ -20,26 +24,54 @@
                   <MenuItem mnemonicParsing="false" onAction="#onCloseProgram" text="סגור" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="משתמש" />
-            <Menu mnemonicParsing="false" text="עדכן" />
+            <Menu mnemonicParsing="false" text="משתמש">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#showPersonalArea" text="אזור אישי" />
+                  <MenuItem mnemonicParsing="false" onAction="#onLogOut" text="התנתק" />
+               </items></Menu>
         </menus>
       </MenuBar>
    </top>
    <center>
-      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+      <VBox alignment="CENTER" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="429.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="movieLabel" alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" prefHeight="105.0" prefWidth="197.0" text="שם סרט">
-               <font>
-                  <Font size="22.0" />
-               </font>
-            </Label>
-            <Label fx:id="movieInfoLabel" alignment="TOP_CENTER" contentDisplay="CENTER" nodeOrientation="RIGHT_TO_LEFT" prefHeight="154.0" prefWidth="600.0" text="מידע על הסרט" textAlignment="CENTER">
-               <font>
-                  <Font size="17.0" />
-               </font>
-            </Label>
-            <ComboBox fx:id="selectDayListBox" nodeOrientation="RIGHT_TO_LEFT" onAction="#chooseDay" prefWidth="150.0" promptText="בחר יום" />
-            <ListView fx:id="screeningListView" nodeOrientation="RIGHT_TO_LEFT" onMouseClicked="#onItemSelected" prefHeight="308.0" prefWidth="144.0" />
+            <HBox alignment="TOP_CENTER" nodeOrientation="RIGHT_TO_LEFT" prefHeight="161.0" prefWidth="600.0">
+               <children>
+                  <VBox nodeOrientation="RIGHT_TO_LEFT" prefHeight="130.0" prefWidth="462.0">
+                     <children>
+                        <Label fx:id="movieLabel" alignment="TOP_LEFT" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" prefHeight="54.0" prefWidth="462.0" text="שם סרט" wrapText="true">
+                           <font>
+                              <Font size="22.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="movieSummaryLabel" alignment="TOP_LEFT" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="400.0" text="תקציר הסרט" textAlignment="CENTER" wrapText="true">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="primaryActorsLabel" maxWidth="1.7976931348623157E308" text="שחקנים ראשיים" wrapText="true">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="producerNameLabel" maxWidth="1.7976931348623157E308" text="מפיק" wrapText="true">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <ImageView fx:id="movieImageView" fitHeight="170.0" fitWidth="220.0" nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
+                     <viewport>
+                        <Rectangle2D />
+                     </viewport></ImageView>
+               </children>
+            </HBox>
+            <DatePicker fx:id="screeningDatePicker" editable="false" onAction="#onDateSelected">
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin></DatePicker>
+            <ListView fx:id="screeningListView" nodeOrientation="RIGHT_TO_LEFT" onMouseClicked="#onItemSelected" prefHeight="285.0" prefWidth="600.0" />
          </children>
       </VBox>
    </center>
